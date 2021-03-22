@@ -8,3 +8,4 @@ files {
     'ui/css/fonts/Roboto-Light.woff2',
 }
 loadscreen 'ui/index.html'
+loadscreen_manual_shutdown 'yes'
