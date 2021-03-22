@@ -1,0 +1,250 @@
+<html>
+  <head>
+    <title>sGaming.pl - Zarządzanie kontem</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="lib/axios.min.js"></script>
+    <style>
+      #spawn {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div v-show="showSpawner" id="spawn">
+      <div  id="double">
+        <div v-if="showFaction">
+          <h1 style="color: white; margin-bottom: 85px">
+            Wybierz służbę mundurową w której chciałbyś zagrać
+          </h1>
+          <div class="ui cards">
+            <img
+              class="faction"
+              src="images/fd.png"
+              @click="showSelection('fd')"
+            />
+            <img
+              class="faction"
+              src="images/md.png"
+              @click="showSelection('md')"
+            />
+            <img
+              class="faction"
+              src="images/pd.png"
+              @click="showSelection('pd')"
+            />
+          </div>
+        </div>
+        <h1
+          v-if="showDepartment && faction == 'fd'"
+          style="color: white; margin-bottom: 85px"
+        >
+          Wybierz departament w którym chciałbyś rozpocząć grę
+        </h1>
+        <div v-if="showDepartment && faction == 'fd'" class="ui cards">
+          <div class="card">
+            <div class="content">
+              <img class="right floated mini ui image" src="images/fd.png" />
+              <div class="header">Vespucci</div>
+              <div class="meta"></div>
+              <div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+            </div>
+            <div class="extra content">
+              <div class="ui two buttons">
+                <button class="ui green button" @click="spawnPlayer(1)">
+                  Wybierz
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="content">
+              <img class="right floated mini ui image" src="images/fd.png" />
+              <div class="header">Vespucci</div>
+              <div class="meta"></div>
+              <div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+            </div>
+            <div class="extra content">
+              <div class="ui two buttons">
+                <button class="ui green button" @click="spawnPlayer(1)">
+                  Wybierz
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="content">
+              <img class="right floated mini ui image" src="images/fd.png" />
+              <div class="header">Sandy Shores (LSCS)</div>
+              <div class="meta">Officer I </div>
+              <div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+            </div>
+            <div class="extra content">
+              <div class="ui two buttons">
+                <button class="ui green button" @click="spawnPlayer(2)">
+                  Wybierz
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+		<h1
+		v-if="showDepartment && faction == 'md'"
+		style="color: white; margin-bottom: 85px"
+	  >
+		Wybierz departament w którym chciałbyś rozpocząć grę
+	  </h1>
+	  <div v-if="showDepartment && faction == 'md'" class="ui cards">
+		<div class="card">
+		  <div class="content">
+			<img class="right floated mini ui image" src="images/md.png" />
+			<div class="header">Vespucci</div>
+			<div class="meta"></div>
+			<div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+		  </div>
+		  <div class="extra content">
+			<div class="ui two buttons">
+			  <button class="ui green button" @click="spawnPlayer(1)">
+				Wybierz
+			  </button>
+			</div>
+		  </div>
+		</div>
+		<div class="card">
+		  <div class="content">
+			<img class="right floated mini ui image" src="images/md.png" />
+			<div class="header">Vespucci</div>
+			<div class="meta"></div>
+			<div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+		  </div>
+		  <div class="extra content">
+			<div class="ui two buttons">
+			  <button class="ui green button" @click="spawnPlayer(1)">
+				Wybierz
+			  </button>
+			</div>
+		  </div>
+		</div>
+		<div class="card">
+		  <div class="content">
+			<img class="right floated mini ui image" src="images/md.png" />
+			<div class="header">Sandy Shores</div>
+			<div class="meta"></div>
+			<div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+		  </div>
+		  <div class="extra content">
+			<div class="ui two buttons">
+			  <button class="ui green button" @click="spawnPlayer(2)">
+				Wybierz
+			  </button>
+			</div>
+		  </div>
+		</div>
+	  </div>
+
+	  <h1
+	  v-if="showDepartment && faction == 'pd'"
+	  style="color: white; margin-bottom: 85px"
+	>
+	  Wybierz departament w którym chciałbyś rozpocząć grę
+	</h1>
+	<div v-if="showDepartment && faction == 'pd'" class="ui cards">
+	  <div class="card">
+		<div class="content">
+		  <img class="right floated mini ui image" src="images/pd.png" />
+		  <div class="header">Vespucci</div>
+		  <div class="meta"></div>
+		  <div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+		</div>
+		<div class="extra content">
+		  <div class="ui two buttons">
+			<button class="ui green button" @click="spawnPlayer(1)">
+			  Wybierz
+			</button>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card">
+		<div class="content">
+		  <img class="right floated mini ui image" src="images/pd.png" />
+		  <div class="header">Vespucci</div>
+		  <div class="meta"></div>
+		  <div class="description"><div class="ui blue tiny progress">
+				<div class="bar"></div>
+				<div class="label">1500/200XP</div>
+			  </div></div>
+		</div>
+		<div class="extra content">
+		  <div class="ui two buttons">
+			<button class="ui green button" @click="spawnPlayer(1)">
+			  Wybierz
+			</button>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card">
+		<div class="content">
+		  <img class="right floated mini ui image" src="images/pd.png" />
+		  <div class="header">Sandy Shores</div>
+		  <div class="meta"></div>
+		  <div class="description"><div class="ui blue tiny progress">
+			<div class="bar"></div>
+			<div class="label">1500/200XP</div>
+		  </div></div>
+		</div>
+		<div class="extra content">
+		  <div class="ui two buttons">
+			<button class="ui green button" @click="spawnPlayer(2)">
+			  Wybierz
+			</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
