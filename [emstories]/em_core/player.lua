@@ -102,3 +102,9 @@ AddEventHandler("playerJoining",function()
     local playerId = source
     Players.onJoin(playerId)
 end)
+
+AddEventHandler('playerDropped', function (reason)
+    Players.all[source]=nil
+end)
+  
+  
