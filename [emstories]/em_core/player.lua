@@ -41,7 +41,8 @@ Players.load = function(identifier, playerId, callback)
         local userData = {
             playerId = playerId,
             identifier = identifier,
-            name = GetPlayerName(playerId)
+            name = GetPlayerName(playerId),
+            skin = row.skin
         }
         Players.set(playerId,userData)
 
@@ -49,6 +50,7 @@ Players.load = function(identifier, playerId, callback)
             callback(callback)
         end
         print('loaded ' .. GetPlayerName(playerId) .. ' (' .. playerId .. '|' .. identifier .. ')')
+        --TriggerClientEvent("ems:spawnSelection:show",playerId)
     end)
 
 end
@@ -78,7 +80,7 @@ Players.onJoin = function(playerId)
                         Players.load(identifier,playerId)
                     end)
                 else
-                    MySQL.Async.execute("INSERT INTO em_users (login,license) VALUES (@login,@identifier)",{
+                    MySQL.Async.execute("INSERT INTO em_users (login,identifier) VALUES (@login,@identifier)",{
                         ["@login"]=GetPlayerName(playerId),
                         ["@identifier"]=identifier
                     },function(rowsChanged)
