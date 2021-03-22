@@ -36,5 +36,6 @@ RegisterNUICallback("spawnPlayer", function(data, callback)
     isDead = false 
       timerCount = 90 
     securedUI = false
+    TriggerEvent("em:showHUD")
     callback("ok")
   end)
