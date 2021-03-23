@@ -25,20 +25,18 @@ const vehControl = new Vue({
             this.wheel.titleWidth = 40
             this.wheel.titleHeight = 40
             this.wheel.spreaderOutTitle = icon.cross;
-            var iconBrake = "imgsrc:images/brake-"+data.handbrake+".png";
             var iconWindow = "imgsrc:images/windows-"+data.passengerWind+".png";
             var iconEngine = "imgsrc:images/engine-"+data.engine+".png";
             var iconTrunk = "imgsrc:images/trunk-"+data.trunk+".png"
             var iconBonnet = "imgsrc:images/bonnet-"+data.bonnet+".png"
             var iconDome = "imgsrc:images/dome-"+data.dome+".png"
-            this.wheel.createWheel([iconEngine, iconWindow, iconBrake,iconTrunk,iconBonnet,iconDome ]);
+            this.wheel.createWheel([iconEngine, iconWindow,iconTrunk,iconBonnet,iconDome ]);
             console.log(data)
             this.wheel.navItems[0].selected = false;
             this.wheel.navItems[1].selected = false;
             this.wheel.navItems[2].selected = false;
             this.wheel.navItems[3].selected = false;
             this.wheel.navItems[4].selected = false;
-            this.wheel.navItems[5].selected = false;
 
             this.wheel.navItems[0].navSlice.mousedown(function() {
                 axios.post(`https://em_vehicleControl/action`,{type:"engine",state:data.engine}).then((response)=>{
@@ -47,15 +45,12 @@ const vehControl = new Vue({
                 axios.post(`https://em_vehicleControl/action`,{type:"window",state:data.passengerWind}).then((response)=>{
             }).catch((error)=>{console.log(error)});})
             this.wheel.navItems[2].navSlice.mousedown(function() {
-                axios.post(`https://em_vehicleControl/action`,{type:"brake",state:data.handbrake}).then((response)=>{
-            }).catch((error)=>{console.log(error)});})
-            this.wheel.navItems[3].navSlice.mousedown(function() {
                 axios.post(`https://em_vehicleControl/action`,{type:"trunk",state:data.trunk}).then((response)=>{
             }).catch((error)=>{console.log(error)});})
-            this.wheel.navItems[4].navSlice.mousedown(function() {
+            this.wheel.navItems[3].navSlice.mousedown(function() {
                 axios.post(`https://em_vehicleControl/action`,{type:"bonnet",state:data.bonnet}).then((response)=>{
             }).catch((error)=>{console.log(error)});})
-            this.wheel.navItems[5].navSlice.mousedown(function() {
+            this.wheel.navItems[4].navSlice.mousedown(function() {
                 axios.post(`https://em_vehicleControl/action`,{type:"dome",state:data.dome}).then((response)=>{
             }).catch((error)=>{console.log(error)});})
 
@@ -80,43 +75,33 @@ const vehControl = new Vue({
                 vehControl.description = "";
             })
             this.wheel.navItems[2].navSlice.mouseover(function(){
-                if (data.handbrake<1) {
-                    vehControl.description = 'Zaciągnij hamulec ręczny';
-                }else {
-                    vehControl.description = "Spuść hamulec ręczny";
-                }
-            })
-            this.wheel.navItems[2].navSlice.mouseout(function(){
-                vehControl.description = "";
-            })
-            this.wheel.navItems[3].navSlice.mouseover(function(){
                 if (data.trunk<1) {
                     vehControl.description = 'Otwórz bagażnik';
                 }else {
                     vehControl.description = "Zamknij bagażnik";
                 }
             })
-            this.wheel.navItems[3].navSlice.mouseout(function(){
+            this.wheel.navItems[2].navSlice.mouseout(function(){
                 vehControl.description = "";
             })
-            this.wheel.navItems[4].navSlice.mouseover(function(){
+            this.wheel.navItems[3].navSlice.mouseover(function(){
                 if (data.bonnet<1) {
                     vehControl.description = 'Otwórz maskę';
                 }else {
                     vehControl.description = "Zamknij maskę";
                 }
             })
-            this.wheel.navItems[4].navSlice.mouseout(function(){
+            this.wheel.navItems[3].navSlice.mouseout(function(){
                 vehControl.description = "";
             })
-            this.wheel.navItems[5].navSlice.mouseover(function(){
+            this.wheel.navItems[4].navSlice.mouseover(function(){
                 if (data.dome<1) {
                     vehControl.description = 'Włącz światło w środku';
                 }else {
                     vehControl.description = "Wyłącz światło w środku";
                 }
             })
-            this.wheel.navItems[5].navSlice.mouseout(function(){
+            this.wheel.navItems[4].navSlice.mouseout(function(){
                 vehControl.description = "";
             })
             this.wheel.refreshWheel();

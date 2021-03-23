@@ -11,7 +11,6 @@ Citizen.CreateThread(function()
                 local engineState = GetIsVehicleEngineRunning(vehicle)
                 local driverWindow, passengerWindow = IsVehicleWindowIntact(vehicle,1), IsVehicleWindowIntact(vehicle,0)
                 local driverWindowState, passengerWindowState = 0, 0
-                local handbrake,handbrakeState = GetVehicleHandbrake(vehicle),0
                 local trunk = GetVehicleDoorAngleRatio(vehicle,5)
                 local bonnet = GetVehicleDoorAngleRatio(vehicle,4)
                 local dome,domeState = IsVehicleInteriorLightOn(vehicle),0
@@ -37,15 +36,12 @@ Citizen.CreateThread(function()
                     passengerWindowState = 0
                 end
 
-                if (handbrake) then
-                    handbrakeState = 1
-                end
                 if (not engineState) then
                     engineState = 0
                 end
                 if (IsControlJustPressed(0,21)) then
                     SetNuiFocus(true,true)
-                    SendNUIMessage({type="renderVehicleControl",data={dome=domeState,engine=engineState,driverWind=driverWindowState,passengerWind=passengerWindowState,handbrake=handbrakeState,trunk=trunkStatus,bonnet=bonnetStatus}})
+                    SendNUIMessage({type="renderVehicleControl",data={dome=domeState,engine=engineState,driverWind=driverWindowState,passengerWind=passengerWindowState,trunk=trunkStatus,bonnet=bonnetStatus}})
                 end
             end
         end
@@ -83,13 +79,6 @@ RegisterNUICallback("action",function(data,callback)
 
                     RollDownWindow(vehicle,0)
                     RollDownWindow(vehicle,1)
-                end
-            end
-            if (data.type == "brake") then
-                if (state == 0) then
-                    FreezeEntityPosition(vehicle,true)
-                else
-                    FreezeEntityPosition(vehicle,false)
                 end
             end
             if (data.type == "trunk") then
