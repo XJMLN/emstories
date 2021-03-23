@@ -5,6 +5,8 @@ const HUD = new Vue({
         showHUD:false,
         street:"",
         zone:"",
+        vehicle:false,
+        speed:"",
     },
     methods: {
         
@@ -20,6 +22,15 @@ const HUD = new Vue({
             }
             this.zone=data.zone;
             
+        },
+        updateVehicle(data) {
+            if (data.vehicle) {
+                this.vehicle = true;
+                this.speed = data.speed;
+            } else {
+                this.vehicle = false;
+                this.speed = "";
+            }
         }
         
 
@@ -34,6 +45,9 @@ document.onreadystatechange = () => {
             }
             if (event.data.type == "streetUpdate") {
                 HUD.updateStreet(event.data.data);
+            }
+            if (event.data.type == "updateVehicle") {
+                HUD.updateVehicle(event.data.data)
             }
         });
     }
