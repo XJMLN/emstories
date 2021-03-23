@@ -1,4 +1,4 @@
-Players = {}
+Players = Extends(nil)
 Players.all = {}
 
 --- @function Players.getAllPlayers
@@ -15,6 +15,9 @@ Players.forEach = function(callback)
     end
 end
 
+Players.fromId = function(id)
+    return Players.all[tostring(id)]
+end
 --- @function Players.set
 --- Add player to Player.all
 Players.set = function(id, player)
@@ -50,7 +53,7 @@ Players.load = function(identifier, playerId, callback)
             callback(callback)
         end
         print('loaded ' .. GetPlayerName(playerId) .. ' (' .. playerId .. '|' .. identifier .. ')')
-        --TriggerClientEvent("ems:spawnSelection:show",playerId)
+        TriggerEvent("em_core:playerLoaded",playerId)
     end)
 
 end
@@ -104,7 +107,20 @@ AddEventHandler("playerJoining",function()
 end)
 
 AddEventHandler('playerDropped', function (reason)
-    Players.all[source]=nil
+    Players.all[tostring(source)]=nil
+    TriggerEvent("em_core:playerDropped",source)
 end)
   
-  
+exports('PlayersGetAllPlayers',function()
+    return Players.getAllPlayers()
+end)
+exports('PlayersGetPlayerFromId',Players.fromId)
+
+AddEventHandler("onResourceStart",function(resource)
+    if (GetCurrentResourceName() == resource) then
+        local allPlayers = GetPlayers()
+        for _,playerId in ipairs(allPlayers) do
+            Players.onJoin(playerId)
+        end
+    end
+end)
