@@ -14,8 +14,12 @@ Citizen.CreateThread(function()
                 local handbrake,handbrakeState = GetVehicleHandbrake(vehicle),0
                 local trunk = GetVehicleDoorAngleRatio(vehicle,5)
                 local bonnet = GetVehicleDoorAngleRatio(vehicle,4)
+                local dome,domeState = IsVehicleInteriorLightOn(vehicle),0
                 local bonnetStatus = 0
                 local trunkStatus = 0
+                if (dome) then
+                    domeState = 1
+                end
                 if (bonnet ~=0) then
                     bonnetStatus = 1
                 end
@@ -41,7 +45,7 @@ Citizen.CreateThread(function()
                 end
                 if (IsControlJustPressed(0,21)) then
                     SetNuiFocus(true,true)
-                    SendNUIMessage({type="renderVehicleControl",data={engine=engineState,driverWind=driverWindowState,passengerWind=passengerWindowState,handbrake=handbrakeState,trunk=trunkStatus,bonnet=bonnetStatus}})
+                    SendNUIMessage({type="renderVehicleControl",data={dome=domeState,engine=engineState,driverWind=driverWindowState,passengerWind=passengerWindowState,handbrake=handbrakeState,trunk=trunkStatus,bonnet=bonnetStatus}})
                 end
             end
         end
@@ -100,6 +104,13 @@ RegisterNUICallback("action",function(data,callback)
                     SetVehicleDoorOpen(vehicle,4,false,false)
                 else
                     SetVehicleDoorShut(vehicle,4,false)
+                end
+            end
+            if (data.type == "dome") then
+                if (state == 0) then
+                    SetVehicleInteriorlight(vehicle,true)
+                else
+                    SetVehicleInteriorlight(vehicle,false)
                 end
             end
             SendNUIMessage({type="destroyInstance"})

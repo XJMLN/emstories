@@ -13,6 +13,8 @@ files {
     "ui/images/trunk-0.png",
     "ui/images/bonnet-1.png",
     "ui/images/bonnet-0.png",
+    "ui/images/dome-1.png",
+    "ui/images/dome-0.png",
     "ui/fonts/Roboto-Light.woff2",
 	"ui/lib/axios.min.js",
     "ui/lib/raphael.min.js",

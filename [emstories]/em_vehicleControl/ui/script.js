@@ -30,13 +30,15 @@ const vehControl = new Vue({
             var iconEngine = "imgsrc:images/engine-"+data.engine+".png";
             var iconTrunk = "imgsrc:images/trunk-"+data.trunk+".png"
             var iconBonnet = "imgsrc:images/bonnet-"+data.bonnet+".png"
-            this.wheel.createWheel([iconEngine, iconWindow, iconBrake,iconTrunk,iconBonnet ]);
+            var iconDome = "imgsrc:images/dome-"+data.dome+".png"
+            this.wheel.createWheel([iconEngine, iconWindow, iconBrake,iconTrunk,iconBonnet,iconDome ]);
             console.log(data)
             this.wheel.navItems[0].selected = false;
             this.wheel.navItems[1].selected = false;
             this.wheel.navItems[2].selected = false;
             this.wheel.navItems[3].selected = false;
             this.wheel.navItems[4].selected = false;
+            this.wheel.navItems[5].selected = false;
 
             this.wheel.navItems[0].navSlice.mousedown(function() {
                 axios.post(`https://em_vehicleControl/action`,{type:"engine",state:data.engine}).then((response)=>{
@@ -52,6 +54,9 @@ const vehControl = new Vue({
             }).catch((error)=>{console.log(error)});})
             this.wheel.navItems[4].navSlice.mousedown(function() {
                 axios.post(`https://em_vehicleControl/action`,{type:"bonnet",state:data.bonnet}).then((response)=>{
+            }).catch((error)=>{console.log(error)});})
+            this.wheel.navItems[5].navSlice.mousedown(function() {
+                axios.post(`https://em_vehicleControl/action`,{type:"dome",state:data.dome}).then((response)=>{
             }).catch((error)=>{console.log(error)});})
 
             this.wheel.navItems[0].navSlice.mouseover(function(){
@@ -102,6 +107,16 @@ const vehControl = new Vue({
                 }
             })
             this.wheel.navItems[4].navSlice.mouseout(function(){
+                vehControl.description = "";
+            })
+            this.wheel.navItems[5].navSlice.mouseover(function(){
+                if (data.dome<1) {
+                    vehControl.description = 'Włącz światło w środku';
+                }else {
+                    vehControl.description = "Wyłącz światło w środku";
+                }
+            })
+            this.wheel.navItems[5].navSlice.mouseout(function(){
                 vehControl.description = "";
             })
             this.wheel.refreshWheel();
