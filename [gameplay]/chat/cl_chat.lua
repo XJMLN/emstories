@@ -225,7 +225,7 @@ local CHAT_HIDE_STATES = {
 }
 
 local kvpEntry = GetResourceKvpString('hideState')
-local chatHideState = kvpEntry and tonumber(kvpEntry) or CHAT_HIDE_STATES.SHOW_WHEN_ACTIVE
+local chatHideState = CHAT_HIDE_STATES.SHOW_WHEN_ACTIVE
 local isFirstHide = true
 
 if not isRDR then
