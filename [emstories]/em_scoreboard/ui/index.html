@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <title>sGaming.pl - Zarządzanie kontem</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="lib/axios.min.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+    <div v-show="showScoreboard" id="scoreboard">
+		<div class="wrap">
+			<div class="playerlist">
+				<table>
+					<thead>
+						<tr class="heading">
+							<th><div>ID</div></th>
+							<th><div>Nick</div></th>
+							<th><div>Departament</div></th>
+							<th><div>Ranga</div></th>
+						</tr>
+					</thead>
+					<tbody class="scrollContent">
+						<tr v-for="value in playerList">
+							<td data-label="ID">{{ value.id }}</td>
+							<td data-label="Nick">{{ value.name }}</td>
+							<td data-label="Frakcja">-</td>
+							<td data-label="Departament">-</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		  </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
