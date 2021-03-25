@@ -1,9 +1,9 @@
 local connectedPlayers = {}
 
 function AddPlayerToScoreboard(player,update)
-    connectedPlayers[player.playerId] = {}
-    connectedPlayers[player.playerId].id = player.playerId
-    connectedPlayers[player.playerId].name = player.name
+    connectedPlayers[tostring(player.playerId)] = {}
+    connectedPlayers[tostring(player.playerId)].id = player.playerId
+    connectedPlayers[tostring(player.playerId)].name = player.name
     if (update) then
         TriggerClientEvent('em_scoreboard:updateConnectedPlayers', -1, connectedPlayers)
     end

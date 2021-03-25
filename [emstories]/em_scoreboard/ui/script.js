@@ -13,7 +13,6 @@ const scoreboard = new Vue({
             }else {
                 this.showScoreboard = true;
             }
-            console.log(this.playerList)
         },
         updatePlayerList(data){
             this.playerList = data;
