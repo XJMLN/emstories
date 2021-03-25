@@ -1,6 +1,47 @@
 local fuelStations = {}
 local fuelPumps = {}
 local plrMoney = 0
+local Config = {}
+-- Mnoznik dla klass, jak chcesz zeby np Sports bralo wiecej to dajesz np. 1.5 jak chcesz zeby mniej bralo to dajesz 0.9
+Config.Classes = {
+	[0] = 1.0, -- Compacts
+	[1] = 1.0, -- Sedans
+	[2] = 1.0, -- SUVs
+	[3] = 1.0, -- Coupes
+	[4] = 1.0, -- Muscle
+	[5] = 1.0, -- Sports Classics
+	[6] = 1.0, -- Sports
+	[7] = 1.0, -- Super
+	[8] = 1.0, -- Motorcycles
+	[9] = 1.0, -- Off-road
+	[10] = 1.0, -- Industrial
+	[11] = 1.0, -- Utility
+	[12] = 1.0, -- Vans
+	[13] = 0.0, -- Cycles
+	[14] = 1.0, -- Boats
+	[15] = 1.0, -- Helicopters
+	[16] = 1.0, -- Planes
+	[17] = 1.0, -- Service
+	[18] = 1.0, -- Emergency
+	[19] = 1.0, -- Military
+	[20] = 1.0, -- Commercial
+	[21] = 1.0, -- Trains
+}
+
+-- Po lewej %RPM Po prawej ile paliwa (podzielone przez 10) ma zabierac z paliwa co 1 sekunde
+Config.FuelUsage = {
+	[1.0] = 1.4,
+	[0.9] = 1.2,
+	[0.8] = 1.0,
+	[0.7] = 0.9,
+	[0.6] = 0.8,
+	[0.5] = 0.7,
+	[0.4] = 0.5,
+	[0.3] = 0.4,
+	[0.2] = 0.2,
+	[0.1] = 0.1,
+	[0.0] = 0.0,
+}
 
 function tablelength(T)
     local count = 0
@@ -83,6 +124,10 @@ function ManageFuelUsage(vehicle)
         SetFuel(vehicle, GetFuel(vehicle))
         fuelSynced = true
     end
+
+    if IsVehicleEngineOn(vehicle) then
+		SetFuel(vehicle, GetVehicleFuelLevel(vehicle) - Config.FuelUsage[Round(GetVehicleCurrentRpm(vehicle), 1)] * (Config.Classes[GetVehicleClass(vehicle)] or 1.0) / 10)
+	end
 end
 
 function GetFuel(vehicle)
@@ -99,7 +144,7 @@ end
 Citizen.CreateThread(function()
     DecorRegister("_VEH_FUEL_LEVEL_",1)
     while true do
-        Citizen.Wait(1000)
+        Citizen.Wait(10000)
         local ped = PlayerPedId()
         if (IsPedInAnyVehicle(ped)) then
             local vehicle = GetVehiclePedIsIn(ped)
