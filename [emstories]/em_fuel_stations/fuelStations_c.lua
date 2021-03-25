@@ -1,6 +1,6 @@
 local fuelStations = {}
 local fuelPumps = {}
-
+local plrMoney = 0
 
 function tablelength(T)
     local count = 0
@@ -25,6 +25,7 @@ end
 local isPumpMenuVisible = false
 local showHelp = false
 local isUIOpened = false
+local vehicle = false
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
@@ -32,14 +33,15 @@ Citizen.CreateThread(function()
             for station_id,fuelData in pairs(fuelPumps) do
                 for i,v in pairs(fuelData) do
                     DrawMarker(29,v.x,v.y,v.z, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.00, 1.00, 1.00, 0, 250, 0, 200, false, true, 2, true, false, false, false)
-                    local vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
+                    vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
                     if (vehicle and GetDistanceBetweenCoords(v.x,v.y,v.z,GetEntityCoords(vehicle,false))<1.5*1.12 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
                         showHelp = true
                         if (not isPumpMenuVisible and showHelp) then
                             if (GetIsVehicleEngineRunning(vehicle)) then
                                 DrawHelp('Wyłącz silnik aby rozpocząć tankowanie.')
                                 if (isUIOpened) then
-                                    
+                                    SendNUIMessage({type="playerLeaveMarker"})
+                                    isUIOpened = false
                                 end
                             else
                                 DrawHelp("Wciśnij ~INPUT_PICKUP~ aby rozpocząć tankowanie.")
@@ -55,11 +57,22 @@ Citizen.CreateThread(function()
     end
 end)
 
-function stations_showGUI(price)
+RegisterNUICallback("pay",function(data,callback)
+    if (not plrMoney) then return end
+    SetNuiFocus(false)
+    SetNuiFocusKeepInput(false)
+    local fuel = data.fuel
+    local toPay = data.toPay
+    TriggerServerEvent("em_fuelStations:verifyMoney",toPay,fuel)
+    callback("ok")
+end)
+
+function stations_showGUI(price,plrVal)
     SetNuiFocus(true,false)
     SetNuiFocusKeepInput(true)
+    plrMoney = plrVal
     isUIOpened = true
-    SendNUIMessage({type="open_fuelMenu",data={fuel=math.floor(GetFuel(vehicle)),price=price}})
+    SendNUIMessage({type="open_fuelMenu",data={fuel=math.floor(GetFuel(vehicle)),price=price,money=plrVal}})
 end
 
 local fuelSynced = false
@@ -101,7 +114,17 @@ Citizen.CreateThread(function()
     end
 end)
 
+function stations_fuelCar(fuel)
+    local fuelNow = GetFuel(vehicle)
+    local newFuel = fuelNow + fuel
+    if (newFuel>100) then
+        newFuel = 100
+    end
+    SetFuel(vehicle,newFuel)
+end
 RegisterNetEvent("em_fuelStations:createStations")
 RegisterNetEvent("em_fuelStations:returnStationPrice")
+RegisterNetEvent("em_fuelStations:fuelCar")
+AddEventHandler("em_fuelStations:fuelCar",stations_fuelCar)
 AddEventHandler("em_fuelStations:returnStationPrice",stations_showGUI)
 AddEventHandler("em_fuelStations:createStations",stations_create)

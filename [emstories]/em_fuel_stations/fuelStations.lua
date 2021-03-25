@@ -21,9 +21,19 @@ function stations_getPetrolStations(player)
 end
 
 function stations_getPrice(stationId)
-    print(stationId)
-    TriggerClientEvent("em_fuelStations:returnStationPrice",source,fuelStations[stationId]['price'])
+    local plrMoney = exports.em_core:PlayersGetMoney(source)
+    TriggerClientEvent("em_fuelStations:returnStationPrice",source,fuelStations[stationId]['price'],plrMoney)
 end
+
+function stations_verifyPayment(price,fuel)
+    local plrMoney = exports.em_core:PlayersGetMoney(source)
+    if (plrMoney < price) then return end
+
+    exports.em_core:PlayersTakeMoney(source,price)
+    TriggerClientEvent("em_fuelStations:fuelCar",source,fuel)
+end
+RegisterNetEvent("em_fuelStations:verifyMoney")
+AddEventHandler("em_fuelStations:verifyMoney",stations_verifyPayment)
 RegisterNetEvent("em_fuelStations:getPriceForStation")
 AddEventHandler("em_fuelStations:getPriceForStation",stations_getPrice)
 AddEventHandler("onResourceStart",function(resname)
