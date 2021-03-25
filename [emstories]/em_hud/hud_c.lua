@@ -5,7 +5,6 @@ AddEventHandler("em:showHUD",function()
     hudShowed = true
 end)
 
-
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
@@ -30,10 +29,14 @@ Citizen.CreateThread(function()
                 if (driver == ped) then
                     local speed = GetEntitySpeed(vehicle)
                     local speedRet = math.floor(speed * 3.6)
-                    SendNUIMessage({type="updateVehicle",data={vehicle=true,speed=speedRet}})
+                    local fuel = "-"
+                    if (DecorExistOn(vehicle,"_VEH_FUEL_LEVEL_")) then
+                        fuel = math.floor(DecorGetFloat(vehicle,"_VEH_FUEL_LEVEL_"))
+                    end
+                    SendNUIMessage({type="updateVehicle",data={vehicle=true,speed=speedRet,fuel=fuel}})
                 end
             else
-                SendNUIMessage({type="updateVehicle",data={vehicle=false,speed=speedRet}})
+                SendNUIMessage({type="updateVehicle",data={vehicle=false,speed=speedRet,fuel=""}})
             end
         end
     end

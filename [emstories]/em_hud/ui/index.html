@@ -32,7 +32,7 @@
 			<h5 v-if="street == ''"><i class="icon white map marker alternate"></i> {{ zone }}</h5>
 			<h5 v-else><i class="icon white map marker alternate"></i> {{ zone }}, {{ street }}</h5>
       <h5 v-if="vehicle"><i class="icon white tachometer alternate"></i> {{ speed }} km/h</h5>
-      <h5 v-if="vehicle"><i class="fas fa-gas-pump"></i> 100 l</h5>
+      <h5 v-if="vehicle"><i class="fas fa-gas-pump"></i> {{ fuel }} l</h5>
 		</div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>

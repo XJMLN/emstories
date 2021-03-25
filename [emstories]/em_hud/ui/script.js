@@ -7,6 +7,7 @@ const HUD = new Vue({
         zone:"",
         vehicle:false,
         speed:"",
+        fuel:"",
     },
     methods: {
         
@@ -27,9 +28,11 @@ const HUD = new Vue({
             if (data.vehicle) {
                 this.vehicle = true;
                 this.speed = data.speed;
+                this.fuel = data.fuel;
             } else {
                 this.vehicle = false;
                 this.speed = "";
+                this.fuel = "";
             }
         }
         
