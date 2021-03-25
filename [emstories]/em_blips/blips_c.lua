@@ -19,15 +19,30 @@ function split(str, pat)
     return t
  end
 local blipData = {
-    {text="LSPD",x=-1093.38,y=-809.1,z=19.28,id=60,colour=3},
-    {text="LSCS",x=1857.1,y=3679.54,z=33.78,id=60,colour=16},
-    {text="BCSD",x=-439.92,y=6019.88,z=31.49,id=60,colour=25},
-    {text="Posterunek",x=621.16,y=21.8,z=88.37,id=60,colour=0},
-    {text="Posterunek",x=-562.23,y=-131.2,z=38.43,id=60,colour=0},
-    {text="Posterunek",x=817.75,y=-1291.07,z=26.29,id=60,colour=0},
-    {text="Posterunek",x=362.15,y=-1576.76,z=30.5,id=60,colour=0},
-    {text="Posterunek",x=392.6,y=789.16,z=187.67,id=60,colour=0},
+   -- Posterunki
+   {text="Posterunek",x=-1093.38,y=-809.1,z=19.28,id=60,colour=0},
+   {text="Posterunek",x=1857.1,y=3679.54,z=33.78,id=60,colour=0},
+   {text="Posterunek",x=-439.92,y=6019.88,z=31.49,id=60,colour=0},
+   {text="Posterunek",x=621.16,y=21.8,z=88.37,id=60,colour=0},
+   {text="Posterunek",x=-562.23,y=-131.2,z=38.43,id=60,colour=0},
+   {text="Posterunek",x=817.75,y=-1291.07,z=26.29,id=60,colour=0},
+   {text="Posterunek",x=362.15,y=-1576.76,z=30.5,id=60,colour=0},
+   {text="Posterunek",x=392.6,y=789.16,z=187.67,id=60,colour=0},
 
+   -- Szpitale
+   {text="Szpital",x=340.74,y=-1395.49,z=32.51,id=61,colour=1},
+   {text="Szpital",x=1839.02,y=3673.72,z=34.28,id=61,colour=1},
+
+   --Remizy
+   {text="Remiza strażacka",x=1200.79,y=-1474.69,z=34.42,id=60,colour=1},
+   {text="Remiza strażacka",x=205.33,y=-1651.64,z=29.4,id=60,colour=1},
+   {text="Remiza strażacka",x=-371.57,y=6125.78,z=31.44,id=60,colour=1},
+   --Stacje Paliw
+   {text="Stacja Paliw",x=-2098.12,y=-317.57,z=13.02,id=361,colour=17},
+   {text="Stacja Paliw",x=-68.54,y=-1763.24,z=28.96,id=361,colour=17},
+   {text="Stacja Paliw",x=176.89,y=6601.08,z=31.45,id=361,colour=17},
+
+   --Mechanik
     {text="Mechanik",x=-1125.36,y=-840.46,z=13.43,id=72,colour=5}, --do poprawy
     {text="Mechanik",x=536.15,y=-183.24,z=54.35,id=72,colour=5},
     {text="Mechanik",x=-205.87,y=-1309.47,z=30.89,id=72,colour=5},
