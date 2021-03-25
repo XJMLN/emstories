@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>sGaming.pl - Zarządzanie kontem</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="lib/axios.min.js"></script>
+	<style>
+		#fuel {
+			bottom: 0;
+    		right: 0;
+    		position: absolute;
+    		margin-bottom: 50px;
+    		margin-right: 50px;
+		}
+	</style>
+  </head>
+  <body>
+    <div v-show="showFuel" id="fuel">
+		<div class="ui cards">
+			<div class="card">
+			  <div class="content">
+				<div class="header center aligned">Cena paliwa: ${{ fuelPrice }}</div>
+				<div class="description">
+					<h5 class="center aligned">Do zapłaty: $1000</h5>
+					<h4 class="center aligned">Naciśnij i przytrzymaj <b>Enter</b>, aby wypełnić zbiornik paliwa.</h4>
+				</div>
+			  </div>
+			  <div class="ui bottom attached">
+				<div class="ui indicating blue progress" id="fuelLevel">
+					<div class="bar"></div>
+					<div class="label">Poziom paliwa</div>
+				  </div>
+			  </div>
+			</div>
+    </div>
+	</div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
