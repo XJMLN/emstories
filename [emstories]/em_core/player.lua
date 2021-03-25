@@ -45,7 +45,9 @@ Players.load = function(identifier, playerId, callback)
             playerId = playerId,
             identifier = identifier,
             name = GetPlayerName(playerId),
-            skin = row.skin
+            skin = row.skin,
+            money = tonumber(row.money),
+            UID = tonumber(row.id)
         }
         Players.set(playerId,userData)
 
@@ -54,6 +56,7 @@ Players.load = function(identifier, playerId, callback)
         end
         print('loaded ' .. GetPlayerName(playerId) .. ' (' .. playerId .. '|' .. identifier .. ')')
         TriggerEvent("em_core:playerLoaded",playerId)
+        TriggerClientEvent("em_core_client:playerLoaded",playerId,userData)
     end)
 
 end
@@ -97,9 +100,28 @@ Players.onJoin = function(playerId)
     end
 end
 
-function Players:save(cb)
+function Players:save(playerId,cb)
     print('saving')
 end
+
+Players.getMoney = function(playerId)
+    return Players.all[tostring(playerId)].money
+end
+
+Players.takeMoney = function(playerId, amount)
+    local money = Players.all[tostring(playerId)].money
+    local newValue = money - amount
+    if (newValue<0) then
+        newValue = 0
+    end
+    local UID = Players.all[tostring(playerId)].UID
+    Players.all[tostring(playerId)].money = newValue
+    TriggerClientEvent("em_core_client:PlayerMoneyChange",playerId,newValue)
+    MySQL.Async.execute("UPDATE em_users SET money=@money WHERE id=@id",{['@id']=UID,['@money']=newValue},function(rowChanged)
+    end)
+    return true
+end
+
 RegisterNetEvent("playerJoining")
 AddEventHandler("playerJoining",function()
     local playerId = source
@@ -115,7 +137,8 @@ exports('PlayersGetAllPlayers',function()
     return Players.getAllPlayers()
 end)
 exports('PlayersGetPlayerFromId',Players.fromId)
-
+exports('PlayersGetMoney',Players.getMoney)
+exports("PlayersTakeMoney",Players.takeMoney)
 AddEventHandler("onResourceStart",function(resource)
     if (GetCurrentResourceName() == resource) then
         local allPlayers = GetPlayers()
