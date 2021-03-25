@@ -5,6 +5,7 @@ const HUD = new Vue({
         showHUD:false,
         street:"",
         zone:"",
+        money:0,
         vehicle:false,
         speed:"",
         fuel:"",
@@ -21,6 +22,7 @@ const HUD = new Vue({
             }else {
                 this.street="";
             }
+            this.money = data.money;
             this.zone=data.zone;
             
         },

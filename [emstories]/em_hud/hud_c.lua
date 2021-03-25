@@ -8,6 +8,7 @@ end)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
+        DecorRegister("__PLAYER_MONEY_",3)
         local ped = GetPlayerPed(-1)
         local pos = GetEntityCoords(PlayerPedId())
 		local var1, var2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z, Citizen.ResultAsInteger(), Citizen.ResultAsInteger())
@@ -17,9 +18,9 @@ Citizen.CreateThread(function()
             if GetStreetNameFromHashKey(var1) and GetNameOfZone(pos.x, pos.y, pos.z) then
                 if GetStreetNameFromHashKey(var1) then
                     if GetStreetNameFromHashKey(var2) == "" then
-                        SendNUIMessage({type="streetUpdate",data={zone=current_zone}})
+                        SendNUIMessage({type="streetUpdate",data={zone=current_zone,money=DecorGetInt(PlayerPedId(),"__PLAYER_MONEY_")}})
                     else
-                        SendNUIMessage({type="streetUpdate",data={zone=current_zone,street=GetStreetNameFromHashKey(var2)}})
+                        SendNUIMessage({type="streetUpdate",data={zone=current_zone,street=GetStreetNameFromHashKey(var2),money=DecorGetInt(PlayerPedId(),"__PLAYER_MONEY_")}})
                     end
                 end
             end
@@ -39,5 +40,25 @@ Citizen.CreateThread(function()
                 SendNUIMessage({type="updateVehicle",data={vehicle=false,speed=speedRet,fuel=""}})
             end
         end
+    end
+end)
+
+RegisterNetEvent("em_core_client:playerLoaded")
+RegisterNetEvent("em_core_client:PlayerMoneyChange")
+AddEventHandler("em_core_client:PlayerMoneyChange",function(data)
+    if (DecorExistOn(PlayerPedId(-1),"__PLAYER_MONEY_")) then
+        DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data)
+        
+    else
+        DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data)
+    end
+end)
+    
+AddEventHandler("em_core_client:playerLoaded",function(data)
+    if (DecorExistOn(PlayerPedId(-1),"__PLAYER_MONEY_")) then
+        DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data.money)
+        
+    else
+        DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data.money)
     end
 end)
