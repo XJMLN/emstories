@@ -45,7 +45,7 @@ Players.load = function(identifier, playerId, callback)
             playerId = playerId,
             identifier = identifier,
             name = GetPlayerName(playerId),
-            skin = row.skin,
+            skin = json.decode(row.skin),
             money = tonumber(row.money),
             UID = tonumber(row.id)
         }
@@ -56,7 +56,6 @@ Players.load = function(identifier, playerId, callback)
         end
         print('loaded ' .. GetPlayerName(playerId) .. ' (' .. playerId .. '|' .. identifier .. ')')
         TriggerEvent("em_core:playerLoaded",playerId)
-        TriggerClientEvent("skinchanger:loadSkin",playerId,json.decode(row.skin),nil)
         TriggerClientEvent("em_core_client:playerLoaded",playerId,userData)
     end)
 

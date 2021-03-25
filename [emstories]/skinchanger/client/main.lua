@@ -115,7 +115,8 @@ function loaddefmodel()
     SetPlayerModel(PlayerId(), model)
     SetPedDefaultComponentVariation(GetPlayerPed(PlayerId()))
 end
-function LoadDefaultModel(malePed,default, cb)
+function LoadDefaultModel(malePed,cb,skinData)
+	LoadSkin = skinData
 	local playerPed = PlayerPedId()
 	local characterModel
 
@@ -124,7 +125,6 @@ function LoadDefaultModel(malePed,default, cb)
 	else
 		characterModel = GetHashKey('mp_f_freemode_01')
 	end
-
 	RequestModel(characterModel)
 
 	Citizen.CreateThread(function()
@@ -136,6 +136,7 @@ function LoadDefaultModel(malePed,default, cb)
 		if IsModelInCdimage(characterModel) and IsModelValid(characterModel) then
 			SetPlayerModel(PlayerId(), characterModel)
 			SetPedDefaultComponentVariation(playerPed)
+			
 		end
 
 		SetModelAsNoLongerNeeded(characterModel)
@@ -438,8 +439,8 @@ function ApplySkin(skin, clothes)
 	end
 end
 
-AddEventHandler('skinchanger:loadDefaultModel', function(loadMale, cb)
-	LoadDefaultModel(loadMale, cb)
+AddEventHandler('skinchanger:loadDefaultModel', function(loadMale, cb,skinData)
+	LoadDefaultModel(loadMale, cb,skinData)
 end)
 
 AddEventHandler('skinchanger:getData', function(cb)
@@ -472,7 +473,7 @@ end)
 
 AddEventHandler('skinchanger:modelLoaded', function()
 	ClearPedProp(PlayerPedId(), 0)
-
+	
 	if LoadSkin ~= nil then
 		ApplySkin(LoadSkin)
 		LoadSkin = nil
@@ -485,9 +486,14 @@ AddEventHandler('skinchanger:modelLoaded', function()
 end)
 
 RegisterNetEvent('skinchanger:loadSkin')
-AddEventHandler('skinchanger:loadSkin', function(data,cb)
+AddEventHandler('skinchanger:loadSkin', function(data,cb,firstspawn)
 	local source = source
 	local skin = data
+	if (firstspawn) then
+		ApplySkin(skin)
+		LastSex = skin['sex']
+		return
+	end
 	if skin['sex'] ~= LastSex then
 		LoadSkin = skin
 		if skin['sex'] == 0 then
