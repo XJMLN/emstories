@@ -28,20 +28,37 @@ local blipData = {
    {text="Posterunek",x=817.75,y=-1291.07,z=26.29,id=60,colour=0},
    {text="Posterunek",x=362.15,y=-1576.76,z=30.5,id=60,colour=0},
    {text="Posterunek",x=392.6,y=789.16,z=187.67,id=60,colour=0},
-
+   {text="Posterunek",x=440.81,y=-982.44,z=30.69,id=60,colour=0},
+   -- Myjnie samochodowe
+   {text="Myjnia Samochodowa",x=25.71,y=-1391.99,z=28.65,id=100,colour=0},
+   {text="Myjnia Samochodowa",x=-699.95,y=-932.92,z=19.01,id=100,colour=0},
    -- Szpitale
    {text="Szpital",x=340.74,y=-1395.49,z=32.51,id=61,colour=1},
    {text="Szpital",x=1839.02,y=3673.72,z=34.28,id=61,colour=1},
-
+   {text="Szpital",x=362.59,y=-591.22,z=27.99,id=61,colour=1},
+   {text="Szpital",x=-244.39,y=6327.79,z=31.74,id=61,colour=1},
    --Remizy
-   {text="Remiza strażacka",x=1200.79,y=-1474.69,z=34.42,id=60,colour=1},
-   {text="Remiza strażacka",x=205.33,y=-1651.64,z=29.4,id=60,colour=1},
-   {text="Remiza strażacka",x=-371.57,y=6125.78,z=31.44,id=60,colour=1},
+   {text="Remiza Strażacka",x=1200.79,y=-1474.69,z=34.42,id=60,colour=1},
+   {text="Remiza Strażacka",x=205.33,y=-1651.64,z=29.4,id=60,colour=1},
+   {text="Remiza Strażacka",x=-371.57,y=6125.78,z=31.44,id=60,colour=1},
    --Stacje Paliw
    {text="Stacja Paliw",x=-2098.12,y=-317.57,z=13.02,id=361,colour=17},
    {text="Stacja Paliw",x=-68.54,y=-1763.24,z=28.96,id=361,colour=17},
    {text="Stacja Paliw",x=176.89,y=6601.08,z=31.45,id=361,colour=17},
-
+   {text="Stacja Paliw",x=-319.05,y=-1471.19,z=29.87,id=361,colour=17},
+   {text="Stacja Paliw",x=-1437.15,y=-276.59,z=45.52,id=361,colour=17},
+   {text="Stacja Paliw",x=-526.51,y=-1211.859,z=17.5,id=361,colour=17},
+   {text="Stacja Paliw",x=1209.17,y=-1403.8,z=34.54,id=361,colour=17},
+   {text="Stacja Paliw",x=2007.36,y=3772.46,z=31.5,id=361,colour=17},
+   {text="Stacja Paliw",x=1701.69,y=6418.58,z=31.96,id=361,colour=17},
+   {text="Stacja Paliw",x=-2556.6,y=2331.11,z=32.38,id=361,colour=17},
+   {text="Stacja Paliw",x=49.72,y=2779.26,z=58.04,id=361,colour=17},
+   {text="Stacja Paliw",x=1039.35,y=2671.71,z=38.87,id=361,colour=17},
+   {text="Stacja Paliw",x=822.74,y=-1028,z=25,id=361,colour=17},
+   {text="Stacja Paliw",x=182,y=-1555,z=28,id=361,colour=17},
+   {text="Stacja Paliw",x=1783.69,y=3330.06,z=40.58,id=361,colour=17},
+   {text="Stacja Paliw",x=-1799.32,y=802.12,z=138.65,id=361,colour=17},
+   {text="Stacja Paliw",x=822.29,y=-1028.12,z=25.58,id=361,colour=17},
    --Mechanik
     {text="Mechanik",x=-1125.36,y=-840.46,z=13.43,id=72,colour=5}, --do poprawy
     {text="Mechanik",x=536.15,y=-183.24,z=54.35,id=72,colour=5},
