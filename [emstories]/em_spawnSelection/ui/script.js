@@ -24,12 +24,11 @@ const spawner = new Vue({
             this.showFaction = false;
             this.showDepartment = true;
         },
-         spawnPlayer(number){
+         spawnPlayer(faction,number){
             this.showSpawner = false;
             this.showFaction = false;
             this.showDepartment = false;
             this.faction = '';
-            //jQuery("#double").css("background","");
             axios.post(`https://em_spawnSelection/spawnPlayer`,{
                     spawnNumber: number,
                 }).then((response)=>{
