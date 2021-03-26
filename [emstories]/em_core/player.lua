@@ -47,7 +47,9 @@ Players.load = function(identifier, playerId, callback)
             name = GetPlayerName(playerId),
             skin = json.decode(row.skin),
             money = tonumber(row.money),
-            UID = tonumber(row.id)
+            UID = tonumber(row.id),
+            level = tonumber(row.level),
+            vip = false,
         }
         Players.set(playerId,userData)
 

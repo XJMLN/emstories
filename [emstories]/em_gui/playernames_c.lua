@@ -1,4 +1,10 @@
 local nametags = {}
+local colors = {
+    [0]=0,
+    [1]=9,
+    [2]=28,
+    [3]=27
+}
 Citizen.CreateThread(function()
     while true do
         local localCoords = GetEntityCoords(PlayerPedId())
@@ -7,6 +13,8 @@ Citizen.CreateThread(function()
                 local playerPed = GetPlayerPed(i)
                 local isPlayerTalking = NetworkIsPlayerTalking(i)
                 local isPlayerTyping,isPlayerTypingState = DecorGetInt(playerPed,"isTypingInChat"), false
+                local level = DecorGetInt(playerPed,"adminLevel")
+                --print(level)
                 if (isPlayerTyping == 2) then
                     isPlayerTypingState = true
                 else
@@ -17,18 +25,20 @@ Citizen.CreateThread(function()
                 end
                 local ID = GetPlayerServerId(i)
                 nametags[i].tag = CreateMpGamerTag(playerPed,"["..ID.."] "..GetPlayerName(i),false,false,"",0)
-                local color = 0
                 local targetCoords = GetEntityCoords(playerPed)
                 local distance = #(targetCoords - localCoords)
 
                 SetMpGamerTagName(nametags[i].tag,"["..ID.."] "..GetPlayerName(i))
                 
-                SetMpGamerTagColour(nametags[i].tag,0,color)
-                SetMpGamerTagColour(nametags[i].tag,4,color)
-                SetMpGamerTagColour(nametags[i].tag,16,color)
-                SetMpGamerTagColour(nametags[i].tag,7,color)
+                SetMpGamerTagColour(nametags[i].tag,0,colors[level])
+                SetMpGamerTagColour(nametags[i].tag,4,colors[level])
+                SetMpGamerTagColour(nametags[i].tag,16,colors[level])
+                SetMpGamerTagColour(nametags[i].tag,7,colors[level])
                 if (distance < 50 and HasEntityClearLosToEntity(PlayerPedId(), playerPed, 17)) then
-                    
+                    SetMpGamerTagColour(nametags[i].tag,0,colors[level])
+                    SetMpGamerTagColour(nametags[i].tag,4,colors[level])
+                    SetMpGamerTagColour(nametags[i].tag,16,colors[level])
+                    SetMpGamerTagColour(nametags[i].tag,7,colors[level])
                     SetMpGamerTagAlpha(nametags[i].tag,7,255)
                     SetMpGamerTagAlpha(nametags[i].tag,16,255)
                     SetMpGamerTagAlpha(nametags[i].tag,3,255)

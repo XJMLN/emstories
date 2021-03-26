@@ -33,7 +33,7 @@ local function freezePlayer(id, freeze)
     end
 end
 
-function base_spawnPlayer(spawnNumber,skin,money)
+function base_spawnPlayer(spawnNumber,skin,playerData)
     local source = PlayerId()
     local skin = skin
     local money = money
@@ -90,7 +90,7 @@ function base_spawnPlayer(spawnNumber,skin,money)
             TriggerEvent("skinchanger:loadSkin",skin,nil,nil)
         end
         firstspawn = false
-        TriggerEvent("em_hud:updateMoney",money)
+        TriggerEvent("em_hud:updateMoney",playerData)
     end)
 
 end
