@@ -9,12 +9,11 @@ Citizen.CreateThread(function()
     while true do
         local localCoords = GetEntityCoords(PlayerPedId())
         for _, i in ipairs(GetActivePlayers()) do
-            --if (i ~= PlayerId()) then
+            if (i ~= PlayerId()) then
                 local playerPed = GetPlayerPed(i)
                 local isPlayerTalking = NetworkIsPlayerTalking(i)
                 local isPlayerTyping,isPlayerTypingState = DecorGetInt(playerPed,"isTypingInChat"), false
                 local level = DecorGetInt(playerPed,"adminLevel")
-                --print(level)
                 if (isPlayerTyping == 2) then
                     isPlayerTypingState = true
                 else
@@ -54,8 +53,7 @@ Citizen.CreateThread(function()
                     SetMpGamerTagVisibility(nametags[i].tag,16,false)
                     SetMpGamerTagVisibility(nametags[i].tag,7,false)
                 end
-
-            --end
+            end
         end
         Citizen.Wait(0)
     end
