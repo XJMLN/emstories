@@ -12,7 +12,7 @@ Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         for id,pos in pairs(CARWASHES) do
-            DrawMarker(29,pos[1],pos[2],pos[3], 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.00, 1.00, 1.00, 0, 250, 0, 200, false, true, 2, true, false, false, false)
+            DrawMarker(36,pos[1],pos[2],pos[3], 0.0, 0.0, 0.0, 0, 0.0, 0.0, 1.00, 1.00, 1.00, 0, 250, 0, 200, false, true, 2, true, false, false, false)
             vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
             if (vehicle and GetDistanceBetweenCoords(pos[1],pos[2],pos[3],GetEntityCoords(vehicle,false))<1.5*1.12 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
                 showHelp = true
@@ -30,15 +30,7 @@ Citizen.CreateThread(function()
         end
     end
 end)
---[[
-    {40.99,-1391.94,28.92,91.02,aiPath={-0.8,-1392.01,29.12},particlesCoords={
-        {36.87,-1391.72,31},
-        {28.95,-1391.92,29.16},
-        {20.89,-1392,29.15},
-    }},
 
-
-]]
 function carwash_startWash(callback,wash_id)
     if (callback~="OK") then
         errorMsg = true
