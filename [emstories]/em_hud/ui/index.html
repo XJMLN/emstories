@@ -23,14 +23,15 @@
 		<div class="navbar">
 			<h5><i class="building outline icon white"></i>Police Department - Los Santos Police Department</h5>
 			<h5>Officer II</h5>
-      <h5>${{ money }}</h5>
+      <h5><a style="color:#4fff8d;padding:0;">$</a>{{ money }}</h5>
 			<h5>  </h5>
 			<div class="ui blue tiny indicating progress" style="display:inline-block;width:30%;margin-bottom:0;margin-top:0;background:rgba(255,255,255,0.5);">
 				<div class="bar"></div>
 			</div>
 			<h5>XP 1500/2000</h5>
       <h5 v-if="vehicle"><i class="icon white tachometer alternate"></i> {{ speed }} km/h</h5>
-      <h5 v-if="vehicle"><i class="fas fa-gas-pump"></i> {{ fuel }} l</h5>
+      <h5 v-if="vehicle && fuel>50"><a style="color:#4fff8d;padding:0;"><i style="color:white;" class="fas fa-gas-pump"></i> {{ fuel }}</a> l</h5>
+      <h5 v-if="vehicle && fuel<50"><a style="color:rgb(255, 160, 79);padding:0;"><i style="color:white;" class="fas fa-gas-pump"></i> {{ fuel }}</a> l</h5>
       <h5 v-if="street == ''"><i class="icon white map marker alternate"></i> {{ zone }}</h5>
 			<h5 v-else><i class="icon white map marker alternate"></i> {{ zone }}, {{ street }}</h5>
 		</div>

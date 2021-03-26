@@ -19,7 +19,6 @@ Citizen.CreateThread(function()
             if GetStreetNameFromHashKey(var1) and GetNameOfZone(pos.x, pos.y, pos.z) then
                 if GetStreetNameFromHashKey(var1) then
                     if GetStreetNameFromHashKey(var2) == "" then
-                        print(DecorGetInt(PlayerPedId(),"__PLAYER_MONEY_"))
                         SendNUIMessage({type="streetUpdate",data={zone=current_zone,money=DecorGetInt(PlayerPedId(),"__PLAYER_MONEY_")}})
                     else
                         SendNUIMessage({type="streetUpdate",data={zone=current_zone,street=GetStreetNameFromHashKey(var2),money=DecorGetInt(PlayerPedId(),"__PLAYER_MONEY_")}})
