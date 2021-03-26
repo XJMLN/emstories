@@ -15,4 +15,8 @@ files {
 }
 ui_page "ui/index.html"
 
+server_scripts {
+	'@mysql-async/lib/MySQL.lua',
+	'spawnSelection.lua'
+}
 client_script 'spawnSelection_c.lua'

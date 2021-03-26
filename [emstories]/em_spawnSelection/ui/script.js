@@ -6,11 +6,12 @@ const spawner = new Vue({
         showFaction:false,
         showDepartment:false,
         faction:'',
+        playerData:false,
     },
     methods: {
         
-        OpenSpawnerMenu(){
-           
+        OpenSpawnerMenu(data){
+           this.playerData = data;
            this.showSpawner = true;
            this.showFaction = true;
            this.showDepartment = false;
@@ -45,7 +46,7 @@ document.onreadystatechange = () => {
     if (document.readyState == "complete") {
         window.addEventListener("message", (event) => {
             if (event.data.type == "open_spawnSelector") {
-                spawner.OpenSpawnerMenu();
+                spawner.OpenSpawnerMenu(event.data.data);
             }
         });
     }

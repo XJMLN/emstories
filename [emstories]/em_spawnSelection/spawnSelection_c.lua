@@ -3,18 +3,15 @@ DecorRegister("selectedSpawn",3)
 
 
 
-function spawnSelection_render()
+function spawnSelection_render(data)
     SetManualShutdownLoadingScreenNui(true)
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
     SetNuiFocus(true,true)
     Wait(1500)
-    SendNUIMessage({type="open_spawnSelector"})
+    SendNUIMessage({type="open_spawnSelector",data=data})
     securedUI = true
 end
-Citizen.CreateThread(function()
-    spawnSelection_render()
-end)
 
 RegisterNUICallback("spawnPlayer", function(data, callback)
     if (not securedUI) then return end
@@ -28,4 +25,7 @@ RegisterNUICallback("spawnPlayer", function(data, callback)
     securedUI = false
     TriggerEvent("em:showHUD")
     callback("ok")
-  end)
+end)
+
+RegisterNetEvent("em_spawnSelection:loadData")
+AddEventHandler("em_spawnSelection:loadData",spawnSelection_render)

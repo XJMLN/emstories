@@ -67,7 +67,8 @@
               <div class="meta"></div>
               <div class="description"><div class="ui blue tiny progress">
 				<div class="bar"></div>
-				<div class="label">1500/200XP</div>
+				<div class="label" v-if="playerData && playerData[faction] && playerData[faction][1] && playerData[faction][1]['xp']">{{ playerData[faction][1]['xp'] }}</div>
+				<div class="label" v-else>0 XP</div>
 			  </div></div>
             </div>
             <div class="extra content">
@@ -85,7 +86,8 @@
               <div class="meta"></div>
               <div class="description"><div class="ui blue tiny progress">
 				<div class="bar"></div>
-				<div class="label">1500/200XP</div>
+				<div class="label" v-if="playerData && playerData[faction] && playerData[faction][2] && playerData[faction][2]['xp']">{{ playerData[faction][2]['xp'] }}</div>
+				<div class="label" v-else>0 XP</div>
 			  </div></div>
             </div>
             <div class="extra content">
@@ -103,7 +105,8 @@
               <div class="meta">Officer I </div>
               <div class="description"><div class="ui blue tiny progress">
 				<div class="bar"></div>
-				<div class="label">1500/200XP</div>
+				<div class="label" v-if="playerData && playerData[faction] && playerData[faction][3] && playerData[faction][3]['xp']">{{ playerData[faction][3]['xp'] }}</div>
+				<div class="label" v-else>0 XP</div>
 			  </div></div>
             </div>
             <div class="extra content">
