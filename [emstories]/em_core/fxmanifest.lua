@@ -6,5 +6,6 @@ server_scripts {
     'modules.lua',
     '@mysql-async/lib/MySQL.lua',
     'player.lua',
+    'player_faction.lua',
     'base.lua'
 }

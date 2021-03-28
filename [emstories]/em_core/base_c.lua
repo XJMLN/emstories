@@ -1,10 +1,21 @@
 local spawnData = {
-    {x=-1095.47,y=-802.59,z=18.66,heading=35.27},
-    {x=1857.37,y=3679.15,z=33.76,heading=192.44},
-    {x=-438.06,y=6021.48,z=31.49,heading=305.66},
+    [1] = {
+        {x=202.64,y=-1630.31,z=29.68,heading=313.92},
+    },
+    [2]={
+        {x=357.84,y=-593.44,z=28.79,heading=246.27},
+        {x=1839.93,y=3671.5,z=34.28,heading=214.03},
+        {x=-244.49,y=6329.29,z=32.43,heading=221.39},
+    },
+    [3]={
+        {x=432.58,y=-984.79,z=30.71,heading=355.32},
+        {x=1855.8,y=3682.13,z=34.27,heading=208.62},
+        {x=-438.79,y=6020.92,z=31.49,heading=317.92},
+    }
 }
 firstspawn = false
 _spawnNumber = 0
+_faction = 0
 local function freezePlayer(id, freeze)
     local player = id
     SetPlayerControl(player, not freeze, false)
@@ -33,12 +44,13 @@ local function freezePlayer(id, freeze)
     end
 end
 
-function base_spawnPlayer(spawnNumber,skin,playerData)
+function base_spawnPlayer(spawnNumber,faction,skin,playerData)
     local source = PlayerId()
     local skin = skin
     local money = money
     if (_spawnNumber == 0) then
         _spawnNumber = spawnNumber
+        _faction = faction
         firstspawn = true
     end
     Citizen.CreateThread(function()
@@ -61,7 +73,7 @@ function base_spawnPlayer(spawnNumber,skin,playerData)
         SetPlayerModel(PlayerId(), model)
         SetPedDefaultComponentVariation(GetPlayerPed(PlayerId()))
         freezePlayer(PlayerId(),true)
-        local pos = spawnData[_spawnNumber]
+        local pos = spawnData[_faction][_spawnNumber]
         RequestCollisionAtCoord(pos.x,pos.y,pos.z)
         local ped = PlayerPedId()
         SetEntityCoordsNoOffset(ped,pos.x,pos.y,pos.z,false,false,false,true)
@@ -101,7 +113,7 @@ Citizen.CreateThread(function()
         local playerPed = PlayerPedId()
         if playerPed and playerPed ~= -1 then
             if IsEntityDead(playerPed) then
-                TriggerServerEvent("em_core:spawnPlayer",PlayerId(-1),_spawnNumber)
+                TriggerServerEvent("em_core:spawnPlayer",PlayerId(-1),_spawnNumber,_faction)
             end
         end
     end

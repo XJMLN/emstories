@@ -7,6 +7,7 @@ const spawner = new Vue({
         showDepartment:false,
         faction:'',
         playerData:false,
+        newplayer:false,
     },
     methods: {
         
@@ -15,12 +16,10 @@ const spawner = new Vue({
            this.showSpawner = true;
            this.showFaction = true;
            this.showDepartment = false;
+           this.newplayer = data.newplayer;
         },
         showSelection(type){
             this.faction = type;
-            if (type == 'fd') {
-                //jQuery("#double").css("background","linear-gradient(-45deg,#b82e1f,#000000)");
-            }
             this.showFaction = false;
             this.showDepartment = true;
         },
@@ -31,6 +30,8 @@ const spawner = new Vue({
             this.faction = '';
             axios.post(`https://em_spawnSelection/spawnPlayer`,{
                     spawnNumber: number,
+                    faction: faction,
+                    newplayer: spawner.newplayer
                 }).then((response)=>{
                 }).catch((error)=>{
                     console.log(error);

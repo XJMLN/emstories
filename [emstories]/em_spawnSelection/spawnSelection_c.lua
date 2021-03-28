@@ -1,6 +1,20 @@
 local securedUI = false
 DecorRegister("selectedSpawn",3)
-
+local departments = {
+    [1]={
+        [1]=1
+    },
+    [2]={
+        [1]=2,
+        [2]=3,
+        [3]=4,
+    },
+    [3]={
+        [1]=5,
+        [2]=6,
+        [3]=7,
+    }
+}
 
 
 function spawnSelection_render(data)
@@ -16,8 +30,20 @@ end
 RegisterNUICallback("spawnPlayer", function(data, callback)
     if (not securedUI) then return end
     SetNuiFocus(false)
+    if (data.newplayer == 1) then
+        exports.em_characters:startCharacterCreator(data.faction)
+        local spawnNumber = tonumber(data.spawnNumber)
+        selectedSpawn = spawnNumber
+        DecorSetInt(PlayerPedId(-1),"selectedSpawn",spawnNumber)
+        isDead = false
+        timerCount = 90
+        securedUI = false
+        callback("ok")
+        return
+    end
     local spawnNumber = tonumber(data.spawnNumber)
-    TriggerServerEvent("em_core:spawnPlayer",spawnNumber)
+    TriggerServerEvent("em_core:setPlayerFaction",data.faction,departments[data.faction][spawnNumber])
+    TriggerServerEvent("em_core:spawnPlayer",spawnNumber,data.faction)
     selectedSpawn = spawnNumber
     DecorSetInt(PlayerPedId(-1),"selectedSpawn",spawnNumber)
     isDead = false

@@ -124,6 +124,12 @@ Players.takeMoney = function(playerId, amount)
     return true
 end
 
+Players.updateSkin = function(playerId, skin)
+    local player = Players.all[tostring(playerId)]
+    player.skin = skin
+    return true
+end
+
 RegisterNetEvent("playerJoining")
 AddEventHandler("playerJoining",function()
     local playerId = source
@@ -141,6 +147,7 @@ end)
 exports('PlayersGetPlayerFromId',Players.fromId)
 exports('PlayersGetMoney',Players.getMoney)
 exports("PlayersTakeMoney",Players.takeMoney)
+exports("PlayersUpdateSkin",Players.updateSkin)
 AddEventHandler("onResourceStart",function(resource)
     if (GetCurrentResourceName() == resource) then
         local allPlayers = GetPlayers()

@@ -94,7 +94,29 @@ local Components = {
 	{label = _U('beard_type'),				name = 'beard_1',			value = 0,		min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
 	{label = _U('beard_size'),				name = 'beard_2',			value = 0,		min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
 	{label = _U('beard_color_1'),			name = 'beard_3',			value = 0,		min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
-	{label = _U('beard_color_2'),			name = 'beard_4',			value = 0,		min = 0,	zoomOffset = 0.4,		camOffset = 0.65}
+	{label = _U('beard_color_2'),			name = 'beard_4',			value = 0,		min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('mother_heritage'), 		name = 'mom',				value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('father_heritage'), 		name = 'dad',				value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('nose_width'),	 			name = 'nose_1',			value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('nose_height'), 			name = 'nose_2',			value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('nose_peak'), 				name = 'nose_3',			value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('nose_bone'), 				name = 'nose_4',			value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('nose_peak_2'), 			name = 'nose_5',			value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('nose'), 					name = 'nose_6',			value = 0.0,	min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
+	{label = _U('eyebrows_depth'),			name = 'eyebrows_5',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('eyebrows_height'),			name = 'eyebrows_6',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('cheekbones_height'), 		name = 'cheeks_1',			value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('cheekbones_width'),		name = 'cheeks_2',			value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('cheek_width'),				name = 'cheeks_3',			value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('opening_eyes'),			name = 'eye_open',			value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('lips_thick'),				name = 'lips_thick',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('jaw_width'),				name = 'jaw_1',				value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('jaw_length'),				name = 'jaw_2',				value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('chin_height'),				name = 'chin_height',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('chin_lenght'),				name = 'chin_lenght',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('chin_width'),				name = 'chin_width',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('chin_hole'),				name = 'chin_hole',			value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
+	{label = _U('neck_thick'),				name = 'neck_thick',		value = 0.0,	min = 0,	zoomOffset = 0.4,		camOffset = 0.65},
 }
 
 local LastSex		= -1
@@ -436,6 +458,15 @@ function ApplySkin(skin, clothes)
 		ClearPedProp(playerPed,	7)
 	else
 		SetPedPropIndex			(playerPed, 7,		Character['bracelets_1'],		Character['bracelets_2'], 2)				-- Bracelets
+	end
+	SetPedHeadBlendData			(playerPed, Character['mom'], Character['dad'], nil, Character['mom'], Character['dad'], nil, Character['face'], Character['skin'], nil, true)
+
+	local Face = {[0] = 'nose_1', [1] = 'nose_2', [2] = 'nose_3', [3] = 'nose_4', [4] = 'nose_5', [5] = 'nose_6', [6] = 'eyebrows_5', [7] = 'eyebrows_6', [8] = 'cheeks_2', [9] = 'cheeks_1', [10] = 'cheeks_3', [11] = 'eye_open', [12] = 'lips_thick', [13] = 'jaw_1', [14] = 'jaw_2', [15] = 'chin_height', [16] = 'chin_lenght', [17] = 'chin_width', [18] = 'chin_hole', [19] = 'neck_thick'}
+
+	for k,v in pairs(Face) do
+		if Character[v] then
+			SetPedFaceFeature(GetPlayerPed(-1), k, Character[v])
+		end
 	end
 end
 
