@@ -28,11 +28,14 @@ end)
 RegisterServerEvent('em_shop_skins:save')
 AddEventHandler('em_shop_skins:save', function(skin)
 	local source = source
+	local skin = skin
     local identifier = string.gsub(getLicense(source),"license:","")
 	MySQL.Async.execute('UPDATE em_users SET skin = @skin WHERE identifier = @identifier', {
 		['@skin'] = json.encode(skin),
 		['@identifier'] = identifier
-	})
+	}, function(result)
+		exports("PlayersUpdateSkin",source,skin)
+	end)
 end)
 
 RegisterServerEvent("em_shop_skins:getPlayerSkin")
