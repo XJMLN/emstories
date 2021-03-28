@@ -9,6 +9,9 @@ const HUD = new Vue({
         vehicle:false,
         speed:"",
         fuel:"",
+        department:"",
+        rank:"",
+        xp:0,
     },
     methods: {
         
@@ -36,6 +39,12 @@ const HUD = new Vue({
                 this.speed = "";
                 this.fuel = "";
             }
+        },
+        updateFaction(data) {
+            this.department = data.department;
+            this.rank = data.rank;
+            this.xp = data.xp;
+            jQuery("#xpBar").progress({percent: data.xp});
         }
         
 
@@ -50,6 +59,9 @@ document.onreadystatechange = () => {
             }
             if (event.data.type == "streetUpdate") {
                 HUD.updateStreet(event.data.data);
+            }
+            if (event.data.type == "updateFaction"){
+                HUD.updateFaction(event.data.data);
             }
             if (event.data.type == "updateVehicle") {
                 HUD.updateVehicle(event.data.data)

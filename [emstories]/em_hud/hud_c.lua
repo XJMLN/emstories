@@ -1,4 +1,22 @@
 local hudShowed = false
+local pRank = ""
+local pDepartment = ""
+local departments = {
+    [1]={
+        [1]="Los Santos Fire Department",
+    },
+    [2]={
+        [1]="Los Santos Medical Center",
+        [2]="Sandy Shores Medical Center",
+        [3]="Paleto Bay Medical Center",
+    },
+    [3]={
+        [1]="Los Santos Police Department",
+        [2]="Blaine County Police Department",
+        [3]="San Andreas Highway Patrol",
+    }
+}
+
 DecorRegister("__PLAYER_MONEY_",3)
 DecorRegister("isVIP",2)
 DecorRegister("adminLevel",3)
@@ -48,6 +66,13 @@ end)
 
 RegisterNetEvent("em_core_client:playerLoaded")
 RegisterNetEvent("em_core_client:PlayerMoneyChange")
+RegisterNetEvent("em_core_client:playerFactionChange")
+AddEventHandler("em_core_client:playerFactionChange",function(data)
+    print(data.rankName)
+    pRank = data.rankName
+    pDepartment = departments[data.factionID][data.departmentID]
+    SendNUIMessage({type="updateFaction",data={rank=pRank,department=pDepartment,xp=data.xp}})
+end)
 AddEventHandler("em_core_client:PlayerMoneyChange",function(data)
     DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data)
 end)
