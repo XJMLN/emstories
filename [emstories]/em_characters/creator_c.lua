@@ -1,8 +1,10 @@
 local Camera = {
 	face = {x = 402.92, y = -1000.72, z = -98.45, fov = 10.00},
 	body = {x = 402.92, y = -1000.72, z = -99.01, fov = 30.00},
+    lhand = {x = 402.89, y= -1000.72, z= -99.01,fov=10.00},
+    rhand = {x=402.89,y=-1000.72,z=-99.01,fov=10.00},
 }
-
+local Sex = 0
 local departments = {
     [1]={
         [1]=1
@@ -66,17 +68,21 @@ function creator_changeModel(model)
             Character['glasses_1'] = -1
         end
         SetModelAsNoLongerNeeded(skin)
+        clothes = GetClothesData()
     end
 end
 
 function creator_changeSex(sex)
     if (sex == 1) then
         Character['sex'] = 0
+        Sex = 0
         pedModel = "mp_m_freemode_01"
     else
         Character['sex'] = 1
+        Sex = 1
         pedModel = "mp_f_freemode_01"
     end
+    
     creator_changeModel(pedModel)
 end
 local factions = nil
@@ -125,6 +131,8 @@ end
 
 function EndCharCreator()
 	local playerPed = GetPlayerPed(-1)
+    Character['sex'] = Sex
+    TriggerServerEvent("em_shop_skins:save",Character)
 	DoScreenFadeOut(1000)
 	Wait(1000)
 	SetCamActive(camSkin,  false)
@@ -134,7 +142,6 @@ function EndCharCreator()
     FreezeEntityPosition(GetPlayerPed(-1), false)
 	SetEntityCoords(playerPed, 405.59, -997.18, -99.00)
 	SetEntityHeading(playerPed, 90.00)
-    TriggerServerEvent("em_shop_skins:save",Character)
 	Wait(1000)
     local spawnNumber = DecorGetInt(PlayerPedId(-1),"selectedSpawn")
     TriggerServerEvent("em_core:setPlayerFaction",factions,departments[factions][spawnNumber])
@@ -206,6 +213,45 @@ function Visible()
     while enable == true do
         Citizen.Wait(0)
         Collision()
+    end
+end
+
+
+function fixPlayerComponents(component,drawableKey, textureKey)
+    local playerPed = PlayerPedId()
+    SetPedComponentVariation(playerPed, component, Character[drawableKey],Character[textureKey], 2)
+    local hash = GetHashNameForComponent(playerPed, component, Character[drawableKey], Character[textureKey])
+    local fcDrawable, fcTexture, fcType = -1, -1, -1
+    local fcCount = GetShopPedApparelForcedComponentCount(hash) - 1
+    for fcId = 0, fcCount do
+        local fcNameHash, fcEnumVal, f5, f7, f8 = -1, -1, -1, -1, -1
+        fcNameHash, fcEnumVal, fcType = GetForcedComponent(hash, fcId)
+        if fcType == 3 then
+            if (fcNameHash == 0) or (fcNameHash == GetHashKey('0')) then
+                fcDrawable = fcEnumVal
+                fcTexture = 0
+            else
+                fcType, fcDrawable, fcTexture = GetComponentDataFromHash(fcNameHash)
+            end
+            if IsPedComponentVariationValid(playerPed, fcType, fcDrawable, fcTexture) then
+                Character['arms'] = fcDrawable
+                Character['arms_2'] = fcTexture
+                SetPedComponentVariation(playerPed, fcType, fcDrawable, fcTexture, 2)
+            end
+        end
+    end
+    if GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
+        if (GetPedDrawableVariation(playerPed, 11) == 15) and (GetPedTextureVariation(playerPed, 11) == 16) then
+            Character['arms'] = 15
+            Character['arms_2'] = 0
+            SetPedComponentVariation(playerPed, 3, 15, 0, 2);
+        end
+    elseif GetEntityModel(playerPed) == GetHashKey('mp_m_freemode_01') then
+        if (GetPedDrawableVariation(playerPed, 11) == 15) and (GetPedTextureVariation(playerPed, 11) == 0) then
+            Character['arms'] = 15
+            Character['arms_2'] = 0
+            SetPedComponentVariation(playerPed, 3, 15, 0, 2);
+        end
     end
 end
 exports("startCharacterCreator",CharCreatorAnimation)

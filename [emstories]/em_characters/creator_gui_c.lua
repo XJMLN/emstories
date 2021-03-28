@@ -5,16 +5,22 @@ MENUS.MainMenu = RageUI.CreateMenu("Kreator Postaci","Nowa postac")
 MENUS.heritage = RageUI.CreateSubMenu(MENUS.MainMenu,"Podobieństwo","Podobieństwo postaci")
 MENUS.features = RageUI.CreateSubMenu(MENUS.MainMenu,"Cechy","Cechy postaci")
 MENUS.apearance = RageUI.CreateSubMenu(MENUS.MainMenu,"Wygląd","Wygląd postaci")
+MENUS.clothes = RageUI.CreateSubMenu(MENUS.MainMenu,"Ubrania","Ubiór postaci")
 MENUS['MainMenu']:DisplayGlare(false)
 MENUS['heritage']:DisplayGlare(false)
 MENUS['features']:DisplayGlare(false)
 MENUS['apearance']:DisplayGlare(false)
+MENUS['clothes']:DisplayGlare(false)
 MENUS['MainMenu'].Closed = function() end
 MENUS['MainMenu'].EnableMouse = true
 MENUS['heritage'].EnableMouse = true
 MENUS['features'].EnableMouse = true
 MENUS['apearance'].EnableMouse = true
+MENUS['clothes'].EnableMouse = true
 MENUS['apearance'].Closed = function()
+    CreateSkinCam("body")
+end
+MENUS['clothes'].Closed = function()
     CreateSkinCam("body")
 end
 MENUS['features'].Closed = function()
@@ -81,7 +87,6 @@ function ManagePanel(type, data)
 		if data.Panel then
 			Panel[data.Panel].itemIndex = data.index
 		end
-
 		if not Panel[type].currentItem then
 	        Panel[type].lastItem = data.item
 		else
@@ -92,7 +97,9 @@ function ManagePanel(type, data)
 		if not Panel[type][Panel[type].currentItem] then
 			Panel[type][Panel[type].currentItem] = {
 				index = type == 'ColourPanel' and 1 or 0,
-				minindex = 1
+				minindex = 1,
+                key = data.key,
+                static= data.static
 			}
 		end
 
@@ -132,6 +139,49 @@ end
 gridNumber = 1
 gridNumberHorizontal = 2
 appearanceNumber = 1
+clothesNumber = 1
+clothes = {}
+function GetClothesData()
+    local result = {
+        topsover = {},
+        topsunder = {},
+        pants = {},
+        shoes = {},
+        bags = {},
+        masks = {},
+        neckarms = {},
+        hats = {},
+        ears = {},
+        glasses = {},
+        lefthands = {},
+        righthands = {},
+    }
+
+    result.topsover = GetComponentsData(11)
+    result.topsunder = GetComponentsData(8)
+    result.pants = GetComponentsData(4)
+    result.shoes = GetComponentsData(6)
+    result.masks = GetComponentsData(1)
+    result.neckarms = GetComponentsData(7)
+    result.hats = GetPropsData(0)
+    result.ears = GetPropsData(2)
+    result.glasses = GetPropsData(1)
+    result.lefthands = GetPropsData(6)
+    result.righthands = GetPropsData(7)
+    table.insert(result.masks,{Name = "Brak",component=1,drawable=0,texture=0})
+    table.insert(result.hats,{Name="Brak",prop=0,drawable=-1,texture=-1})
+    table.insert(result.ears,{Name="Brak",prop=2,drawable=-1,texture=-1})
+    table.insert(result.glasses,{Name="Brak",prop=1,drawable=-1,texture=-1})
+    table.insert(result.neckarms,{Name="Brak",component=7,drawable=0,texture=0})
+    table.insert(result.lefthands,{Name="Brak",prop=6,drawable=-1,texture=-1})
+    table.insert(result.righthands,{Name="Brak",prop=7,drawable=-1,texture=-1})
+    table.insert(result.topsover,{Name="Brak",component=11,drawable=0,texture=0})
+    table.insert(result.topsunder,{Name="Brak",component=8,drawable=-1,texture=0})
+    table.insert(result.pants,{Name="Brak",component=4,drawable=0,texture=0})
+    table.insert(result.shoes,{Name="Brak",component=6,drawable=0,texture=0})
+    return result
+end
+
 Citizen.CreateThread(function()
     while (true) do 
         Citizen.Wait(1.0)
@@ -162,6 +212,13 @@ Citizen.CreateThread(function()
                 CreateSkinCam("face")
                end
            }, MENUS.apearance)
+           RageUI.Button("Ubiór","Zmień ubiór postaci",{},true, {
+               onSelected = function()
+                MENUS.clothes.Controls.Back.Enabled = true
+                
+                CreateSkinCam("body")
+               end
+           },MENUS.clothes)
            RageUI.Button("Zapisz i wyjdź", "Wyglądu postaci nie możesz zmienić.",{RightBadge = RageUI.BadgeStyle.Tick,Color = {BackgroundColor={38,85,150,160},HighLightColor={102,155,228,160}}},true,{
                onSelected = function()
                     RageUI.Visible(MENUS['MainMenu'],false)
@@ -362,6 +419,225 @@ Citizen.CreateThread(function()
                     end
                 },appearanceNumber)
             end
+        end)
+
+        RageUI.IsVisible(MENUS['clothes'],function()
+            RageUI.List("Nakrycia głowy", clothes.hats, list.hats, "Wciśnij ~g~ENTER~w~ aby przybliżyć kamerę",{},true,{
+                onSelected= function()
+                    CreateSkinCam("face")
+                end,
+                onListChange = function(Index, Item)
+                    list.hats = Index
+                    local item = clothes.hats[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'helmet_1'
+                    local textureKey = 'helmet_2'
+                    local prop = 0
+                    local playerPed = PlayerPedId()
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    if Character[drawableKey] == -1 then
+                        ClearPedProp(playerPed, prop)
+                    else
+                        SetPedPropIndex(playerPed, prop, Character[drawableKey], Character[textureKey], false)
+                    end
+                end})
+            RageUI.List("Maski",clothes.masks, list.masks,"Wciśnij ~g~ENTER~w~ aby przybliżyć kamerę",{},true,{
+                onSelected = function()
+                    CreateSkinCam("face")
+                end,
+                onListChange = function(Index, Item)
+                    list.masks = Index
+                    local item = clothes.masks[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'mask_1'
+                    local textureKey = 'mask_2'
+                    local component = 1
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    fixPlayerComponents(component,drawableKey, textureKey)
+            end})
+            RageUI.List("Uszy",clothes.ears,list.ears,"Wciśnij ~g~ENTER~w~ aby przybliżyć kamerę",{},true,{
+                onSelected = function()
+                    CreateSkinCam("face")
+                end,
+                onListChange = function(Index, Item)
+                    list.ears = Index
+                    local item = clothes.ears[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'ears_1'
+                    local textureKey = 'ears_2'
+                    local prop = 2
+                    local playerPed = PlayerPedId()
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    if Character[drawableKey] == -1 then
+                        ClearPedProp(playerPed, prop)
+                    else
+                        SetPedPropIndex(playerPed, prop, Character[drawableKey], Character[textureKey], false)
+                    end
+            end})
+            RageUI.List("Okulary",clothes.glasses,list.glasses,"Wciśnij ~g~ENTER~w~ aby przybliżyć kamerę",{},true,{
+                onSelected = function()
+                    CreateSkinCam("face")
+                end,
+                onListChange = function(Index, Item)
+                    list.glasses = Index
+                    local item = clothes.glasses[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'glasses_1'
+                    local textureKey = 'glasses_2'
+                    local prop = 1
+                    local playerPed = PlayerPedId()
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    if Character[drawableKey] == -1 then
+                        ClearPedProp(playerPed, prop)
+                    else
+                        SetPedPropIndex(playerPed, prop, Character[drawableKey], Character[textureKey], false)
+                    end
+            end})
+            RageUI.List("Szyja/Ramię",clothes.neckarms,list.neckarms,"Wciśnij ~g~ENTER~w~ aby oddalić kamerę",{},true,{
+                onSelected= function()
+                    CreateSkinCam("body")
+                end,
+                onListChange = function(Index, Item)
+                    list.neckarms = Index
+                    local item = clothes.neckarms[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'neckarm_1'
+                    local textureKey = 'neckarm_2'
+                    local component = 7
+                    local playerPed = PlayerPedId()
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    SetPedComponentVariation(playerPed, 7,  Character[drawableKey],  Character[textureKey],  2)
+            end})
+            RageUI.List("Lewa ręka",clothes.lefthands,list.lefthands,"Wcisnij ~g~ENTER~w~ aby przybliżyć kamerę",{},true,{
+                onSelected = function()
+                    CreateSkinCam("lhand")
+                end,
+                onListChange = function(Index, Item)
+                    list.lefthands = Index
+                    local item = clothes.lefthands[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'lefthand_1'
+                    local textureKey = 'lefthand_2'
+                    local prop = 6
+                    local playerPed = PlayerPedId()
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    if Character[drawableKey] == -1 then
+                        ClearPedProp(playerPed, prop)
+                    else
+                        SetPedPropIndex(playerPed, prop, Character[drawableKey], Character[textureKey], false)
+                    end
+            end})
+            RageUI.List("Prawa ręka",clothes.righthands,list.righthands,"Wcisnij ~g~ENTER~w~ aby przybliżyć kamerę",{},true,{
+                onSelected = function()
+                    CreateSkinCam("rhand")
+                end,
+                onListChange = function(Index, Item)
+                    list.righthands = Index
+                    local item = clothes.righthands[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'righthand_1'
+                    local textureKey = 'righthand_2'
+                    local prop = 7
+                    local playerPed = PlayerPedId()
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    if Character[drawableKey] == -1 then
+                        ClearPedProp(playerPed, prop)
+                    else
+                        SetPedPropIndex(playerPed, prop, Character[drawableKey], Character[textureKey], false)
+                    end
+            end})
+            RageUI.List("Koszulki",clothes.topsover,list.topsover,"Wciśnij ~g~ENTER~w~ aby oddalić kamerę",{},true,{
+                onSelected= function()
+                    CreateSkinCam("body")
+                end,
+                onListChange = function(Index, Item)
+                    list.topsover = Index
+                    local item = clothes.topsover[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'torso_1'
+                    local textureKey = 'torso_2'
+                    local component = 11
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    fixPlayerComponents(component,drawableKey, textureKey)
+            end})
+            RageUI.List("Podkoszulki",clothes.topsunder,list.topsunder,"Wciśnij ~g~ENTER~w~ aby oddalić kamerę",{},true,{
+                onSelected= function()
+                    CreateSkinCam("body")
+                end,
+                onListChange = function(Index, Item)
+                    list.topsunder = Index
+                    local item = clothes.topsunder[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'tshirt_1'
+                    local textureKey = 'tshirt_2'
+                    local component = 8
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    fixPlayerComponents(component,drawableKey, textureKey)
+            end})
+            RageUI.List("Spodnie",clothes.pants,list.pants,"Wciśnij ~g~ENTER~w~ aby oddalić kamerę",{},true,{
+                onSelected= function()
+                    CreateSkinCam("body")
+                end,
+                onListChange = function(Index, Item)
+                    list.pants = Index
+                    local item = clothes.pants[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'pants_1'
+                    local textureKey = 'pants_2'
+                    local component = 4
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    fixPlayerComponents(component,drawableKey, textureKey)
+            end})
+            RageUI.List("Buty",clothes.shoes,list.shoes,"Wciśnij ~g~ENTER~w~ aby oddalić kamerę",{},true,{
+                onSelected= function()
+                    CreateSkinCam("body")
+                end,
+                onListChange = function(Index, Item)
+                    list.shoes = Index
+                    local item = clothes.shoes[Index]
+                    local drawable = item.drawable
+                    local texture = item.texture
+                    local drawableKey = 'shoes_1'
+                    local textureKey = 'shoes_2'
+                    local component = 6
+                    Character[drawableKey] = drawable
+                    Character[textureKey] = texture
+                    fixPlayerComponents(component,drawableKey, textureKey)
+            end})
+            RageUI.Button("~r~Usuń koszulę~w~","Resetuje koszulę",{},true, {
+                onSelected = function()
+                    list.topsover = 2015
+                    Character['torso_1'] = 0
+                    Character['torso_2'] = 0
+                    fixPlayerComponents(11,'torso_1','torso_2')
+            end})
+            RageUI.Button("~r~Usuń podkoszulek~w~","Resetuje podkoszulek",{},true,{
+                onSelected = function()
+                    list.topsunder = 949
+                    Character['tshirt_1'] = -1
+                    Character['tshirt_2'] = 0
+                    fixPlayerComponents(8,'tshirt_1','tshirt_2')
+            end})
         end)
     end
 end)

@@ -1,6 +1,20 @@
 Character = {}
 cam, cam2, cam3, camSkin, isCameraActive = nil, nil, nil, nil, nil
 lastCam = 'body'
+clothingCategoryNames = {"Maski", "Włosy", "Rękawice", "Spodnie", "Plecaki i spadochrony", "Buty", "Naszyjniki i krawaty", "Podkoszulek", "Zbroja", "Kalkomanie i logo", "Koszule i kurtki" }
+list = {
+    ['masks']=963,
+    ['hats']=911,
+    ['ears']=100,
+    ['glasses']=71,
+    ['neckarms']=317,
+    ['lefthands']=73,
+    ['righthands']=12,
+    ['topsover']=2015,
+    ['topsunder']=949,
+    ['pants']=482,
+    ['shoes']=496,
+}
 Components = {
 	{label = _U('sex'),						name = 'sex',				value = 0,		min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
 	{label = _U('face'),					name = 'face',				value = 0,		min = 0,	zoomOffset = 0.6,		camOffset = 0.65},
@@ -286,3 +300,158 @@ Apperance = {
         desc = "Rumieńce"
 	},
 }
+
+function GetComponentDataFromHash(hash)
+    local blob = string.rep('\0\0\0\0\0\0\0\0', 9 + 16)
+    if not Citizen.InvokeNative(0x74C0E2A57EC66760, hash, blob) then
+        return nil
+    end
+
+    -- adapted from: https://gist.github.com/root-cause/3b80234367b0c856d60bf5cb4b826f86
+    local lockHash = string.unpack('<i4', blob, 1)
+    local hash = string.unpack('<i4', blob, 9)
+    local locate = string.unpack('<i4', blob, 17)
+    local drawable = string.unpack('<i4', blob, 25)
+    local texture = string.unpack('<i4', blob, 33)
+    local field5 = string.unpack('<i4', blob, 41)
+    local component = string.unpack('<i4', blob, 49)
+    local field7 = string.unpack('<i4', blob, 57)
+    local field8 = string.unpack('<i4', blob, 65)
+    local gxt = string.unpack('c64', blob, 73)
+
+    return component, drawable, texture, gxt, field5, field7, field8
+end
+
+function GetPropDataFromHash(hash)
+    local blob = string.rep('\0\0\0\0\0\0\0\0', 9 + 16)
+    if not Citizen.InvokeNative(0x5D5CAFF661DDF6FC, hash, blob) then
+        return nil
+    end
+
+    -- adapted from: https://gist.github.com/root-cause/3b80234367b0c856d60bf5cb4b826f86
+    local lockHash = string.unpack('<i4', blob, 1)
+    local hash = string.unpack('<i4', blob, 9)
+    local locate = string.unpack('<i4', blob, 17)
+    local drawable = string.unpack('<i4', blob, 25)
+    local texture = string.unpack('<i4', blob, 33)
+    local field5 = string.unpack('<i4', blob, 41)
+    local prop = string.unpack('<i4', blob, 49)
+    local field7 = string.unpack('<i4', blob, 57)
+    local field8 = string.unpack('<i4', blob, 65)
+    local gxt = string.unpack('c64', blob, 73)
+
+    return prop, drawable, texture, gxt, field5, field7, field8
+end
+
+function GetComponentsData(id)
+    local result = {}
+
+    local playerPed = PlayerPedId()
+    local componentBlacklist = nil
+
+    if blacklist ~= nil then
+        if GetEntityModel(playerPed) == GetHashKey('mp_m_freemode_01') then
+           -- componentBlacklist = blacklist.components.male
+        elseif GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
+            --componentBlacklist = blacklist.components.female
+        end
+    end
+
+    local drawableCount = GetNumberOfPedDrawableVariations(playerPed, id) - 1
+
+    for drawable = 0, drawableCount do
+        local textureCount = GetNumberOfPedTextureVariations(playerPed, id, drawable) - 1
+
+        for texture = 0, textureCount do
+            local hash = GetHashNameForComponent(playerPed, id, drawable, texture)
+
+            if hash ~= 0 then
+                local component, drawable, texture, gxt = GetComponentDataFromHash(hash)
+                -- only named components
+                if gxt ~= '' then
+                    label = GetLabelText(gxt)
+                    if label ~= 'NULL' then
+                        local blacklisted = false
+
+                       -- if componentBlacklist ~= nil then
+                         --   if componentBlacklist[component] ~= nil then
+                           --     if componentBlacklist[component][drawable] ~= nil then
+                             --       if componentBlacklist[component][drawable][texture] ~= nil then
+                               --         blacklisted = true
+                                 --   end
+                               -- end
+                           -- end
+                        --end
+    
+                        if not blacklisted then
+                            table.insert(result, {
+                                Name = tostring(label),
+                                component = component,
+                                drawable = drawable,
+                                texture = texture
+                            })
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return result
+end
+
+function GetPropsData(id)
+    local result = {}
+
+    local playerPed = PlayerPedId()
+    local propBlacklist = nil
+
+    if blacklist ~= nil then
+        if GetEntityModel(playerPed) == GetHashKey('mp_m_freemode_01') then
+            --propBlacklist = blacklist.props.male
+        elseif GetEntityModel(playerPed) == GetHashKey('mp_f_freemode_01') then
+            --propBlacklist = blacklist.props.female
+        end
+    end
+
+    local drawableCount = GetNumberOfPedPropDrawableVariations(playerPed, id) - 1
+
+    for drawable = 0, drawableCount do
+        local textureCount = GetNumberOfPedPropTextureVariations(playerPed, id, drawable) - 1
+
+        for texture = 0, textureCount do
+            local hash = GetHashNameForProp(playerPed, id, drawable, texture)
+
+            if hash ~= 0 then
+                local prop, drawable, texture, gxt = GetPropDataFromHash(hash)
+                if gxt ~= '' then
+                    label = GetLabelText(gxt)
+                    if label ~= 'NULL' then
+                        local blacklisted = false
+
+                        --if propBlacklist ~= nil then
+                          --  if propBlacklist[prop] ~= nil then
+                            --    if propBlacklist[prop][drawable] ~= nil then
+                              --      if propBlacklist[prop][drawable][texture] ~= nil then
+                                --        blacklisted = true
+                                  --  end
+                                --end
+                            --end
+                        --end
+
+                        if not blacklisted then
+                            table.insert(result, {
+                                Name = tostring(label),
+                                prop = prop,
+                                drawable = drawable,
+                                texture = texture
+                            })
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return result
+end
