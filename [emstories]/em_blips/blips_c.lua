@@ -47,41 +47,12 @@ local blipData = {
    {text="Stacja Paliw",x=-2556.6,y=2331.11,z=32.38,id=361,colour=17},
    {text="Stacja Paliw",x=49.72,y=2779.26,z=58.04,id=361,colour=17},
    {text="Stacja Paliw",x=1039.35,y=2671.71,z=38.87,id=361,colour=17},
-   {text="Stacja Paliw",x=822.74,y=-1028,z=25,id=361,colour=17},
-   {text="Stacja Paliw",x=182,y=-1555,z=28,id=361,colour=17},
+   {text="Stacja Paliw",x=822.74,y=-1028.0,z=25.0,id=361,colour=17},
+   {text="Stacja Paliw",x=182.02,y=-1555.02,z=28.0,id=361,colour=17},
    {text="Stacja Paliw",x=1783.69,y=3330.06,z=40.58,id=361,colour=17},
    {text="Stacja Paliw",x=-1799.32,y=802.12,z=138.65,id=361,colour=17},
    {text="Stacja Paliw",x=822.29,y=-1028.12,z=25.58,id=361,colour=17},
-   --Mechanik
-   --[[
-    {text="Mechanik",x=-1125.36,y=-840.46,z=13.43,id=72,colour=5}, --do poprawy
-    {text="Mechanik",x=536.15,y=-183.24,z=54.35,id=72,colour=5},
-    {text="Mechanik",x=-205.87,y=-1309.47,z=30.89,id=72,colour=5},
-    {text="Mechanik",x=2005.65,y=3798.75,z=32.18,id=72,colour=5},
-   {text="Mechanik",x=1765.55,y=3337.43,z=41.42,id=72,colour=5},
-   {text="Mechanik",x=-337.55,y=-135.14,z=39.1,id=72,colour=5},
-   {text="Mechanik",x=2511.98,y=4138.39,z=38.58,id=72,colour=5},
-   {text="Mechanik",x=2660.85,y=3273.74,z=55.24,id=72,colour=5}, -- do poprawy
-   {text="Mechanik",x=109.54,y=6627.76,z=31.79,id=72,colour=5}, -- te same kordy? sprawdzic
-   {text="Mechanik",x=1542.24,y=6335.07,z=24.08,id=72,colour=5},
-   {text="Mechanik",x=1682.41,y=6431.38,z=32.14,id=72,colour=5},
-   {text="Mechanik",x=2552.97,y=4670.39,z=33.96,id=72,colour=5},
-   {text="Mechanik",x=1174.66,y=2639.14,z=37.76,id=72,colour=5},
-   {text="Mechanik",x=-2166.58,y=4283.77,z=48.96,id=72,colour=5},
-   {text="Mechanik",x=258.5,y=2589.91,z=44.95,id=72,colour=5},
-   {text="Mechanik",x=-3170.06,y=1101.21,z=20.75,id=72,colour=5},
-   {text="Mechanik",x=-1131.8,y=2699.08,z=18.8,id=72,colour=5},
-   {text="Mechanik",x=1301.87,y=4321.03,z=38.26,id=72,colour=5},
-   {text="Mechanik",x=2577.58,y=361.73,z=108.46,id=72,colour=5},
-   {text="Mechanik",x=-83.67,y=1879.94,z=197.28,id=72,colour=5},
-   {text="Mechanik",x=635.76,y=251.91,z=103.15,id=72,colour=5}, -- do poprawy
-   {text="Mechanik",x=-1157.59,y=-2021.84,z=13.13,id=72,colour=5},
-   {text="Mechanik",x=756.84,y=-3195.32,z=6.07,id=72,colour=5},
-   {text="Mechanik",x=1832.88,y=2542.12,z=45.88,id=72,colour=5},
-   {text="Mechanik",x=461.54,y=-1014.89,z=28.07,id=72,colour=5},   
-   {text="Mechanik",x=481.06,y=-1317.85,z=29.2,id=72,colour=5},
-]]--
-
+   {text="Stacja Paliw",x=266.25,y=-1263.83,z=29.14,id=361,colour=17},
 
   {text="Sklep z ubraniami",x=-709.79,y=-153.19,z=37.2,id=73,colour=0},
   {text="Sklep z ubraniami",x=-1193.78,y=-768.9,z=17.1,id=73,colour=0},
