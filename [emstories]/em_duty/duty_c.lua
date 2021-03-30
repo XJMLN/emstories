@@ -1,6 +1,7 @@
 
 local vehicleRoom = nil
 local plrFactionID = nil
+local plrDepartmentID = nil
 local enable = false
 local cam2 = nil
 local camName=""
@@ -152,6 +153,7 @@ function startDuty(vehData)
     duty_createVehicle(vehData)
     DisplayRadar(true)
 	DoScreenFadeIn(1000)
+    TriggerServerEvent("em_duty:startPlayerDuty",plrFactionID,plrDepartmentID)
 end
 
 function CreateSkinCam(camera)
