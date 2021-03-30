@@ -9,9 +9,8 @@ files {
 	"ui/lib/vuetify.js",
     "ui/script.js",
 	"ui/style.css",
-	'ui/images/fd.png',
-	'ui/images/md.png',
-	'ui/images/pd.png',
+	'ui/images/*',
+	'ui/music/music.ogg',
 }
 ui_page "ui/index.html"
 

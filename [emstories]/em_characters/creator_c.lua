@@ -144,12 +144,14 @@ function EndCharCreator()
 	SetEntityHeading(playerPed, 90.00)
 	Wait(1000)
     local spawnNumber = DecorGetInt(PlayerPedId(-1),"selectedSpawn")
-    TriggerServerEvent("em_core:setPlayerFaction",factions,departments[factions][spawnNumber])
+    if (factions ~=4) then
+        TriggerServerEvent("em_core:setPlayerFaction",factions,departments[factions][spawnNumber])
+    end
     TriggerServerEvent("em_core:spawnPlayer",spawnNumber,factions,true)
 	DisplayRadar(true)
 	DoScreenFadeIn(1000)
 	Wait(1000)
-    TriggerEvent("em:showHUD")
+    TriggerEvent("em:showHUD",factions)
 end
 
 function LoadAnim(dict)

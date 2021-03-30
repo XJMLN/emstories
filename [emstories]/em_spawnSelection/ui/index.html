@@ -30,6 +30,9 @@
   </head>
   <body>
     <div v-show="showSpawner" id="spawn">
+		<audio id="audio" controls loop hidden>
+				<source src="music/music.ogg" type="audio/ogg">
+			</audio>
       <div  id="double">
         <div v-if="showFaction">
           <h1 style="color: white; margin-bottom: 85px">
@@ -37,20 +40,58 @@
           </h1>
           <div class="ui cards">
             <img
+			@mouseover="changeText('Fire Department')"
+			@mouseleave="changeText(' ')"
               class="faction"
               src="images/fd.png"
               @click="showSelection('fd')"
             />
             <img
               class="faction"
+			  @mouseover="changeText('Medical Center')"
+			  @mouseleave="changeText(' ')"
               src="images/md.png"
               @click="showSelection('md')"
             />
             <img
               class="faction"
+			  @mouseover="changeText('Police Department')"
+			  @mouseleave="changeText(' ')"
               src="images/pd.png"
               @click="showSelection('pd')"
             />
+			<img
+			class="faction"
+			@mouseover="changeText('Cywil')"
+			@mouseleave="changeText(' ')"
+			src="images/civil.png"
+			@click="showSelection('civil')"
+		  />
+          </div>
+		  <div style=" margin-top:85px;height:40px;">
+		  	<h1 style="color:white;" id="FactionNameText">{{ factionName }}</h1>
+		</div>
+        </div>
+		<h1
+          v-if="showDepartment && faction == 'civil'"
+          style="color: white; margin-bottom: 85px"
+        >
+          Wybierz miejsce w którym chciałbyś się pojawić
+        </h1>
+        <div v-if="showDepartment && faction == 'civil'" class="ui cards">
+          <div class="card">
+            <div class="content">
+              <div class="header">Los Santos</div>
+              <div class="meta"></div>
+              <div class="description">Nazwa ulicy</div>
+            </div>
+            <div class="extra content">
+              <div class="ui two buttons">
+                <button class="ui green button" @click="spawnPlayer(4,1)">
+                  Wybierz
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <h1
@@ -62,7 +103,7 @@
         <div v-if="showDepartment && faction == 'fd'" class="ui cards">
           <div class="card">
             <div class="content">
-              <img class="right floated mini ui image" src="images/fd.png" />
+              <img class="right floated mini ui image" src="images/lsfd.png" />
               <div class="header">Los Santos Fire Department</div>
               <div class="meta"></div>
               <div class="description"><div class="ui blue tiny progress">
@@ -73,7 +114,7 @@
             </div>
             <div class="extra content">
               <div class="ui two buttons">
-                <button class="ui green button" @click="spawnPlayer(1,1)">
+                <button class="ui green button" @click="spawnPlayer(3,1)">
                   Wybierz
                 </button>
               </div>
@@ -90,7 +131,7 @@
 	  <div v-if="showDepartment && faction == 'md'" class="ui cards">
 		<div class="card">
 		  <div class="content">
-			<img class="right floated mini ui image" src="images/md.png" />
+			<img class="right floated mini ui image" src="images/lsmc.png" />
 			<div class="header">Los Santos Medical Center</div>
 			<div class="meta"></div>
 			<div class="description"><div class="ui blue tiny progress">
@@ -109,7 +150,7 @@
 		</div>
 		<div class="card">
 		  <div class="content">
-			<img class="right floated mini ui image" src="images/md.png" />
+			<img class="right floated mini ui image" src="images/ssmc.png" />
 			<div class="header">Sandy Shores Medical Center</div>
 			<div class="meta"></div>
 			<div class="description"><div class="ui blue tiny progress">
@@ -128,7 +169,7 @@
 		</div>
 		<div class="card">
 		  <div class="content">
-			<img class="right floated mini ui image" src="images/md.png" />
+			<img class="right floated mini ui image" src="images/pbmc.png" />
 			<div class="header">Paleto Bay Medical Center</div>
 			<div class="meta"></div>
 			<div class="description"><div class="ui blue tiny progress">
@@ -156,7 +197,7 @@
 	<div v-if="showDepartment && faction == 'pd'" class="ui cards">
 	  <div class="card">
 		<div class="content">
-		  <img class="right floated mini ui image" src="images/pd.png" />
+		  <img class="right floated mini ui image" src="images/ls.png" />
 		  <div class="header">Vespucci</div>
 		  <div class="meta"></div>
 		  <div class="description"><div class="ui blue tiny progress">
@@ -167,7 +208,7 @@
 		</div>
 		<div class="extra content">
 		  <div class="ui two buttons">
-			<button class="ui green button" @click="spawnPlayer(3,1)">
+			<button class="ui green button" @click="spawnPlayer(1,1)">
 			  Wybierz
 			</button>
 		  </div>
@@ -175,7 +216,7 @@
 	  </div>
 	  <div class="card">
 		<div class="content">
-		  <img class="right floated mini ui image" src="images/pd.png" />
+		  <img class="right floated mini ui image" src="images/bcso.png" />
 		  <div class="header">Blaine County Police Department</div>
 		  <div class="meta"></div>
 		  <div class="description"><div class="ui blue tiny progress">
@@ -186,7 +227,7 @@
 		</div>
 		<div class="extra content">
 		  <div class="ui two buttons">
-			<button class="ui green button" @click="spawnPlayer(3,2)">
+			<button class="ui green button" @click="spawnPlayer(1,2)">
 			  Wybierz
 			</button>
 		  </div>
@@ -194,7 +235,7 @@
 	  </div>
 	  <div class="card">
 		<div class="content">
-		  <img class="right floated mini ui image" src="images/pd.png" />
+		  <img class="right floated mini ui image" src="images/sahp.png" />
 		  <div class="header">San Andreas Highway Patrol</div>
 		  <div class="meta"></div>
 		  <div class="description"><div class="ui blue tiny progress">
@@ -205,14 +246,18 @@
 		</div>
 		<div class="extra content">
 		  <div class="ui two buttons">
-			<button class="ui green button" @click="spawnPlayer(3,3)">
+			<button class="ui green button" @click="spawnPlayer(1,3)">
 			  Wybierz
 			</button>
 		  </div>
 		</div>
 	  </div>
 	</div>
-
+	<div style="margin-top: 20px;" v-if="showDepartment">
+		<div class="ui two buttons">
+			<button class="ui orange button" @click="returnSelection()">Wstecz</button>
+		</div>
+	</div>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>

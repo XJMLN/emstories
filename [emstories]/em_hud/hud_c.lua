@@ -2,7 +2,7 @@ local hudShowed = false
 local pRank = ""
 local pDepartment = ""
 local departments = {
-    [1]={
+    [3]={
         [1]="Los Santos Fire Department",
     },
     [2]={
@@ -10,7 +10,7 @@ local departments = {
         [2]="Sandy Shores Medical Center",
         [3]="Paleto Bay Medical Center",
     },
-    [3]={
+    [1]={
         [1]="Los Santos Police Department",
         [2]="Blaine County Police Department",
         [3]="San Andreas Highway Patrol",
@@ -20,9 +20,15 @@ local departments = {
 DecorRegister("__PLAYER_MONEY_",3)
 DecorRegister("isVIP",2)
 DecorRegister("adminLevel",3)
-AddEventHandler("em:showHUD",function()
+AddEventHandler("em:showHUD",function(faction)
     Wait(1000)
-    SendNUIMessage({type="drawHUD"})
+    local showAllData=true
+    if faction == 4 then
+        showAllData = false
+    end
+    print(faction)
+    print(showAllData)
+    SendNUIMessage({type="drawHUD",data={showAllData=showAllData}})
     hudShowed = true
 end)
 
@@ -68,7 +74,6 @@ RegisterNetEvent("em_core_client:playerLoaded")
 RegisterNetEvent("em_core_client:PlayerMoneyChange")
 RegisterNetEvent("em_core_client:playerFactionChange")
 AddEventHandler("em_core_client:playerFactionChange",function(data)
-    print(data.rankName)
     pRank = data.rankName
     pDepartment = departments[data.factionID][data.departmentID]
     SendNUIMessage({type="updateFaction",data={rank=pRank,department=pDepartment,xp=data.xp}})

@@ -12,11 +12,13 @@ const HUD = new Vue({
         department:"",
         rank:"",
         xp:0,
+        showAllData:true
     },
     methods: {
         
-        renderHUD(){
+        renderHUD(data){
             this.showHUD = true
+            this.showAllData = data.showAllData
         },
 
         updateStreet(data) {
@@ -55,7 +57,7 @@ document.onreadystatechange = () => {
     if (document.readyState == "complete") {
         window.addEventListener("message", (event) => {
             if (event.data.type == "drawHUD") {
-                HUD.renderHUD();
+                HUD.renderHUD(event.data.data);
             }
             if (event.data.type == "streetUpdate") {
                 HUD.updateStreet(event.data.data);
