@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>sGaming.pl - Zarządzanie kontem</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+    />
+	<link
+	rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+  />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="lib/axios.min.js"></script>
+  </head>
+  <body>
+    <div v-show="showDispatch" id="dispatch">
+      <div class="ui card">
+        <div class="content">
+          <div class="center aligned header">{{ dispatchTitle }}</div>
+          <div class="center aligned description">
+            <p>{{ dispatchLocation }}</p>
+          </div>
+        </div>
+        <div class="extra content">
+          <div class="center aligned author">
+            Wciśnij <b>Y</b> aby przyjąć zgłoszenie.
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
