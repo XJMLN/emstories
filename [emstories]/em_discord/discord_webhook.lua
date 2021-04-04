@@ -4,44 +4,16 @@ CONFIG = {
     nick = "Emergency Stories",
 }
 
-function discord_sendRestartMessage()
-    local date = os.date('*t')
-	if date.month < 10 then date.month = '0' .. tostring(date.month) end
-	if date.day < 10 then date.day = '0' .. tostring(date.day) end
-	if date.hour < 10 then date.hour = '0' .. tostring(date.hour) end
-	if date.min < 10 then date.min = '0' .. tostring(date.min) end
-	if date.sec < 10 then date.sec = '0' .. tostring(date.sec) end
-	local DateString = date.day .. '/' .. date.month .. '/' .. date.year .. ' - ' .. date.hour .. ':' .. date.min
-    local embed = {
-        {
-            ["color"]= 1127128,
-            ["title"]="Status serwera",
-            ["description"]="Serwer jest w trakcie restartowania.",
-            ["footer"]={
-                ["text"]=DateString,
-            }
+local departmentNames = {
+    [1]="Los Santos Fire Department",
+    [2]="Los Santos Medical Center",
+    [3]="Sandy Shores Medical Center",
+    [4]="Paleto Bay Medical Center",
+    [5]="Los Santos Police Department",
+    [6]="Blaine County Police Department",
+    [7]="San Andreas Highway Patrol"
+}
 
-        }
-    }
-    PerformHttpRequest(CONFIG.url, function(err, text, headers) end, 'POST',
-    json.encode({username = CONFIG.nick, embeds = embed, avatar_url = CONFIG.avatar}),
-    { ['Content-Type'] = 'application/json' })
-end
-
-RegisterNetEvent("discordHook:sendLevelMsg")
-AddEventHandler("discordHook:sendLevelMsg",function(lowLevel,hLevel,XP)
-    local embed = {
-        {
-            ["color"]= 1127128,
-            ["title"]="[EVENT WATCH | AC] Awans na kolejny poziom",
-            ["description"]=GetPlayerName(source).." - poprzedni poziom: "..lowLevel..", aktualny poziom: "..hLevel.." [XP: "..XP.."]",
-        }
-    }
-    PerformHttpRequest(CONFIG.url, function(err, text, headers) end, 'POST',
-    json.encode({username = CONFIG.nick, embeds = embed, avatar_url = CONFIG.avatar}),
-    { ['Content-Type'] = 'application/json' })
-end)
-exports('discord_sendRestartMessage',discord_sendRestartMessage)
 
 function discord_onDutyMessage(playerName, callsign, departmentName, departmentID)
     local embed = {
@@ -59,4 +31,25 @@ function discord_onDutyMessage(playerName, callsign, departmentName, departmentI
         ['Content-Type'] = 'application/json'
     })
 end
+
+function discord_acceptCallout(factionID,departmentID,callsign,missionData)
+    local missionTitle = missionData.title
+    local departmentName = departmentNames[departmentID]
+    local embed = {
+        {
+            ["color"]=39423,
+            ["author"]={
+                ["name"]= departmentName,
+                ["icon_url"]="https://emergencystories.pl/images/logos/department-"..departmentID..".png"
+            },
+            ["description"]="`"..callsign.."` odpowiada na zgłoszenie *"..missionTitle.."*."
+        }
+    }
+    PerformHttpRequest(CONFIG.url,function(err,text,headers) end, 'POST',
+    json.encode({username = CONFIG.nick, embeds = embed, avatar_url = CONFIG.avatar}),{
+        ['Content-Type'] = 'application/json'
+    })
+end
+exports("onDispatchAccept",discord_acceptCallout)
 exports("onDutyMessage",discord_onDutyMessage)
+exports('discord_sendRestartMessage',discord_sendRestartMessage)
