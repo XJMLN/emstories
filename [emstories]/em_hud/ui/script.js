@@ -44,9 +44,14 @@ const HUD = new Vue({
         },
         updateFaction(data) {
             this.department = data.department;
+            this.showAllData = true;
             this.rank = data.rank;
             this.xp = data.xp;
-            jQuery("#xpBar").progress({percent: data.xp});
+            jQuery("#xpBar").progress({percent: (data.xp*100)/2000});
+        },
+        updateXP(data) {
+            this.xp = data.xp;
+            jQuery("#xpBar").progress({percent: (data.xp*100)/2000});
         }
         
 
@@ -67,6 +72,9 @@ document.onreadystatechange = () => {
             }
             if (event.data.type == "updateVehicle") {
                 HUD.updateVehicle(event.data.data)
+            }
+            if (event.data.type == "updateXP") {
+                HUD.updateXP(event.data.data);
             }
         });
     }

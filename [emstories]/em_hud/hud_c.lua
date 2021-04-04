@@ -73,6 +73,10 @@ end)
 RegisterNetEvent("em_core_client:playerLoaded")
 RegisterNetEvent("em_core_client:PlayerMoneyChange")
 RegisterNetEvent("em_core_client:playerFactionChange")
+RegisterNetEvent("em_core_client:playerXPChange")
+AddEventHandler("em_core_client:playerXPChange",function(data)
+    SendNUIMessage({type="updateXP",data={xp=data}})
+end)
 AddEventHandler("em_core_client:playerFactionChange",function(data)
     pRank = data.rankName
     pDepartment = departments[data.factionID][data.departmentID]
