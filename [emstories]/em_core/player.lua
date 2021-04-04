@@ -50,6 +50,7 @@ Players.load = function(identifier, playerId, callback)
             UID = tonumber(row.id),
             level = tonumber(row.level),
             vip = false,
+            factionDuty = false,
         }
         Players.set(playerId,userData)
 

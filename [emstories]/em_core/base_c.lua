@@ -1,6 +1,11 @@
 local spawnData = {
     [4] = {
         {x=296.45,y=188.57,z=104.22,heading=153.65},
+        {x=-1259.83,y=-1481.2,z=4.33,heading=90},
+        {x=160.54,y=-988.59,z=30.09,heading=0.0},
+        {x=-41.23,y=6508.26,z=31.45,heading=0.0},
+        {x=1698.47,y=4806.75,z=41.84,heading=0.0},
+        {x=1534.77,y=3777.0,z=41.84,heading=0.0},
     },
     [3] = {
         {x=202.64,y=-1630.31,z=29.68,heading=313.92},
@@ -16,9 +21,25 @@ local spawnData = {
         {x=-438.79,y=6020.92,z=31.49,heading=317.92},
     }
 }
+local departments = {
+    [3]={
+        [1]=1
+    },
+    [2]={
+        [1]=2,
+        [2]=3,
+        [3]=4,
+    },
+    [1]={
+        [1]=5,
+        [2]=6,
+        [3]=7,
+    }
+}
 firstspawn = false
 _spawnNumber = 0
 _faction = 0
+_alreadyInCreator = false
 local function freezePlayer(id, freeze)
     local player = id
     SetPlayerControl(player, not freeze, false)
@@ -103,6 +124,10 @@ function base_spawnPlayer(spawnNumber,faction,skin,playerData)
             TriggerEvent("skinchanger:loadSkin",skin,false,firstspawn)
         else
             TriggerEvent("skinchanger:loadSkin",skin,nil,nil)
+        end
+        if (_faction ~= 4 and not _alreadyInCreator) then
+            _alreadyInCreator = true
+            TriggerServerEvent("em_duty:getPlayerFaction",_faction,departments[_faction][_spawnNumber],GetEntityModel(PlayerPedId()))
         end
         firstspawn = false
         TriggerEvent("em_hud:updateMoney",playerData)

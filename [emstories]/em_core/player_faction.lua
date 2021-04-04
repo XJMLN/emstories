@@ -64,8 +64,11 @@ function faction_playerDataInit(factionID,departmentID,UID,playerData)
     end)
 end
 
-Players.setPlayerFaction = function(factionID, departmentID)
+Players.setPlayerFaction = function(factionID, departmentID,player)
     local playerId = source
+    if (player) then
+        playerId = player
+    end
     local playerData = Players.all[tostring(playerId)]
     local factionID = factionID
     local departmentID = departmentID
