@@ -30,12 +30,10 @@ function Fire:removeFlame(fireIndex, flameIndex)
 	end
 	if self.active[fireIndex].flames[flameIndex] and self.active[fireIndex].flames[flameIndex] > -1 then
 		RemoveScriptFire(self.active[fireIndex].flames[flameIndex])
-		--print('a')
         self.active[fireIndex].flames[flameIndex] = nil
     end
 	if self.active[fireIndex].particles[flameIndex] and self.active[fireIndex].particles[flameIndex] ~= 0 then
 		local particles = self.active[fireIndex].particles[flameIndex]
-		--print('b')
 		Citizen.SetTimeout(
 			5000,
 			function()
@@ -60,7 +58,6 @@ function Fire:removeFlame(fireIndex, flameIndex)
 
 	if self.active[fireIndex] ~= nil and countElements(self.active[fireIndex].flames) < 1 then
 		self.active[fireIndex] = nil
-		TriggerServerEvent("fireMission:endMission",fireIndex)
 		self.removed[fireIndex] = true
 	end
 end

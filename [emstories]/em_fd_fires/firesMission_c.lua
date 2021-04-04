@@ -1,9 +1,37 @@
 local missionElements = {}
+local missionCoords = nil
 removedFirstFire = false
-function fSystem_createRoute(coords)
+local watcher = false
+local FireID = false
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
+
+Citizen.CreateThread(function()
+    while true do
+        if (watcher) then
+            local coords = missionCoords
+            if (Fire and Fire.active and Fire.active[FireID] and Fire.active[FireID].flames) then
+                local firesInRange = countElements(Fire.active[FireID].flames)
+                print('getting number of fires: '..firesInRange)
+                if (firesInRange <= 1) then
+                    TriggerServerEvent("fireMission:endMission",FireID)
+                    FireID = false
+                    watcher = false
+                end
+            end
+        end
+        Citizen.Wait(2500)
+    end
+end)
+function fSystem_createRoute(coords,fireID)
     removedFirstFire = false
+    FireID = fireID
     local player = source
     missionElements[player] = {}
+    missionCoords = coords
     local blip = AddBlipForCoord(coords.x,coords.y,coords.z)
     
     SetBlipSprite(blip,436)
@@ -20,6 +48,16 @@ function fSystem_createRoute(coords)
     StartGpsMultiRoute(6, true, true)
     AddPointToGpsMultiRoute(table.unpack(coords))
     SetGpsMultiRouteRender(true)
+    Wait(15000)
+    Citizen.CreateThread(function()
+        while true do
+            local playerPos = GetEntityCoords(GetPlayerPed(-1))
+            if (#(playerPos - missionCoords) < 20) then
+                watcher = true
+            end
+            Citizen.Wait(1000)
+        end
+    end)
 end 
 
 function fSystem_destroyRoute()

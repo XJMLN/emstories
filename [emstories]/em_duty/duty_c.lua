@@ -12,6 +12,31 @@ local Camera = {
     garage = {x = 228.04, y=-999.21, z = -99.1, fov = 30.00,rot=0},
 }
 
+function restoreDefaultVariables()
+    menusVariables = {
+        vehiclesMarkIndex = 1,
+        vehiclesUMarkIndex = 1,
+        vehicleData = {},
+        vehicleSelected = false,
+        skinSelected = false,
+        showExtras = false,
+        extras = nil,
+        error = false,
+        names = {
+            [3]={marked="Wozy Strażackie",unmarked="Pojazdy Użytkowe"},
+            [2]={marked="Ambulanse",unmarked="Pojazdy Użytkowe"},
+            [1]={marked="Oznakowane",unmarked="Nieoznakowane"},
+        }
+    }
+    vehicleRoom = nil
+    plrFactionID = nil
+    plrDepartmentID = nil
+    enable = false
+    cam2 = nil
+    camName=""
+    camSkin = nil
+    returnPos = nil
+end
 function DrawHelp(text)
 	SetTextComponentFormat("STRING")
 	AddTextComponentString(text)
@@ -147,6 +172,7 @@ function duty_createVehicle(vehData)
 end
 function startDuty(vehData)
     local playerPed = GetPlayerPed(-1)
+    
     DoScreenFadeOut(1000)
 	Wait(1000)
 	SetCamActive(camSkin,  false)
@@ -162,6 +188,7 @@ function startDuty(vehData)
     DisplayRadar(true)
 	DoScreenFadeIn(1000)
     TriggerServerEvent("em_duty:startPlayerDuty",plrFactionID,plrDepartmentID)
+    restoreDefaultVariables()
 end
 
 function CreateSkinCam(camera)

@@ -27,6 +27,7 @@ function dispatch_displayForFaction(factionID,missionData)
     if (tablelength(dispatchPlayers[factionID])>0) then
         local player = dispatch_getRandomPlayer(factionID,dispatchPlayers)
         if (player) then
+            print(GetPlayerName(player).." dispatch")
             TriggerClientEvent("em_dispatch_client:showRender",player,missionData)
         end
     end

@@ -95,5 +95,29 @@ Players.setPlayerFaction = function(factionID, departmentID,player)
     end)
 end
 
+Players.givePlayerXP = function(xp, player)
+    local playerId = source
+    if (player) then
+        playerId = player
+    end
+    local playerData = Players.all[tostring(playerId)]
+    local factionID = playerData.factionID
+    local departmentID = playerData.departmentID
+    local newvalue = playerData.xp + xp
+    playerData.xp = newvalue
+
+    MySQL.Async.execute("UPDATE em_users_departments SET xp=@xp WHERE user_id=@UID AND faction_id=@factionID AND department_id=@departmentID",{
+        ['@xp']=playerData.xp,
+        ['@UID']=playerData.UID,
+        ['@factionID']=factionID,
+        ['@departmentID']=departmentID
+    },function(result)
+    end)
+    exports.em_discord:onXPAdd(GetPlayerName(player).." [UID: "..playerData.UID.."] dostaje +"..xp.."XP. Nowa wartość: "..newvalue.."XP")
+    TriggerClientEvent("em_core_client:playerXPChange",playerId,playerData.xp)
+    return true
+end
+
+exports("givePlayerXP",Players.givePlayerXP)
 RegisterNetEvent("em_core:setPlayerFaction")
 AddEventHandler("em_core:setPlayerFaction",Players.setPlayerFaction)
