@@ -18,7 +18,6 @@ local departments = {
 
 
 function spawnSelection_render(data)
-    SetManualShutdownLoadingScreenNui(true)
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
     SetNuiFocus(true,true)
