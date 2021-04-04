@@ -31,13 +31,26 @@ function duty_getPlayerFaction(factionID, departmentID,model)
     end
     local player = exports.em_core:PlayersGetPlayerFromId(source)
     local pFID = player.factionID
+    if (not pFID) then
+        pFID = factionID
+    end
     local pDID = player.departmentID
+    if (not pDID) then
+        pDID = departmentID
+    end
+    
     if (pFID~=factionID or pDID ~= departmentID) then
         TriggerClientEvent("em_duty_client:callbackGetPlayerFaction",source,"Nie należysz do tego departamentu.")
         return
     else
         local pRank = player.rankID
-        duty_getDepartmentData(source,pFID,pDID,pRank,sex)
+        if (not pRank) then
+            TriggerEvent("em_core:setPlayerFaction",pFID,pDID,source)
+            duty_getDepartmentData(source,pFID,pDID,0,sex)
+            return
+        else
+            duty_getDepartmentData(source,pFID,pDID,pRank,sex)
+        end
     end
 end
 
@@ -47,6 +60,7 @@ function faction_startPlayerDuty(factionID, departmentID)
     local callsign = player.callsign
     local playerName = player.name
     local departmentName = departmentNames[departmentID]
+    player.factionDuty = true
     exports.em_discord:onDutyMessage(playerName, callsign, departmentName,departmentID)
 end
 RegisterNetEvent("em_duty:getPlayerFaction")

@@ -1,6 +1,5 @@
-
-local vehicleRoom = nil
-local plrFactionID = nil
+vehicleRoom = nil
+plrFactionID = nil
 local plrDepartmentID = nil
 local enable = false
 local cam2 = nil
@@ -12,6 +11,7 @@ local Camera = {
 	body = {x = 455.24, y = -980.77, z = 30.9, fov = 30.00,rot=-90.00},
     garage = {x = 228.04, y=-999.21, z = -99.1, fov = 30.00,rot=0},
 }
+
 function DrawHelp(text)
 	SetTextComponentFormat("STRING")
 	AddTextComponentString(text)
@@ -100,7 +100,7 @@ function duty_prepareMenu(data,factionID,departmentID)
     plrDepartmentID = departmentID
     for i,v in ipairs(data) do
         table.insert(skins,{skin_id=v.skin_id,skin_data=v.skin_data,Name=v.name})
-        table.insert(vehicles[v.vehicle_type],{Name=v.vehicle_desc,hash=v.vehicle_hash,extras=v.vehicle_extras,livery=v.vehicle_livery})
+        table.insert(vehicles[v.vehicle_type],{type=v.vehicle_type,Name=v.vehicle_desc,hash=v.vehicle_hash,extras=v.vehicle_extras,livery=v.vehicle_livery})
     end
     enable = true
     DisplayRadar(false)
@@ -109,6 +109,12 @@ function duty_prepareMenu(data,factionID,departmentID)
     Visible()
 end
 
+function setVehicleExtras(veh,data)
+    local data = json.decode(data)
+    for i,v in ipairs(data) do
+        SetVehicleExtra(veh,v.id,v.state)
+    end
+end
 function duty_createVehicle(vehData)
     local hash = vehData['hash']
     local playerPed = PlayerPedId()
@@ -128,9 +134,11 @@ function duty_createVehicle(vehData)
     local spawnHeading = spawnData['heading']
     vehicles[playerPed] = {}
     vehicles[playerPed].vehicle = CreateVehicle(hash,spawnData[1],spawnData[2],spawnData[3],spawnHeading, true,false)
+    if (vehData['type'] == 0) then
+        setVehicleExtras(vehicles[playerPed].vehicle,vehData['extras'])
+    end
+    SetVehicleLivery(vehicles[playerPed].vehicle,vehData['livery'])
     SetVehicleOnGroundProperly(vehicles[playerPed].vehicle)
-
-
     SetModelAsNoLongerNeeded(hash)
     SetEntityAsMissionEntity(vehicles[playerPed].vehicle,true,true)
     SetPedIntoVehicle(playerPed,vehicles[playerPed].vehicle,-1)
@@ -180,6 +188,20 @@ function showRoom(hash)
         vehicleRoom = nil
     end
     vehicleRoom = CreateVehicle(hash,231.08,-986.6,-98.93,143.81,false,false)
+    SetEntityAsMissionEntity(vehicleRoom,true,true)
+    FreezeEntityPosition(vehicleRoom,true)
+end
+
+function getAvailableExtras()
+    local vehicleExtras = {}
+    if (vehicleRoom and DoesEntityExist(vehicleRoom)) then
+        for i=0,20 do
+            if (DoesExtraExist(vehicleRoom, i)) then
+                table.insert(vehicleExtras,{extraId=i,Name="Dodatek #"..i, state=(IsVehicleExtraTurnedOn(vehicleRoom, i) == 1)})
+            end
+        end
+    end
+    return vehicleExtras
 end
 
 function Collision()

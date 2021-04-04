@@ -17,24 +17,31 @@ local menusVariables = {
     vehicleData = {},
     vehicleSelected = false,
     skinSelected = false,
+    showExtras = false,
+    extras = nil,
     error = false,
+    names = {
+        [3]={marked="Wozy Strażackie",unmarked="Pojazdy Użytkowe"},
+        [2]={marked="Ambulanse",unmarked="Pojazdy Użytkowe"},
+        [1]={marked="Oznakowane",unmarked="Nieoznakowane"},
+    }
 }
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1.0)
         RageUI.IsVisible(MENUS.MainMenu, function()
             MENUS.MainMenu.Controls.Back.Enabled = false
+            RageUI.Button("Szafka","Wybierz swój uniform",{},true,{
+                onSelected = function()
+                    MENUS.skins.Controls.Back.Enabled = true
+                    menusVariables.error = false
+            end},MENUS.skins)
             RageUI.Button("Garaż","Wybierz pojazd",{},true,{
                 onSelected = function()
                     MENUS.garage.Controls.Back.Enabled = true
                     setGarageCam()
                     menusVariables.error = false
             end},MENUS.garage)
-            RageUI.Button("Szafka","Wybierz swój uniform",{},true,{
-                onSelected = function()
-                    MENUS.skins.Controls.Back.Enabled = true
-                    menusVariables.error = false
-            end},MENUS.skins)
             RageUI.Button("Wejdź na służbę","Rozpocznij służbę!",{RightBadge = RageUI.BadgeStyle.Tick,Color = {BackgroundColor={38,85,150,160},HighLightColor={102,155,228,160}}},true,{
             onSelected = function()
                 if menusVariables.skinSelected and menusVariables.vehicleSelected then
@@ -60,12 +67,14 @@ Citizen.CreateThread(function()
         end)
 
         RageUI.IsVisible(MENUS.garage, function()
-            RageUI.List("Oznakowane",vehicles[1],menusVariables.vehiclesMarkIndex,"Wciśnij ~g~ENTER~w~ aby wybrać pojazd.",{},true,{
+            RageUI.List(menusVariables.names[plrFactionID]['marked'],vehicles[1],menusVariables.vehiclesMarkIndex,"Wciśnij ~g~ENTER~w~ aby wybrać pojazd.",{},true,{
                 onSelected = function(Index, Items)
                     showRoom(vehicles[1][menusVariables.vehiclesMarkIndex]['hash'])
                     local item = vehicles[1][menusVariables.vehiclesMarkIndex]
                     menusVariables.vehicleData = item
                     menusVariables.vehicleSelected = true
+                    menusVariables.showExtras = true
+                    menusVariables.extras = getAvailableExtras()
                 end,
                 onListChange = function(Index, Items)
                     menusVariables.vehiclesMarkIndex = Index
@@ -74,18 +83,40 @@ Citizen.CreateThread(function()
                     
                 end
             })
-            if plrFactionID == 1 then
-                RageUI.List("Oznakowane",vehicles[0],menusVariables.vehiclesUMarkIndex,"Wciśnij ~g~ENTER~w~ aby wybrać pojazd.",{},true,{
-                    onSelected = function(Index, Items)
-                        showRoom(vehicles[0][menusVariables.vehiclesUMarkIndex]['hash'])
-                        menusVariables.vehicleSelected = true
-                    end,
-                    onListChange = function(Index, Items)
-                        menusVariables.vehiclesUMarkIndex = Index
-                        local item = vehicles[0][menusVariables.vehiclesUMarkIndex]
-                        menusVariables.vehicleData = item
-                    end
+            RageUI.List(menusVariables.names[plrFactionID]['unmarked'],vehicles[0],menusVariables.vehiclesUMarkIndex,"Wciśnij ~g~ENTER~w~ aby wybrać pojazd.",{},true,{
+                onSelected = function(Index, Items)
+                    showRoom(vehicles[0][menusVariables.vehiclesUMarkIndex]['hash'])
+                    local item = vehicles[0][menusVariables.vehiclesUMarkIndex]
+                    menusVariables.vehicleSelected = true
+                    menusVariables.showExtras = false
+                    menusVariables.vehicleData = item
+                end,
+                onListChange = function(Index, Items)
+                    menusVariables.vehiclesUMarkIndex = Index
+                    local item = vehicles[0][menusVariables.vehiclesUMarkIndex]
+                    menusVariables.vehicleData = item
+                end
                 })
+
+            if (menusVariables.extras and menusVariables.showExtras) then
+                RageUI.Separator("~g~Modyfikacje pojazdu")
+                for i,v in ipairs(menusVariables.extras) do
+                    RageUI.Checkbox(v.Name, "Dodaj/Usuń dodatek", v.state, {}, {
+                        onChecked = function()
+                            v.state = true
+                        end,
+                        onUnChecked = function()
+                            v.state = false
+                        end,
+                        onSelected = function(Index)
+                            local state = 0
+                            if (not v.state) then
+                                state = 1
+                            end
+                            SetVehicleExtra(vehicleRoom,v.extraId,state)
+                        end
+                    })
+                end
             end
         end)
     end
