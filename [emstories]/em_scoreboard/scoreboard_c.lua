@@ -16,7 +16,7 @@ Citizen.CreateThread(function()
 
     while true do
         Citizen.Wait(0)
-        if (IsControlJustReleased(0,160)) and IsInputDisabled(0) then
+        if (IsControlJustReleased(0,170)) and IsInputDisabled(0) then
             ScoreboardToggle()
         end
 

@@ -26,14 +26,14 @@
 							<th><div>ID</div></th>
 							<th><div>Nick</div></th>
 							<th><div>Departament</div></th>
-							<th><div>Ranga</div></th>
+							<th><div>-</div></th>
 						</tr>
 					</thead>
 					<tbody class="scrollContent">
 						<tr v-for="value in playerList">
 							<td data-label="ID">{{ value.id }}</td>
 							<td data-label="Nick">{{ value.name }}</td>
-							<td data-label="Frakcja">-</td>
+							<td data-label="Frakcja">{{ value.departmentName }}</td>
 							<td data-label="Departament">-</td>
 						</tr>
 					</tbody>

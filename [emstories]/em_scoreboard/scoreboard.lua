@@ -1,9 +1,19 @@
 local connectedPlayers = {}
 
+local departmentNames = {
+    [1]="LSFD",
+    [2]="LSMC",
+    [3]="SSMC",
+    [4]="PBMC",
+    [5]="LSPD",
+    [6]="BCPD",
+    [7]="SAHP",
+}
 function AddPlayerToScoreboard(player,update)
     connectedPlayers[tostring(player.playerId)] = {}
     connectedPlayers[tostring(player.playerId)].id = player.playerId
     connectedPlayers[tostring(player.playerId)].name = player.name
+    connectedPlayers[tostring(player.playerId)].departmentName = departmentNames[player.departmentID]
     if (update) then
         TriggerClientEvent('em_scoreboard:updateConnectedPlayers', -1, connectedPlayers)
     end
