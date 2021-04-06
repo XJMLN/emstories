@@ -18,6 +18,7 @@ local departments = {
 }
 
 DecorRegister("__PLAYER_MONEY_",3)
+
 DecorRegister("isVIP",2)
 DecorRegister("adminLevel",3)
 AddEventHandler("em:showHUD",function(faction)
@@ -26,8 +27,6 @@ AddEventHandler("em:showHUD",function(faction)
     if faction == 4 then
         showAllData = false
     end
-    print(faction)
-    print(showAllData)
     SendNUIMessage({type="drawHUD",data={showAllData=showAllData}})
     hudShowed = true
 end)
@@ -78,6 +77,7 @@ AddEventHandler("em_core_client:playerXPChange",function(data)
     SendNUIMessage({type="updateXP",data={xp=data}})
 end)
 AddEventHandler("em_core_client:playerFactionChange",function(data)
+
     pRank = data.rankName
     pDepartment = departments[data.factionID][data.departmentID]
     SendNUIMessage({type="updateFaction",data={rank=pRank,department=pDepartment,xp=data.xp}})
