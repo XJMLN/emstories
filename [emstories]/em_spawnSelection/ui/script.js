@@ -6,21 +6,19 @@ const spawner = new Vue({
         showFaction:false,
         showDepartment:false,
         faction:'',
-        playerData:false,
         newplayer:false,
         factionName: ' ',
     },
     methods: {
         
         OpenSpawnerMenu(data){
-           this.playerData = data;
            this.showSpawner = true;
            var audio = document.getElementById("audio");
            audio.volume = 0.1;
            audio.play();
            this.showFaction = true;
            this.showDepartment = false;
-           this.newplayer = data.newplayer;
+           this.newplayer = data
         },
         changeText(name){
             this.factionName = name;
