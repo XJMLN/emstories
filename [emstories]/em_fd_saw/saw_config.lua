@@ -1,0 +1,1 @@
+CHAINSAW_MODEL = "prop_tool_consaw"
