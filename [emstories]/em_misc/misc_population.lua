@@ -11,3 +11,14 @@ Citizen.CreateThread(function()
 	Citizen.Wait(0)
 	end
 end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(10)
+        local ply = GetPlayerPed(-1)
+        if GetSelectedPedWeapon(ply) == GetHashKey("WEAPON_FIREEXTINGUISHER") then
+            SetPedInfiniteAmmo(ply, true, GetHashKey("WEAPON_FIREEXTINGUISHER"))
+			GiveDelayedWeaponToPed(ply,GetHashKey("WEAPON_FIREEXTINGUISHER"),0,false)
+        end
+    end
+end)
