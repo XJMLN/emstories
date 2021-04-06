@@ -23,3 +23,10 @@ RegisterCommand("do",function(source,args,rawCommand)
     local msg = rawCommand:sub(4)
     TriggerClientEvent("sendRangedMessage",-1,source,pName,msg,20,3)
 end,false)
+
+RegisterNetEvent("chat:sendScriptMessage")
+AddEventHandler("chat:sendScriptMessage",function(message,type)
+    local pName = GetPlayerName(source)
+
+    TriggerClientEvent("sendRangedMessage",-1,source,pName,message,20,type)
+end)
