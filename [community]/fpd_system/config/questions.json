@@ -1,0 +1,14 @@
+[{"questions": [
+            {
+                "question":"Dokąd zmierzasz?",
+                "id":1,
+                "answers":[
+                    {
+                        "angry":["chuj cie to"],
+                        "good":["swietnie kocham zycko"],
+                    }
+                ]
+            },
+        ],
+    },
+]
