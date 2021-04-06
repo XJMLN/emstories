@@ -3,9 +3,8 @@ games { 'gta5' }
 
 ui_page "ui/index.html"
 files {
-    "ui/cone.png",
-    "ui/barrier.png",
-    "ui/ammo.png",
+    "ui/items/item-1.png",
+    "ui/items/item-2.png",
 	"ui/index.html",
 	"ui/lib/axios.min.js",
 	"ui/lib/vue.min.js",
@@ -17,6 +16,4 @@ files {
 	"ui/style.css"
 }
 
-client_script 'veh_inv_c.lua'
-
-export 'vehicleInventory_deleteAllObjects'
+client_scripts {'vehInventory_config.lua','vehInventory_c.lua'}
