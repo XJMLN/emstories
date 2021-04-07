@@ -1,12 +1,21 @@
 local currentSaw = nil
 local vehicleWatch = nil
-
+local gameTimer = false
+isCutting = false
 local function getVehicleInDirection(coordFrom, coordTo)
 	local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, GetPlayerPed(-1), 0)
 	local _, _, _, _, vehicle = GetRaycastResult(rayHandle)
 	return vehicle
 end
 
+function createParticles()
+    RequestNamedPtfxAsset("des_fib_floor")
+    while (not HasNamedPtfxAssetLoaded("des_fib_floor")) do
+        Citizen.Wait(1)
+    end
+    UseParticleFxAsset("des_fib_floor")
+    StartNetworkedParticleFxLoopedOnEntity("ent_ray_fbi5a_ramp_metal_imp",currentSaw, -0.715, 0.005,0.0,0.0,25.0,25.0,0.75,false,false,false)
+end
 local function DrawHelp(text)
     SetTextComponentFormat("STRING")
     AddTextComponentString(text)
@@ -21,6 +30,18 @@ function saw_destroy()
     return true
 end
 
+function saw_cutDoors(vehicle,doorIndex)
+    isCutting = true
+    if (not gameTimer) then
+        gameTimer = GetGameTimer()
+    end
+    createParticles()
+    if (GetGameTimer() - gameTimer >= 3000) then
+        SetVehicleDoorBroken(vehicle,doorIndex,true)
+        gameTimer = false
+        isCutting = false
+    end
+end
 Citizen.CreateThread(function()
     while true do
         if (currentSaw) then
@@ -28,12 +49,27 @@ Citizen.CreateThread(function()
                 saw_destroy()
             end
             if (vehicleWatch and DoesEntityExist(vehicleWatch)) then
-                local vehPos = GetEntityCoords(vehicleWatch)
+                local MainVehPos = GetEntityCoords(vehicleWatch)
                 local plrPos = GetEntityCoords(GetPlayerPed(-1))
-                local distance = #(plrPos - vehPos)
+                local distance = #(plrPos - MainVehPos)
                 if (distance >=100) then
                     saw_destroy()
                 end
+                local plrOffset = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1),0.0,1.0,0.0)
+                local vehicle = getVehicleInDirection(plrPos, plrOffset)
+                if (DoesEntityExist(vehicle) and DecorGetInt(vehicle,"__MISSION_SAW_") == 1) then
+                    local vehPos = GetWorldPositionOfEntityBone(vehicle,GetEntityBoneIndexByName(vehicle,"door_dside_f"))
+                    local distanceToBone = GetDistanceBetweenCoords(vehPos, plrPos, 1)
+                    if (distanceToBone <= 3.0 and IsVehicleDoorDamaged(vehicle,0)~=1) then
+                        DrawHelp("Przytrzymaj ~INPUT_PICKUP~ aby wyciąć drzwi.")
+                        if (IsControlPressed(0,38)) then
+                            saw_cutDoors(vehicle,0)
+                        end
+                        
+                    end
+                   
+                end
+
             end
         end
         Citizen.Wait(10)
@@ -63,3 +99,4 @@ function saw_pickup(vehicle)
 end
 
 exports("onPlayerPickedUpSaw",saw_pickup)
+exports("saw_destroy",saw_destroy)

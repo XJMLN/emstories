@@ -1,5 +1,6 @@
 local isVehicleInventoryOpen = false
 local currentVehicleInventory = nil
+local hasSaw = false
 local function getVehicleInDirection(coordFrom, coordTo)
 	local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, GetPlayerPed(-1), 0)
 	local _, _, _, _, vehicle = GetRaycastResult(rayHandle)
@@ -53,6 +54,13 @@ function carInventory_useItem(response)
         return
     end
     if (itemID == 1) then
+        if (hasSaw) then
+            TriggerServerEvent("chat:sendScriptMessage","Otwiera boczną roletę, po czym wkłada piłę i zasuwa roletę.",2)
+            exports.em_fd_saw:saw_destroy()
+            hasSaw = false
+            return
+        end
+        hasSaw = true
         TriggerServerEvent("chat:sendScriptMessage","Otwiera boczną roletę, po czym wyjmuje piłę.",2)
         exports.em_fd_saw:onPlayerPickedUpSaw(currentVehicleInventory)
     end
