@@ -12,7 +12,8 @@ const HUD = new Vue({
         department:"",
         rank:"",
         xp:0,
-        showAllData:true
+        showAllData:true,
+        isTalking:false,
     },
     methods: {
         
@@ -20,7 +21,9 @@ const HUD = new Vue({
             this.showHUD = true
             this.showAllData = data.showAllData
         },
-
+        updateMicrophone(state) {
+            this.isTalking = state
+        },
         updateStreet(data) {
             if (data.street){
                 this.street=data.street;
@@ -75,6 +78,9 @@ document.onreadystatechange = () => {
             }
             if (event.data.type == "updateXP") {
                 HUD.updateXP(event.data.data);
+            }
+            if (event.data.type == "updateTalk") {
+                HUD.updateMicrophone(event.data.data);
             }
         });
     }

@@ -41,6 +41,11 @@ Citizen.CreateThread(function()
 		local current_zone = GetLabelText(GetNameOfZone(pos.x, pos.y, pos.z))
         local IsInVehicle = IsPedSittingInAnyVehicle(ped)
         if (hudShowed) then
+            if (NetworkIsPlayerTalking(PlayerId())) then
+                SendNUIMessage{type="updateTalk",data=true}
+            else
+                SendNUIMessage{type="updateTalk",data=false}
+            end
             if GetStreetNameFromHashKey(var1) and GetNameOfZone(pos.x, pos.y, pos.z) then
                 if GetStreetNameFromHashKey(var1) then
                     if GetStreetNameFromHashKey(var2) == "" then

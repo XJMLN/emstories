@@ -22,6 +22,9 @@
   <body>
     <div v-show="showHUD" id="hud">
 		<div class="navbar" v-if="showAllData">
+
+      <h5 v-if="isTalking"><i class="microphone icon white" style="color: #4fff8d;"></i></h5>
+      <h5 v-if="!isTalking"><i class="microphone icon white"></i></h5>
 			<h5><i class="building outline icon white"></i> {{ department }}</h5>
 			<h5>{{ rank }}</h5>
       <h5>  </h5>
@@ -39,6 +42,8 @@
 		</div>
     <div class="navbar" v-if="!showAllData">
       <center>
+      <h5 v-if="isTalking"><i class="microphone icon white" style="color: #4fff8d;"></i></h5>
+      <h5 v-if="!isTalking"><i class="microphone icon white"></i></h5>
       <h5><a style="color:#4fff8d;padding:0;">$</a>{{ money }}</h5>
       <h5 v-if="vehicle"><i class="icon white tachometer alternate"></i> {{ speed }} km/h</h5>
       <h5 v-if="vehicle && fuel>50"><a style="color:#4fff8d;padding:0;"><i style="color:white;" class="fas fa-gas-pump"></i> {{ fuel }}</a> l</h5>
