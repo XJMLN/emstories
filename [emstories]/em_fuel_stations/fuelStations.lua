@@ -36,6 +36,7 @@ RegisterNetEvent("em_fuelStations:verifyMoney")
 AddEventHandler("em_fuelStations:verifyMoney",stations_verifyPayment)
 RegisterNetEvent("em_fuelStations:getPriceForStation")
 AddEventHandler("em_fuelStations:getPriceForStation",stations_getPrice)
+AddEventHandler("em_core:playerLoaded",stations_getPetrolStations)
 AddEventHandler("onResourceStart",function(resname)
     if (GetCurrentResourceName() == resname) then
         stations_getPetrolStations(false)
