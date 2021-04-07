@@ -15,6 +15,7 @@ local function dispatch_getRandomPlayer(factionID,dispatchPlayers)
     return dispatchPlayers[factionID][n]
 end
 function dispatch_displayForFaction(factionID,missionData)
+    print('halo')
     local allPlayers = exports.em_core:PlayersGetAllPlayers()
     local dispatchPlayers = {[1]={},[2]={},[3]={}}
     for i,v in pairs(allPlayers) do
@@ -40,7 +41,11 @@ function dispatch_accepted(missionData)
     local departmentID = player.departmentID
     local callsign = player.callsign
     if (systemData.type == 'fire') then
-        exports.em_fd_fires:fireSystem_createFire(systemData.id,source)
+        exports.em_fd_callouts:fireSystem_createFire(systemData.id,source)
+    end
+    if (systemData.type == 'vehicle') then
+        print('halo')
+        exports.em_fd_callouts:accidentSystem_create(missionData, source)
     end
     exports.em_discord:onDispatchAccept(FactionID,departmentID,callsign,missionData)
 end

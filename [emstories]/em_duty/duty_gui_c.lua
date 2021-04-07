@@ -38,10 +38,9 @@ Citizen.CreateThread(function()
             end},MENUS.skins)
             RageUI.Button("Garaż","Wybierz pojazd",{},true,{
                 onSelected = function()
-                    MENUS.garage.Controls.Back.Enabled = true
                     setGarageCam()
                     menusVariables.error = false
-            end},MENUS.garage)
+            end})
             RageUI.Button("Wejdź na służbę","Rozpocznij służbę!",{RightBadge = RageUI.BadgeStyle.Tick,Color = {BackgroundColor={38,85,150,160},HighLightColor={102,155,228,160}}},true,{
             onSelected = function()
                 if menusVariables.skinSelected and menusVariables.vehicleSelected then

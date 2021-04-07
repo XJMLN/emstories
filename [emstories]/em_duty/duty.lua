@@ -60,7 +60,7 @@ function faction_startPlayerDuty(factionID, departmentID)
     local callsign = player.callsign
     local playerName = player.name
     local departmentName = departmentNames[departmentID]
-    player.factionDuty = true
+    exports.em_core:setPlayerDuty(source,true)
     exports.em_discord:onDutyMessage(playerName, callsign, departmentName,departmentID)
 end
 RegisterNetEvent("em_duty:getPlayerFaction")
