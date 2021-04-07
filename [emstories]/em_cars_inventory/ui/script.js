@@ -29,7 +29,6 @@ const creator = new Vue({
             this.wheel.spreaderOutTitle = icon.cross;
             var images = [];
             itemData.forEach(function(item, index) {
-                console.log(item)
                 images.push("imgsrc:items/item-"+item+".png");
             })
             this.wheel.createWheel(images);

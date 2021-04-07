@@ -3,8 +3,7 @@ games { 'gta5' }
 
 ui_page "ui/index.html"
 files {
-    "ui/items/item-1.png",
-    "ui/items/item-2.png",
+    "ui/items/*",
 	"ui/index.html",
 	"ui/lib/axios.min.js",
 	"ui/lib/vue.min.js",
