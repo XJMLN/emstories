@@ -95,6 +95,17 @@ Players.setPlayerFaction = function(factionID, departmentID,player)
     end)
 end
 
+Players.setDuty = function(player, state)
+    local playerId = source
+    if (player) then
+        playerId = player
+    end
+
+    local playerData = Players.all[tostring(playerId)]
+    playerData.factionDuty = state
+    return true
+end
+
 Players.givePlayerXP = function(xp, player)
     local playerId = source
     if (player) then
@@ -119,5 +130,6 @@ Players.givePlayerXP = function(xp, player)
 end
 
 exports("givePlayerXP",Players.givePlayerXP)
+exports("setPlayerDuty",Players.setDuty)
 RegisterNetEvent("em_core:setPlayerFaction")
 AddEventHandler("em_core:setPlayerFaction",Players.setPlayerFaction)

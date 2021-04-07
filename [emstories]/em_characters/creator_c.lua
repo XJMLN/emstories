@@ -6,7 +6,7 @@ local Camera = {
 }
 local Sex = 0
 local departments = {
-    [1]={
+    [3]={
         [1]=1
     },
     [2]={
@@ -14,7 +14,7 @@ local departments = {
         [2]=3,
         [3]=4,
     },
-    [3]={
+    [1]={
         [1]=5,
         [2]=6,
         [3]=7,

@@ -34,7 +34,7 @@ AddEventHandler('em_shop_skins:save', function(skin)
 		['@skin'] = json.encode(skin),
 		['@identifier'] = identifier
 	}, function(result)
-		exports("PlayersUpdateSkin",source,skin)
+		exports.em_core:PlayersUpdateSkin(source,skin)
 	end)
 end)
 
