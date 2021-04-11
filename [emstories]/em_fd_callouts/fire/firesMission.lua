@@ -38,7 +38,7 @@ function system_createFire(ID,player)
 	TriggerClientEvent("fireSystem_createRoute",player,coords,FireID)
 end
 
---[[
+
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(5000)
@@ -65,13 +65,8 @@ Citizen.CreateThread(function()
 		end
 		Citizen.Wait(300000)
 	end
-end)]]--
+end)
 exports("fireSystem_createFire",system_createFire)
 
 RegisterNetEvent("fireMission:endMission")
 AddEventHandler("fireMission:endMission",fireSystem_endMission)
-
-RegisterCommand("callouts",function(player)
-	TriggerClientEvent("fireSystem_initCallout",player,FIRE_MISSIONS[9])
-
-end)

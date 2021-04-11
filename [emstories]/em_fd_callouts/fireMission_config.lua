@@ -10,5 +10,5 @@ FIRE_MISSIONS = {
 
 
     -- vehicle callouts
-    {title="Slup energetyczny",location=vector3(496.95,-1769.79,27.96),code=3, systemData={type='vehicle',id=9}, vehicleData={frontDamage=true,location=vector3(496.95,-1769.79,27.96),heading=316.15}},
+    {title="Wypadek: Uderzenie w słup energetyczny",location=vector3(496.95,-1769.79,27.96),code=3, systemData={type='vehicle',id=9}, vehicleData={frontDamage=true,location=vector3(496.95,-1769.79,27.96),heading=316.15}},
 }
