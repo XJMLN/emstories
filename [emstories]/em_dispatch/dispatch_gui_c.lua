@@ -12,6 +12,7 @@ function dispatch_cancelMission()
 end
 function dispatch_gui_show(missionData)
     if (dispatchShowing) then return end
+    print(missionData)
     dispatchShowing = true
     dispatchAccepted = false
     dispatchMission = missionData
