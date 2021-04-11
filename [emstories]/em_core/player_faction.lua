@@ -106,6 +106,20 @@ Players.setDuty = function(player, state)
     return true
 end
 
+Players.setRankName = function(player)
+    local playerData = Players.all[tostring(player)]
+    MySQL.Async.fetchAll("SELECT name FROM em_departments_ranks WHERE rank_id=@rankID AND department_id=@departmentID",{
+        ['@rankID']=playerData.rankID,
+        ['@departmentID']=playerData.departmentID
+    },function(result)
+        local row = result[1]
+        if (row and row.name) then
+            playerData.rankName = row.name
+            TriggerClientEvent("em_core_client:playerFactionChange",player,playerData)
+        end
+    end)
+    return true
+end
 Players.givePlayerXP = function(xp, player)
     local playerId = source
     if (player) then
@@ -116,8 +130,20 @@ Players.givePlayerXP = function(xp, player)
     local departmentID = playerData.departmentID
     local newvalue = playerData.xp + xp
     playerData.xp = newvalue
-
-    MySQL.Async.execute("UPDATE em_users_departments SET xp=@xp WHERE user_id=@UID AND faction_id=@factionID AND department_id=@departmentID",{
+    local queryStr = "UPDATE em_users_departments SET xp=@xp WHERE user_id=@UID AND faction_id=@factionID AND department_id=@departmentID"
+    if (playerData.xp ==2000) then
+        playerData.xp = 0
+        playerData.rankID = playerData.rankID +1
+        queryStr = "UPDATE em_users_departments SET xp=@xp, rank_id=rank_id+1 WHERE user_id=@UID AND faction_id=@factionID AND department_id=@departmentID"
+        Players.setRankName(playerId)
+    end
+    if (playerData.xp>2000) then
+        playerData.xp = playerData.xp - 2000
+        queryStr = "UPDATE em_users_departments SET xp=@xp, rank_id=rank_id+1 WHERE user_id=@UID AND faction_id=@factionID AND department_id=@departmentID"
+        playerData.rankID = playerData.rankID +1
+        Players.setRankName(playerId)
+    end
+    MySQL.Async.execute(queryStr,{
         ['@xp']=playerData.xp,
         ['@UID']=playerData.UID,
         ['@factionID']=factionID,
