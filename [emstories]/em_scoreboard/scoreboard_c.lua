@@ -12,18 +12,8 @@ function ScoreboardToggle()
     SendNUIMessage({type='toggle'})
 end
 
-Citizen.CreateThread(function()
-
-    while true do
-        Citizen.Wait(0)
-        if (IsControlJustReleased(0,170)) and IsInputDisabled(0) then
-            ScoreboardToggle()
-        end
-
-    end
-end)
-
-
+RegisterCommand("toggleScoreboard",ScoreboardToggle)
+RegisterKeyMapping("toggleScoreboard","Pokaż scoreboard","keyboard","f3")
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(2000)
