@@ -1,0 +1,1 @@
+BAG_MODEL = "prop_cs_shopping_bag"
