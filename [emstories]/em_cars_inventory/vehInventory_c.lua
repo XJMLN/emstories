@@ -1,6 +1,7 @@
 local isVehicleInventoryOpen = false
 local currentVehicleInventory = nil
 local hasSaw = false
+local hasMedKit = false
 local attachedType = nil
 local attachedObjects = {}
 local placedObjects = {}
@@ -46,6 +47,7 @@ end
 
 local function carInventory_hideGUI()
     isVehicleInventoryOpen = false
+    SetVehicleDoorShut(currentVehicleInventory,5,false)
     currentVehicleInventory = nil
     SetNuiFocus(false)
     SendNUIMessage({type="closeInventory"})
@@ -77,6 +79,7 @@ function carInventory_useItem(response,cb)
     end
     if (itemID == 3) then
         if (hasSaw) then return end
+        if (attachedType) then return end
         attachedObjects[PlayerPedId()] = CreateObject(GetHashKey("prop_mp_cone_01"), 0,0,0,false,true,true)
         SetEntityLocallyInvisible(attachedObjects[PlayerPedId()],true)
         AttachEntityToEntity(attachedObjects[PlayerPedId()],PlayerPedId(),GetPedBoneIndex(GetPlayerPed(-1), 0),0,0.9,-0.9,0,0,0,true, true, false, true, 1, true)
@@ -90,6 +93,14 @@ function carInventory_useItem(response,cb)
         SetEntityAlpha(attachedObjects[PlayerPedId()],151,false)
         AttachEntityToEntity(attachedObjects[PlayerPedId()],PlayerPedId(),GetPedBoneIndex(GetPlayerPed(-1), 0),0,0.9,-0.9,0,0,0,true, true, false, true, 1, true)
         attachedType = "barrier"
+    end
+    if (itemID == 5) then
+        if (hasMedKit) then
+            hasMedKit = false
+            return
+        end
+        hasMedKit = true
+        exports.em_mc_bag:onPlayerPickedUpBag(currentVehicleInventory)
     end
     carInventory_hideGUI()
     cb("ok")
@@ -158,7 +169,7 @@ Citizen.CreateThread(function()
             local plrOffset = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1),0.0,1.0,0.0)
             local vehicle = getVehicleInDirection(plrCoords,plrOffset)
             if (DoesEntityExist(vehicle) and IsEntityAVehicle(vehicle)) then
-                local model = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+                local model = string.lower(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
                 if (CONFIG_VEHICLES[model]) then
                     local factionID, departmentID = GetDataFromVehicleModel(model)
                     local playerData = getPlayerElementData(PlayerPedId(-1))
@@ -166,7 +177,7 @@ Citizen.CreateThread(function()
                     for i,v in pairs(vehicleInventory) do
                         local vehPos = GetWorldPositionOfEntityBone(vehicle, GetEntityBoneIndexByName(vehicle,i))
                         local distanceToBone = GetDistanceBetweenCoords(vehPos, plrCoords, 1)
-                        if (distanceToBone <= 3.0) then
+                        if (distanceToBone <= v.dist) then
                             if (playerData.factionID == factionID and playerData.departmentID == departmentID) then
                                 DrawHelp(v.name)
                                 if (IsControlJustReleased(0,38)) then
