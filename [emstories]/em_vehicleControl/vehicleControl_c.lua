@@ -1,53 +1,50 @@
 local menuOpened = false
 
-Citizen.CreateThread(function()
-    while true do
-        local player = GetPlayerPed(-1)
-        local IsInVehicle = IsPedSittingInAnyVehicle(player)
-        if (IsInVehicle) then
-            local vehicle = GetVehiclePedIsIn(player,false)
-            local driver = GetPedInVehicleSeat(vehicle,-1)
-            if (driver == player) then
-                local engineState = GetIsVehicleEngineRunning(vehicle)
-                local driverWindow, passengerWindow = IsVehicleWindowIntact(vehicle,1), IsVehicleWindowIntact(vehicle,0)
-                local driverWindowState, passengerWindowState = 0, 0
-                local trunk = GetVehicleDoorAngleRatio(vehicle,5)
-                local bonnet = GetVehicleDoorAngleRatio(vehicle,4)
-                local dome,domeState = IsVehicleInteriorLightOn(vehicle),0
-                local bonnetStatus = 0
-                local trunkStatus = 0
-                if (dome) then
-                    domeState = 1
-                end
-                if (bonnet ~=0) then
-                    bonnetStatus = 1
-                end
-                if (trunk~=0) then
-                    trunkStatus = 1
-                end
-                if (driverWindow == false) then
-                    driverWindowState = 1
-                else
-                    driverWindowState = 0
-                end
-                if (passengerWindow == false) then
-                    passengerWindowState = 1
-                else
-                    passengerWindowState = 0
-                end
+function vehControl_show()
+    local player = GetPlayerPed(-1)
+    local IsInVehicle = IsPedSittingInAnyVehicle(player)
+    if (IsInVehicle) then
+        local vehicle = GetVehiclePedIsIn(player,false)
+        local driver = GetPedInVehicleSeat(vehicle,-1)
+        if (driver == player) then
+            local engineState = GetIsVehicleEngineRunning(vehicle)
+            local driverWindow, passengerWindow = IsVehicleWindowIntact(vehicle,1), IsVehicleWindowIntact(vehicle,0)
+            local driverWindowState, passengerWindowState = 0, 0
+            local trunk = GetVehicleDoorAngleRatio(vehicle,5)
+            local bonnet = GetVehicleDoorAngleRatio(vehicle,4)
+            local dome,domeState = IsVehicleInteriorLightOn(vehicle),0
+            local bonnetStatus = 0
+            local trunkStatus = 0
+            if (dome) then
+                domeState = 1
+            end
+            if (bonnet ~=0) then
+                bonnetStatus = 1
+            end
+            if (trunk~=0) then
+                trunkStatus = 1
+            end
+            if (driverWindow == false) then
+                driverWindowState = 1
+            else
+                driverWindowState = 0
+            end
+            if (passengerWindow == false) then
+                passengerWindowState = 1
+            else
+                passengerWindowState = 0
+            end
 
-                if (not engineState) then
-                    engineState = 0
-                end
-                if (IsControlJustPressed(0,21)) then
-                    SetNuiFocus(true,true)
-                    SendNUIMessage({type="renderVehicleControl",data={dome=domeState,engine=engineState,driverWind=driverWindowState,passengerWind=passengerWindowState,trunk=trunkStatus,bonnet=bonnetStatus}})
-                end
+            if (not engineState) then
+                engineState = 0
+            end
+            if (IsControlJustPressed(0,21)) then
+                SetNuiFocus(true,true)
+                SendNUIMessage({type="renderVehicleControl",data={dome=domeState,engine=engineState,driverWind=driverWindowState,passengerWind=passengerWindowState,trunk=trunkStatus,bonnet=bonnetStatus}})
             end
         end
-        Citizen.Wait(0)
     end
-end)
+end
 
 RegisterNUICallback("none",function(data,callback)
     SendNUIMessage({type="destroyInstance"})
@@ -108,3 +105,7 @@ RegisterNUICallback("action",function(data,callback)
         end
     end
 end)
+
+
+RegisterCommand("toggleVehControl",vehControl_show)
+RegisterKeyMapping("toggleVehControl","Pojazd: Panel Interakcji","keyboard","lshift")
