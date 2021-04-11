@@ -1,5 +1,14 @@
 fuelStations = {}
 
+function stations_changePrice()
+    for i,v in ipairs(fuelStations) do
+        v.price = math.random(1,3)
+        MySQL.Async.execute("UPDATE em_fuel_stations SET station_price=@price WHERE station_active=1 AND station_id=@ID",{['@price']=v.price,['@ID']=v.station_id},function(ret) end)
+    end
+    print("[FUEL SYSTEM] Nastąpiła zmiana cen na stacjach paliw!")
+    SetTimeout(21600000,stations_changePrice)
+end
+
 function stations_getPetrolStations(player)
     local n = 0
     MySQL.Async.fetchAll("SELECT station_id,station_price,station_pumps FROM em_fuel_stations WHERE station_active=1",{},function(stations)
@@ -40,5 +49,8 @@ AddEventHandler("em_core:playerLoaded",stations_getPetrolStations)
 AddEventHandler("onResourceStart",function(resname)
     if (GetCurrentResourceName() == resname) then
         stations_getPetrolStations(false)
+        Citizen.Wait(5000)
+        stations_changePrice()
+        SetTimeout(21600000,stations_changePrice) -- co 3h zmiana cen
     end
 end)

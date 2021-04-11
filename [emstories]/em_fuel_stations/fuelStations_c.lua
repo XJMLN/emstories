@@ -113,6 +113,9 @@ function stations_showGUI(price,plrVal)
     SetNuiFocusKeepInput(true)
     plrMoney = plrVal
     isUIOpened = true
+    if (GetVehicleClass(vehicle) == 18) then
+        price = 0
+    end
     SendNUIMessage({type="open_fuelMenu",data={fuel=math.floor(GetFuel(vehicle)),price=price,money=plrVal}})
 end
 
