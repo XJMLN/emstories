@@ -6,14 +6,14 @@ local departments = {
         [1]="Los Santos Fire Department",
     },
     [2]={
-        [1]="Los Santos Medical Center",
-        [2]="Sandy Shores Medical Center",
-        [3]="Paleto Bay Medical Center",
+        [2]="Los Santos Medical Center",
+        [3]="Sandy Shores Medical Center",
+        [4]="Paleto Bay Medical Center",
     },
     [1]={
-        [1]="Los Santos Police Department",
-        [2]="Blaine County Police Department",
-        [3]="San Andreas Highway Patrol",
+        [5]="Los Santos Police Department",
+        [6]="Blaine County Police Department",
+        [7]="San Andreas Highway Patrol",
     }
 }
 
