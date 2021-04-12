@@ -1,6 +1,9 @@
 local currentBag = false
 local vehicleWatch = nil
 
+function isPlayerHoldingBag()
+    return currentBag
+end
 function bag_destroy()
     DeleteEntity(currentBag)
     currentBag = nil
@@ -37,3 +40,4 @@ function bag_pickup(vehicle)
     return true
 end
 exports("onPlayerPickedUpBag", bag_pickup)
+exports("isPlayerHoldingBag",isPlayerHoldingBag)
