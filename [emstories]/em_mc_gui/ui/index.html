@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <title>sGaming.pl - Zarządzanie kontem</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+    />
+    <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"
+  ></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script type="text/javascript" src="lib/raphael.min.js"></script>
+    <script type="text/javascript" src="lib/wheelnav.min.js"></script>
+    <script src="lib/axios.min.js"></script>
+    <style>
+      body {
+	background:unset !important;
+}
+       @font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 100;
+    src: url("fonts/Roboto-Light.woff2") format('woff2');
+    unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+        #interaction > svg {
+            width: 100%;
+            height: 100%;
+        }
+        #interaction {
+            width: 400px;
+            height: 400px;
+            margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+        }
+        #creator {
+            margin-top: 18%;
+            flex-direction: column;
+        }
+        #desc {
+          position: absolute;
+          top: 70%;
+          left: 50%;
+          -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+          font-family: 'Roboto', sans-serif;
+          color:white;
+          font-weight: 100;
+    font-style: normal;
+    font-size:40px;
+    color: white;
+    text-shadow: 1px 1px 1px #000;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="emsInteraction">
+      <div v-if="showPedData" style="position:absolute;bottom: 25%;margin-left:10px;">
+        <div class="ui card">
+          <div class="content">
+            <div class="header" v-if="pedData.sex == 4">Informacje o pacjencie</div>
+            <div class="header" v-else>Informacje o pacjentce</div>
+            <div class="meta"></div>
+            <div class="description">
+              <p v-if="pedData.sex == 4"><i class="venus mars icon"></i> Mężczyzna</p>
+              <p v-else><i class="venus mars icon"></i> Kobieta</p>
+              <p v-if="pedData.temp<37"><i class="thermometer icon"></i> {{ pedData.temp }}</p>
+              <p v-if="pedData.temp>=37 && pedData.temp<=38" style="color: orange;"><i class="thermometer icon"></i> {{ pedData.temp}} </p>
+              <p v-if="pedData.temp>38" style="color: red;"><i class="thermometer icon"></i> {{ pedData.temp }}</p>
+              <p v-if="!pedData.temp"><i class="thermometer icon"></i> Brak informacji</p>
+              <p v-if="pedData.puls"><i class="heartbeat icon"></i> {{ pedData.puls }}</p>
+              <p v-if="!pedData.puls"><i class="heartbeat icon"></i> Brak informacji</p>
+              <p v-if="pedData.diagnose"><i class="stethoscope icon"></i> {{ pedData.diagnose }}</p>
+              <p v-if="!pedData.diagnose"><i class="stethoscope icon"></i> Brak informacji</p>
+              <hr>
+              <p><i class="info icon"></i> Możliwa diagnoza</p>
+              <p v-if="!pedData.taskList">Zbyt mało informacji aby określić diagnozę.</p>
+              <p v-if="pedData.taskList">{{ pedData.taskList }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div id="interaction" data-wheelnav></div>
+        <h5 id="desc">{{ description }}</h5>
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
