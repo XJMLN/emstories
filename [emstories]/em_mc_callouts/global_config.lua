@@ -6,7 +6,7 @@
 ]]
 
 MISSIONS = {
-    {title="Upadek w stacji metra", location=vector3(-481.08,-687.36,20.03),code=3, systemData={type="ped",id=1},pedData={taskList="Podaj poszkodowanemu środki przeciwbólowe, ustabilizuj zranioną kończynę. Następnie przewieź osobę do szpitala.",tasksIDs={1,2,3},diagnose={"Zwichnięta lewa kostka","Zwichnięta prawa kostka","Złamana lewa noga", "Złamana prawa noga","Złamana lewa ręka","Złamana prawa ręka"}, pulseFrom=65, pulseTo=95,temperatureFrom=36.4, temperatureTo=40.3,location=vector3(-481.08,-687.36,20.03),heading=277.06}},
+    {title="Upadek w stacji metra", location=vector3(-481.08,-687.36,20.03),code=3, systemData={type="ped",id=1},pedData={taskList="Podaj poszkodowanemu środki przeciwbólowe, ustabilizuj zranioną kończynę. Następnie przewieź osobę do szpitala.",tasksIDs={[1]=true,[2]=true,[3]=true},diagnose={"Zwichnięta lewa kostka","Zwichnięta prawa kostka","Złamana lewa noga", "Złamana prawa noga","Złamana lewa ręka","Złamana prawa ręka"}, pulseFrom=65, pulseTo=95,temperatureFrom=36.4, temperatureTo=40.3,location=vector3(-481.08,-687.36,20.03),heading=277.06}},
 }
 
 function table.random(t)

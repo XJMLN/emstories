@@ -2,7 +2,7 @@ local calloutID = nil
 local missionElements = {}
 local player = nil
 local missionCoords = nil
-
+local taskWatchData = {}
 DecorRegister("__MISSION_MC_ITEMS_",3)
 DecorRegister("__MISSION_MC_PED_",3)
 DecorRegister("__MISSION_MC_PED_SEX_",3)
@@ -11,6 +11,11 @@ DecorRegister("__MISSION_MC_PED_PULSE_",3)
 
 local function randomFloat(lower, greater)
     return lower + math.random()  * (greater - lower);
+end
+local function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
 end
 local function round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
@@ -33,6 +38,23 @@ function mcPedCallouts_getPedDisease()
 end
 function mcPedCallouts_getTaskList()
     return missionElements[player].pedData.taskList
+end
+
+function mcPedCallouts_initTaskWatcher(tasks)
+    taskWatchData = {}
+    taskWatchData.completedTasks = {}
+    taskWatchData.tasks = tasks
+    taskWatchData.taskCounter = tablelength(tasks)
+    taskWatchData.completedTaskCounter = 0
+end
+
+function mcPedCallouts_taskWatcherComplete(taskID)
+    if (taskWatchData.tasks[taskID]) then
+        if (not taskWatchData.completedTasks[taskID]) then
+            taskWatchData.completedTasks[taskID] = true
+            taskWatchData.completedTaskCounter = taskWatchData.completedTaskCounter + 1
+        end
+    end
 end
 
 function mcPedCallouts_create(data)
@@ -69,9 +91,11 @@ function mcPedCallouts_create(data)
     missionElements[player].pedData = pedData
     DecorSetInt(NPC,"__MISSION_MC_PED_PULSE_",pulse)
     DecorSetFloat(NPC,"__MISSION_MC_PED_TEMP_",temp)
+    mcPedCallouts_initTaskWatcher(pedData.tasksIDs)
 end
 
 exports("GetPedSickType",mcPedCallouts_getPedDisease)
 exports("GetTaskList",mcPedCallouts_getTaskList)
+exports("TaskWatcher_completeID",mcPedCallouts_taskWatcherComplete)
 RegisterNetEvent("mcSystem_createPedEnvironment")
 AddEventHandler("mcSystem_createPedEnvironment",mcPedCallouts_create)
