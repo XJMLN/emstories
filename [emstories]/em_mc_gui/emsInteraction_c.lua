@@ -66,8 +66,13 @@ function emsInteraction_action(response, cb)
         SendNUIMessage({type="updatePedData",data=pedData})
     end
     if (actionID == 4) then
-        
+        exports.em_mc_callouts:taskWatcher_completeID(1)
+        --@todo some animations export
     end
+    if (actionID == 5) then
+        exports.em_mc_callouts:taskWatcher_completeID(2)
+    end
+    
     if (pedData.diagnose and pedData.puls and pedData.temp) then
         pedData.taskList = exports.em_mc_callouts:GetTaskList()
         SendNUIMessage({type="updatePedData",data=pedData})
