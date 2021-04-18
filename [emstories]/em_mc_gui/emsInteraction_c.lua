@@ -20,24 +20,31 @@ end
 local function getPlayerElementData(player)
     local FID = DecorGetInt(player,"__PLAYER_FACTION_")
     local DID = DecorGetInt(player,"__PLAYER_DEPARTMENT_")
-    return {factionID=FID,departmentID=DID}
+    return {factionID=2,departmentID=2}
 end
 local function isPlayerHoldingMedicBag()
     return exports.em_mc_bag:isPlayerHoldingBag()
 end
-
+local function isPlayerWithStretcher()
+    local state = exports.em_mc_stretcher:getStretcherState()
+    if (state == 0) then return true else return false end
+end
+function getStretcherState()
+    return exports.em_mc_stretcher:getStretcherState()
+end 
 function emsInteraction_gui()
     if (isInteractionWindowOpen) then
         isInteractionWindowOpen = false
-        SetNuiFocus(false)
         SendNUIMessage({type="closeInteraction"})
+        SetNuiFocus(false)
+        
         return
     end
     if (canOpenInteraction) then
         isInteractionWindowOpen = true
         SetNuiFocus(true, true)
         Citizen.Wait(100)
-        SendNUIMessage({type="openInteraction",data={hasBag=isPlayerHoldingMedicBag()}})
+        SendNUIMessage({type="openInteraction",data={hasBag=isPlayerHoldingMedicBag(),hasStretcher=isPlayerWithStretcher()}})
         pedData.sex = DecorGetInt(ped,"__MISSION_MC_PED_SEX_")
         SendNUIMessage({type="showPedInformation",data=pedData})
     else
@@ -46,8 +53,9 @@ function emsInteraction_gui()
 end
 
 function emsInteraction_action(response, cb)
-    if (not isInteractionWindowOpen) then return end
+    if (not isInteractionWindowOpen) then print('xD') return end
     local actionID = response.actionID 
+    print(actionID)
     if (actionID == -1) then
         emsInteraction_gui()
         cb("ok")
@@ -66,13 +74,20 @@ function emsInteraction_action(response, cb)
         SendNUIMessage({type="updatePedData",data=pedData})
     end
     if (actionID == 4) then
-        exports.em_mc_callouts:taskWatcher_completeID(1)
+        exports.em_mc_callouts:TaskWatcher_completeID(1)
         --@todo some animations export
     end
     if (actionID == 5) then
-        exports.em_mc_callouts:taskWatcher_completeID(2)
+        exports.em_mc_callouts:TaskWatcher_completeID(2)
     end
-    
+    if (actionID == 6) then
+        emsInteraction_gui()
+        cb('ok')
+        exports.em_mc_stretcher:putNPCOnStretcher(ped)
+        exports.em_mc_callouts:TaskWatcher_completeID(3)
+        
+
+    end
     if (pedData.diagnose and pedData.puls and pedData.temp) then
         pedData.taskList = exports.em_mc_callouts:GetTaskList()
         SendNUIMessage({type="updatePedData",data=pedData})
@@ -90,16 +105,19 @@ Citizen.CreateThread(function()
                     local pedData = DecorGetInt(ped,"__MISSION_MC_PED_")
                     if (pedData == 2) then
                         local hasPlayerBag = isPlayerHoldingMedicBag()
-                        if (not hasPlayerBag) then
-                            DrawHelp("Nie posiadasz torby medycznej aby rozpocząć interakcję.")
-                            canOpenInteraction = false
-                        else
-                            local pedCoords = GetEntityCoords(ped)
-                            if (#(plrCoords - pedCoords) <= 2.0) then
-                                DrawHelp("Interakcja z poszkodowanym - ~INPUT_PICKUP~")
-                                canOpenInteraction = true
-                            else
+                        local hasPlayerStretcher = isPlayerWithStretcher()
+                        if (getStretcherState() ~= 2) then
+                            if (not hasPlayerBag and not hasPlayerStretcher) then
+                                DrawHelp("Nie posiadasz torby medycznej aby rozpocząć interakcję.")
                                 canOpenInteraction = false
+                            else
+                                local pedCoords = GetEntityCoords(ped)
+                                if (#(plrCoords - pedCoords) <= 2.0) then
+                                    DrawHelp("Interakcja z poszkodowanym - ~INPUT_PICKUP~")
+                                    canOpenInteraction = true
+                                else
+                                    canOpenInteraction = false
+                                end
                             end
                         end
                     end

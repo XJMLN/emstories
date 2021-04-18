@@ -10,11 +10,14 @@ const emsInteraction = new Vue({
         wheel: false,
         showPedData: false,
         pedData: false,
+        stretcher: false,
         description: "",
     },
     methods: {
-        CreateInteraction(){
+        CreateInteraction(bag,stretcher){
             this.isOpened = true;
+            this.stretcher = stretcher;
+            this.bag = bag;
             this.wheel = new wheelnav('interaction',null);
             this.wheel.spreaderEnable = true;
             this.wheel.wheelRadius = 200;
@@ -29,6 +32,9 @@ const emsInteraction = new Vue({
             
             this.wheel.spreaderOutTitle = icon.cross;
             var images = ["imgsrc:actions/testy.png","imgsrc:actions/bag.png"];
+            if (this.stretcher) {
+                images.push("imgsrc:actions/nosze.png");
+            }
             this.wheel.createWheel(images);
             this.wheel.navItems[0].selected = false
             this.wheel.navItems[0].navSlice.mouseover(function(){
@@ -38,7 +44,11 @@ const emsInteraction = new Vue({
                 emsInteraction.description = ""
             })
             this.wheel.navItems[0].navSlice.mousedown(function(){
-                emsInteraction.showCategory(0)
+                console.log('test')
+                if (emsInteraction.bag) {
+                    
+                    emsInteraction.showCategory(0)
+                }
             })
             this.wheel.navItems[1].selected = false
             this.wheel.navItems[1].navSlice.mouseover(function(){
@@ -48,8 +58,23 @@ const emsInteraction = new Vue({
                 emsInteraction.description = ""
             })
             this.wheel.navItems[1].navSlice.mousedown(function(){
-                emsInteraction.showCategory(1)
+                if (emsInteraction.bag) {
+                    emsInteraction.showCategory(1)
+                }
             })
+            if (this.wheel.navItems[2]) {
+                this.wheel.navItems[2].selected = false
+                this.wheel.navItems[2].navSlice.mouseover(function(){
+                    emsInteraction.description = "Przenieś osobę na nosze"
+                })
+                this.wheel.navItems[2].navSlice.mouseout(function(){
+                    emsInteraction.description = ""
+                })
+                this.wheel.navItems[2].navSlice.mousedown(function(){
+                    axios.post(`https://em_mc_gui/Interaction`,{actionID:6}).then((response)=>{
+                    }).catch((error)=>{console.log(error)});
+                })
+            }
             this.wheel.refreshWheel();
             var wheelspreader = document.getElementById("wheelnav-interaction-spreader");
             var wheelspreadertitle = document.getElementById("wheelnav-interaction-spreadertitle");
@@ -76,7 +101,7 @@ const emsInteraction = new Vue({
             this.wheel.spreaderOutTitle = icon.cross;
             var images2 = false
             if (CID === 0) {
-                images2 = ["imgsrc:actions/temp.png","imgsrc:actions/cardio.png","imgsrc:actions/lookpng"]
+                images2 = ["imgsrc:actions/temp.png","imgsrc:actions/cardio.png","imgsrc:actions/look.png"]
             }
             if (CID == 1) {
                 images2 = ["imgsrc:actions/pills.png","imgsrc:actions/stability.png"]
@@ -153,10 +178,12 @@ const emsInteraction = new Vue({
                 this.pedData.temp = this.pedData.temp.toFixed(1);
             }
         },
-        destroyInteraction() {
+        destroyInteraction(all) {
             this.isOpened = false
             this.description = ""
             this.wheel.removeWheel();
+            this.pedData = false
+            this.showPedData = false
         },
 
     },
@@ -166,7 +193,7 @@ document.onreadystatechange = () => {
     if (document.readyState == "complete") {
         window.addEventListener("message", (event) => {
             if (event.data.type == "openInteraction") {
-                emsInteraction.CreateInteraction()
+                emsInteraction.CreateInteraction(event.data.data.hasBag,event.data.data.hasStretcher)
             }
             if (event.data.type == "showPedInformation"){
                 emsInteraction.showInformations(event.data.data)
@@ -175,7 +202,7 @@ document.onreadystatechange = () => {
                 emsInteraction.updateInformations(event.data.data)
             }
             if (event.data.type == "closeInteraction") {
-                emsInteraction.destroyInteraction()
+                emsInteraction.destroyInteraction(event.data.data)
             }
         });
     }
