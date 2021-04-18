@@ -12,6 +12,14 @@ function mcSystem_endMission(missionID,taskCounter)
     end
 end
 
+function mcSystem_cancel(missionID)
+	if (playersOnMission[missionID]) then
+        for i,v in ipairs(playersOnMission[missionID]) do
+            playersMission[2][v] = nil
+        end
+    end
+end
+
 function tablelength(T)
     local count = 0
     for _ in pairs(T) do count = count + 1 end
@@ -51,4 +59,6 @@ Citizen.CreateThread(function()
 	end
 end)
 RegisterNetEvent("mcMission:endMission")
+RegisterNetEvent("mcMission:cancelMission")
+AddEventHandler("mcMission:cancelMission",mcSystem_cancel)
 AddEventHandler("mcMission:endMission",mcSystem_endMission)

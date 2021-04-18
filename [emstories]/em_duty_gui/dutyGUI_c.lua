@@ -33,9 +33,19 @@ Citizen.CreateThread(function()
         if (isWindowOpen) then
             RageUI.IsVisible(MENUS.main, function()
                 RageUI.Button("Centrala","Wezwij wsparcie",{RightLabel = ">>>"},true,{},MENUS.dispatch)
+                RageUI.Button("Przerwij wezwanie","Przerwij wezwanie",{RightBadge= RageUI.BadgeStyle.Alert, Color ={BackgroundColor={212, 71, 53}, HighLightColor={235, 101, 84}}}, true, {
+                    onSelected = function()
+                        exports.em_fd_callouts:accident_fd_cancel()
+                        exports.em_fd_callouts:fireCallout_cancel()
+                        exports.em_mc_callouts:mcCallout_cancel()
+                        RageUI.Visible(MENUS['main'],false)
+                    end
+                })
                 RageUI.Button("Zakończ służbę","Zakończ służbę",{RightBadge= RageUI.BadgeStyle.Alert, Color ={BackgroundColor={212, 71, 53}, HighLightColor={235, 101, 84}}}, true, {
                     onSelected = function()
-                        print("end duty")
+                        exports.em_duty:playerEndDuty()
+                        TriggerServerEvent("em_duty_gui:endDuty")
+                        RageUI.Visible(MENUS['main'],false)
                     end
                 })
             end)

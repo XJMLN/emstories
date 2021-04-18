@@ -106,6 +106,22 @@ Players.setDuty = function(player, state)
     return true
 end
 
+Players.unsetDuty = function(player)
+    local playerId = source
+    if (player) then
+        playerId = player
+    end
+    local playerData = Players.all[tostring(playerId)]
+    --@todo save player data
+    playerData.factionDuty = nil
+    playerData.xp = nil
+    playerData.rankID = nil
+    playerData.rankName = nil
+    playerData.callsign = nil
+    playerData.factionID = nil
+    playerData.departmentID = nil
+    return true
+end
 Players.setRankName = function(player)
     local playerData = Players.all[tostring(player)]
     MySQL.Async.fetchAll("SELECT name FROM em_departments_ranks WHERE rank_id=@rankID AND department_id=@departmentID",{
@@ -157,5 +173,6 @@ end
 
 exports("givePlayerXP",Players.givePlayerXP)
 exports("setPlayerDuty",Players.setDuty)
+exports("unsetPlayerDuty",Players.unsetDuty)
 RegisterNetEvent("em_core:setPlayerFaction")
 AddEventHandler("em_core:setPlayerFaction",Players.setPlayerFaction)

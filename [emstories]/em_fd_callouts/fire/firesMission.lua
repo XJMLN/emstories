@@ -15,6 +15,16 @@ function fireSystem_endMission(FireID)
     end
 end
 
+function fireSystem_cancelCallout(FireID)
+    if (playersOnMission[FireID]) then
+		Fire:remove(FireID)
+		for i,v in ipairs(playersOnMission[FireID]) do
+			local factionID = 3
+			playersMission[factionID][v] = nil
+		end
+	end
+end
+
 function tablelength(T)
     local count = 0
     for _ in pairs(T) do count = count + 1 end
@@ -42,7 +52,7 @@ end
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(5000)
-		local randomFire = 9--table.random(FIRE_MISSIONS)
+		local randomFire = table.random(FIRE_MISSIONS)
 		if (randomFire) then
 			if (playersOnMission[FIRE_MISSIONS[randomFire].systemData.id]) then return end
 			local allPlayers = exports.em_core:PlayersGetAllPlayers()
@@ -59,7 +69,7 @@ Citizen.CreateThread(function()
         	local player = dispatch_getRandomPlayer(factionID,dispatchPlayers)
         	if (player) then
             	print(GetPlayerName(player).." dispatch")
-				TriggerClientEvent("fireSystem_initCallout",player,FIRE_MISSIONS[9])
+				TriggerClientEvent("fireSystem_initCallout",player,FIRE_MISSIONS[randomFire])
         	end
     	end
 		end
@@ -70,4 +80,6 @@ exports("fireSystem_createFire",system_createFire)
 
 
 RegisterNetEvent("fireMission:endMission")
+RegisterNetEvent("em_fire_callout:cancel")
+AddEventHandler("em_fire_callout:cancel",fireSystem_cancelCallout)
 AddEventHandler("fireMission:endMission",fireSystem_endMission)

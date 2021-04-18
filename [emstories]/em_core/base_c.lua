@@ -146,7 +146,7 @@ Citizen.CreateThread(function()
         local playerPed = PlayerPedId()
         if playerPed and playerPed ~= -1 then
             if IsEntityDead(playerPed) then
-                TriggerServerEvent("em_core:spawnPlayer",PlayerId(-1),_spawnNumber,_faction)
+                TriggerServerEvent("em_core:spawnPlayer",_spawnNumber,_faction)
             end
         end
     end

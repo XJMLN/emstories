@@ -70,6 +70,25 @@ function accidentSystem_end(ID)
     accidentData = nil
 
 end
+
+function accidentSystem_cancel()
+    if (missionElements[player] and missionElements[player].blip) then
+        ClearGpsMultiRoute()
+        DeleteEntity(missionElements[player].ped)
+        missionElements[player].ped = nil
+        DeleteEntity(missionElements[player].veh)
+        missionElements[player].veh = nil
+        RemoveBlip(missionElements[player].blip)
+        DeleteEntity(missionElements[player].blip)
+        missionElements[player].blip = nil
+        TriggerServerEvent("accidentSystem_cancelCallout",ID)
+        missionElements[player] = {}
+        player = nil
+        accidentID = nil
+        missionCoords = nil
+        accidentData = nil
+    end
+end
 function accidentSystem_createAccident()
     local coords = accidentData.location
     local vD = accidentData.vehicleData
@@ -141,6 +160,6 @@ function accidentSystem_create(data)
 
    
 end
-
+exports("accident_fd_cancel",accidentSystem_cancel)
 RegisterNetEvent("accidentSystem_create")
 AddEventHandler("accidentSystem_create",accidentSystem_create)

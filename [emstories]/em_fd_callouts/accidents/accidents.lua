@@ -18,7 +18,17 @@ function accident_end(steps, ID)
         end
     end
 end
+
+function accident_cancel(ID)
+    if (playersOnMission[ID]) then
+        for i,v in ipairs(playersOnMission[ID]) do
+            playersMission[factionID][v] = nil
+        end
+    end
+end
+
 exports("accidentSystem_create",accident_create)
---TriggerServerEvent("accidentSystem_endCallout",missionElements[player].completedSteps,ID)
 RegisterNetEvent("accidentSystem_endCallout")
+RegisterNetEvent("accidentSystem_cancelCallout")
+AddEventHandler("accidentSystem_cancelCallout",accident_cancel)
 AddEventHandler("accidentSystem_endCallout",accident_end)

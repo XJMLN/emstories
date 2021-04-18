@@ -50,6 +50,18 @@ function mcSystem_initDispatch(data)
     TriggerServerEvent("em_dispatch_init",2,data)
 end
 
+function mcSystem_cancel()
+    local player = source
+    if (missionElements[player]) then
+        ClearGpsMultiRoute()
+        RemoveBlip(missionElements[player].blip)
+        missionElements[player].blip = nil
+        missionElements[player] = nil
+        TriggerServerEvent("mcMission:cancelMission",missionID)
+        exports.em_mc_callouts:mc_pedCallout_cancel()
+    end
+end
+exports("mcCallout_cancel", mcSystem_cancel)
 RegisterNetEvent("mcSystem_initCallout")
 AddEventHandler("mcSystem_initCallout",mcSystem_initDispatch)
 RegisterNetEvent("mcSystem_createRoute")

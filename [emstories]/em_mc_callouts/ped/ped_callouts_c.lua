@@ -65,9 +65,6 @@ function mcPedCallouts_pedInAmbulance()
     missionElements[player].ped = nil
     TriggerEvent("mcSystem_destroyRoute")
     dropoffCoords = getClosestCoords(EMERGENCY_POINTS)
-    print(dropoffCoords.x)
-    print(dropoffCoords.y)
-    print(dropoffCoords.z)
     local blip = AddBlipForCoord(dropoffCoords[1],dropoffCoords[2],dropoffCoords[3])
     SetBlipSprite(blip,153)
     SetBlipDisplay(blip,4)
@@ -150,6 +147,22 @@ Citizen.CreateThread(function()
         Citizen.Wait(10)
     end
 end)
+function mcPedCallouts_cancel()
+    if (missionElements[player]) then
+        ClearGpsMultiRoute()
+        RemoveBlip(missionElements[player].blip)
+        DeleteEntity(missionElements[player].blip)
+        DeleteEntity(missionElements[player].ped)
+        missionElements[player].ped = nil
+        missionElements[player].blip = nil
+        dropoffState = nil
+        dropoffCoords = nil
+        missionCoords = nil
+        taskWatchData = {}
+        calloutID = nil
+    end
+end
+exports("mc_pedCallout_cancel",mcPedCallouts_cancel)
 exports("onPlayerPutPedInAmbulance",mcPedCallouts_pedInAmbulance)
 exports("GetPedSickType",mcPedCallouts_getPedDisease)
 exports("GetTaskList",mcPedCallouts_getTaskList)

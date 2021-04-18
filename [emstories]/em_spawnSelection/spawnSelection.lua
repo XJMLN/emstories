@@ -7,6 +7,7 @@ function spawnSelection_getData(source)
     end)
     
 end
+exports("spawnSelection_server_init",spawnSelection_getData)
 AddEventHandler("em_core:playerLoaded",spawnSelection_getData)
 
 RegisterCommand("wybor.spawnu",spawnSelection_getData)

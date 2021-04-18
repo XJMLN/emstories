@@ -3,6 +3,7 @@ local missionCoords = nil
 removedFirstFire = false
 local watcher = false
 local FireID = false
+local player = nil
 function tablelength(T)
     local count = 0
     for _ in pairs(T) do count = count + 1 end
@@ -29,7 +30,7 @@ end)
 function fSystem_createRoute(coords,fireID)
     removedFirstFire = false
     FireID = fireID
-    local player = source
+    player = source
     missionElements[player] = {}
     missionCoords = coords
     local blip = AddBlipForCoord(coords.x,coords.y,coords.z)
@@ -78,6 +79,19 @@ function fSystem_initDispatch(data)
     data.textLocation = text
     TriggerServerEvent("em_dispatch_init",3,data)
 end
+function fSystem_cancelFire()
+    if (missionElements[player]) then
+        ClearGpsMultiRoute()
+        RemoveBlip(missionElements[player].blip)
+        watcher = false
+        missionCoords = nil
+        missionElements[player].blip = nil
+        missionElements[player] = nil
+        TriggerServerEvent("em_fire_callout:cancel",FireID)
+    end
+end
+
+exports("fireCallout_cancel",fSystem_cancelFire)
 RegisterNetEvent("fireSystem_initCallout")
 AddEventHandler("fireSystem_initCallout",fSystem_initDispatch)
 RegisterNetEvent("fireSystem_createRoute")

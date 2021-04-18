@@ -327,6 +327,17 @@ function Visible()
     end
 end
 
-
+function duty_endDuty()
+    local playerPed = PlayerPedId()
+    if (vehicles[playerPed]) then
+        if (DoesEntityExist(vehicles[playerPed].vehicle)) then
+            SetEntityAsMissionEntity(vehicles[playerPed].vehicle,true,true)
+            DeleteVehicle(vehicles[playerPed].vehicle)
+            print('yo i have vehicle')
+        end
+        vehicles[playerPed] = nil
+    end
+end
+exports("playerEndDuty",duty_endDuty)
 RegisterNetEvent("em_duty_client:returnDepartmentData")
 AddEventHandler("em_duty_client:returnDepartmentData",duty_prepareMenu)
