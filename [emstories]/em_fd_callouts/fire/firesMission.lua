@@ -42,7 +42,7 @@ end
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(5000)
-		local randomFire = table.random(FIRE_MISSIONS)
+		local randomFire = 9--table.random(FIRE_MISSIONS)
 		if (randomFire) then
 			if (playersOnMission[FIRE_MISSIONS[randomFire].systemData.id]) then return end
 			local allPlayers = exports.em_core:PlayersGetAllPlayers()
@@ -59,7 +59,7 @@ Citizen.CreateThread(function()
         	local player = dispatch_getRandomPlayer(factionID,dispatchPlayers)
         	if (player) then
             	print(GetPlayerName(player).." dispatch")
-				TriggerClientEvent("fireSystem_initCallout",player,FIRE_MISSIONS[randomFire])
+				TriggerClientEvent("fireSystem_initCallout",player,FIRE_MISSIONS[9])
         	end
     	end
 		end
@@ -67,6 +67,7 @@ Citizen.CreateThread(function()
 	end
 end)
 exports("fireSystem_createFire",system_createFire)
+
 
 RegisterNetEvent("fireMission:endMission")
 AddEventHandler("fireMission:endMission",fireSystem_endMission)
