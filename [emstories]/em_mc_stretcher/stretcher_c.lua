@@ -10,10 +10,13 @@ function getStretcherState()
 end
 
 function stretcher_destroy()
+    DetachEntity(PlayerPedId(),true,true)
     DeleteEntity(objectStretcher)
     objectStretcher = nil
     stateStretcher = false
     pedStretcher = nil
+    Citizen.Wait(100)
+    ClearPedTasksImmediately(PlayerPedId())
     return true
 end
 
