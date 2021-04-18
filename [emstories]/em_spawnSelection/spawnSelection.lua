@@ -8,3 +8,5 @@ function spawnSelection_getData(source)
     
 end
 AddEventHandler("em_core:playerLoaded",spawnSelection_getData)
+
+RegisterCommand("wybor.spawnu",spawnSelection_getData)

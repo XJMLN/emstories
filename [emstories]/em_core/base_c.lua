@@ -77,6 +77,11 @@ function base_spawnPlayer(spawnNumber,faction,skin,playerData)
         _faction = faction
         firstspawn = true
     end
+    if (_spawnNumber ~= spawnNumber) then
+        _spawnNumber = spawnNumber
+        _faction = faction
+        firstspawn = true
+    end
     Citizen.CreateThread(function()
         
         DoScreenFadeOut(500)
