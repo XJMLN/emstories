@@ -57,8 +57,9 @@ function carInventory_useItem(response,cb)
     if (not isVehicleInventoryOpen) then cb("ok") return end
     local itemID = response.itemID
     if (itemID == -1) then
-        carInventory_hideGUI()
         cb("ok")
+        carInventory_hideGUI()
+        
         return
     end
     if (itemID == 1) then
@@ -66,6 +67,7 @@ function carInventory_useItem(response,cb)
             TriggerServerEvent("chat:sendScriptMessage","Otwiera boczną roletę, po czym wkłada piłę i zasuwa roletę.",2)
             exports.em_fd_saw:saw_destroy()
             hasSaw = false
+            cb("ok")
             return
         end
         hasSaw = true
@@ -78,16 +80,16 @@ function carInventory_useItem(response,cb)
         SetPedInfiniteAmmo(GetPlayerPed(-1),true,GetHashKey("WEAPON_FIREEXTINGUISHER"))
     end
     if (itemID == 3) then
-        if (hasSaw) then return end
-        if (attachedType) then return end
+        if (hasSaw) then cb("ok") return end
+        if (attachedType) then cb("ok") return end
         attachedObjects[PlayerPedId()] = CreateObject(GetHashKey("prop_mp_cone_01"), 0,0,0,false,true,true)
         SetEntityLocallyInvisible(attachedObjects[PlayerPedId()],true)
         AttachEntityToEntity(attachedObjects[PlayerPedId()],PlayerPedId(),GetPedBoneIndex(GetPlayerPed(-1), 0),0,0.9,-0.9,0,0,0,true, true, false, true, 1, true)
         attachedType = "cone"
     end
     if (itemID == 4) then
-        if (hasSaw) then return end
-        if (attachedType) then return end
+        if (hasSaw) then cb("ok") return end
+        if (attachedType) then cb("ok") return end
         attachedObjects[PlayerPedId()] = CreateObject(GetHashKey("prop_mp_barrier_02b"), 0, 0, 0, false, true, true)
         SetEntityLocallyInvisible(attachedObjects[PlayerPedId()],true)
         SetEntityAlpha(attachedObjects[PlayerPedId()],151,false)
@@ -97,10 +99,29 @@ function carInventory_useItem(response,cb)
     if (itemID == 5) then
         if (hasMedKit) then
             hasMedKit = false
+            cb("ok")
             return
         end
         hasMedKit = true
         exports.em_mc_bag:onPlayerPickedUpBag(currentVehicleInventory)
+    end
+    if (itemID == 6) then
+        SetVehicleDoorShut(currentVehicleInventory,2,false)
+        SetVehicleDoorShut(currentVehicleInventory,3,false)
+        local state = exports.em_mc_stretcher:getStretcherState()
+        if (state == 1) then
+            cb("ok")
+            carInventory_hideGUI()
+            print('t')
+            exports.em_mc_stretcher:putInVehicle(currentVehicleInventory)
+            exports.em_mc_callouts:onPlayerPutPedInAmbulance()
+
+            
+            return
+        end
+        cb("ok")
+        carInventory_hideGUI()
+        exports.em_mc_stretcher:onPlayerPickedUpStretcher()
     end
     carInventory_hideGUI()
     cb("ok")
@@ -171,10 +192,12 @@ Citizen.CreateThread(function()
             if (DoesEntityExist(vehicle) and IsEntityAVehicle(vehicle)) then
                 local model = string.lower(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
                 if (CONFIG_VEHICLES[model]) then
+                    
                     local factionID, departmentID = GetDataFromVehicleModel(model)
                     local playerData = getPlayerElementData(PlayerPedId(-1))
                     local vehicleInventory = GetVehicleInventory(model)
                     for i,v in pairs(vehicleInventory) do
+                       
                         local vehPos = GetWorldPositionOfEntityBone(vehicle, GetEntityBoneIndexByName(vehicle,i))
                         local distanceToBone = GetDistanceBetweenCoords(vehPos, plrCoords, 1)
                         if (distanceToBone <= v.dist) then
@@ -184,6 +207,11 @@ Citizen.CreateThread(function()
                                     if (i == 'boot') then
                                         SetVehicleDoorOpen(vehicle,5,false,false)
                                     end
+                                    if (i == 'door_dside_r' and model == 'f750') then
+                                        SetVehicleDoorOpen(vehicle,2,false,false)
+                                        SetVehicleDoorOpen(vehicle,3,false,false)
+                                    end
+                                    
                                     currentVehicleInventory = vehicle
                                     carInventory_showGUI(v.items)
                                 end
