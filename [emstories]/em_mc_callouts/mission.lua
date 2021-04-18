@@ -3,12 +3,11 @@ playersMission = {
     [2]={},
 }
 
-function mcSystem_endMission(missionID)
+function mcSystem_endMission(missionID,taskCounter)
     if (playersOnMission[missionID]) then
         for i,v in ipairs(playersOnMission[missionID]) do
             playersMission[2][v] = nil
-            exports.em_core:givePlayerXP(50,v)
-            TriggerClientEvent("mcSystem_destroyRoute",v)
+            exports.em_core:givePlayerXP(10*taskCounter,v)
         end
     end
 end
@@ -43,6 +42,7 @@ Citizen.CreateThread(function()
     	if (tablelength(dispatchPlayers[factionID])>0) then
         	local player = dispatch_getRandomPlayer(factionID,dispatchPlayers)
         	if (player) then
+				print(GetPlayerName(player))
 				TriggerClientEvent("mcSystem_initCallout",player,MISSIONS[randomMission])
         	end
     	end

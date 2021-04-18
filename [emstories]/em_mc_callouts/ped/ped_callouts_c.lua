@@ -3,6 +3,8 @@ local missionElements = {}
 local player = nil
 local missionCoords = nil
 local taskWatchData = {}
+local dropoffCoords = nil
+local dropoffState = false
 DecorRegister("__MISSION_MC_ITEMS_",3)
 DecorRegister("__MISSION_MC_PED_",3)
 DecorRegister("__MISSION_MC_PED_SEX_",3)
@@ -57,6 +59,32 @@ function mcPedCallouts_taskWatcherComplete(taskID)
     end
 end
 
+function mcPedCallouts_pedInAmbulance()
+    DrawHelp("Przetransportuj poszkodowanego do szpitala. Najbliższy szpital został zaznaczony na mapie.")
+    DeleteEntity(missionElements[player].ped)
+    missionElements[player].ped = nil
+    TriggerEvent("mcSystem_destroyRoute")
+    dropoffCoords = getClosestCoords(EMERGENCY_POINTS)
+    print(dropoffCoords.x)
+    print(dropoffCoords.y)
+    print(dropoffCoords.z)
+    local blip = AddBlipForCoord(dropoffCoords[1],dropoffCoords[2],dropoffCoords[3])
+    SetBlipSprite(blip,153)
+    SetBlipDisplay(blip,4)
+    SetBlipColour(blip,3)
+    SetBlipAsShortRange(blip,false)
+    SetBlipScale(blip,1.0)
+
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString("Cel Wezwania")
+    EndTextCommandSetBlipName(blip)
+    missionElements[player].blip = blip
+    ClearGpsMultiRoute()
+    StartGpsMultiRoute(10, true, true)
+    AddPointToGpsMultiRoute(table.unpack(dropoffCoords))
+    SetGpsMultiRouteRender(true)
+    dropoffState = true
+end
 function mcPedCallouts_create(data)
     calloutID = data.systemData.id
     player = source
@@ -94,6 +122,35 @@ function mcPedCallouts_create(data)
     mcPedCallouts_initTaskWatcher(pedData.tasksIDs)
 end
 
+function mcPedCallouts_endCallout()
+    TriggerServerEvent("mcMission:endMission",calloutID,taskWatchData.completedTaskCounter)
+    ClearGpsMultiRoute()
+    RemoveBlip(missionElements[player].blip)
+    DeleteEntity(missionElements[player].blip)
+    missionElements[player].blip = nil
+    dropoffState = nil
+    dropoffCoords = nil
+    missionCoords = nil
+    
+    taskWatchData = {}
+    calloutID = nil
+end
+Citizen.CreateThread(function()
+    while true do
+        if (dropoffState) then
+            DrawMarker(1,dropoffCoords[1],dropoffCoords[2],dropoffCoords[3],0.0,0.0,0.0,0,180.0,0.0,1.5,1.5,1.5,122,199,74,90,false,true,2,nil,nil,false)
+            local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+            if (vehicle and GetDistanceBetweenCoords(dropoffCoords[1],dropoffCoords[2],dropoffCoords[3], GetEntityCoords(vehicle,false)) < 1.5 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
+                DrawHelp("Wciśnij ~INPUT_PICKUP~ aby personel szpitala przejął poszkodowanego.")
+                if (IsControlJustPressed(0,38)) then
+                    mcPedCallouts_endCallout()
+                end
+            end
+        end
+        Citizen.Wait(10)
+    end
+end)
+exports("onPlayerPutPedInAmbulance",mcPedCallouts_pedInAmbulance)
 exports("GetPedSickType",mcPedCallouts_getPedDisease)
 exports("GetTaskList",mcPedCallouts_getTaskList)
 exports("TaskWatcher_completeID",mcPedCallouts_taskWatcherComplete)
