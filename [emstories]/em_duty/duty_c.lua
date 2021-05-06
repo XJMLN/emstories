@@ -193,7 +193,7 @@ function startDuty(vehData)
     DecorSetInt(PlayerPedId(-1),"__PLAYER_FACTION_",plrFactionID)
     TriggerServerEvent("em_duty:startPlayerDuty",plrFactionID,plrDepartmentID)
     if (plrFactionID == 1) then
-        exports.em_gui:showNotification("Informacja","Zanim przejdziesz na służbę sugerujemy wybrać broń w zbrojowni posterunku.",9000)
+        exports.em_gui:showNotification("Informacja","Swoje wyposażenie znajdziesz w bagażniku.\nJeśli chcesz zakupić nowe wyposażenie, udaj się na posterunek do zbrojowni.",9000)
     end
     restoreDefaultVariables()
 

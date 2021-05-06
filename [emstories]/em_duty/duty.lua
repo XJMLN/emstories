@@ -54,6 +54,15 @@ function duty_getPlayerFaction(factionID, departmentID,model)
     end
 end
 
+function faction_checkPlayerArmory(UID)
+    local UID = UID
+    MySQL.Async.fetchScalar("SELECT 1 FROM em_users_police_armory WHERE user_id=@uid",{['@uid']=UID},function(result)
+        if (not result) then
+            MySQL.Async.execute("INSERT INTO em_users_police_armory (weapons,user_id) VALUES ('[]',@uid)",{['@uid']=UID},function(result)
+            end)
+        end
+    end)
+end
 function faction_startPlayerDuty(factionID, departmentID)
     local source = source
     local player = exports.em_core:PlayersGetPlayerFromId(source)
@@ -63,6 +72,9 @@ function faction_startPlayerDuty(factionID, departmentID)
     local departmentID = departmentID
     exports.em_core:setPlayerDuty(source,true)
     exports.em_discord:onDutyMessage(playerName, callsign, departmentName,departmentID)
+    if (factionID==1) then
+        faction_checkPlayerArmory(player.UID)
+    end
 end
 RegisterNetEvent("em_duty:getPlayerFaction")
 RegisterNetEvent("em_duty:startPlayerDuty")
