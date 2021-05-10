@@ -8,12 +8,12 @@ ARMORY_POSITIONS = {
 }
 
 ARMORY_OFFER = {
-    ["736523883u"]={weaponHash="736523883u",weaponImg="images/weapon_smg.png",weaponPrice=500},
-    ["4024951519u"]={weaponHash="4024951519u",weaponImg="images/weapon_assaultsmg.png", weaponPrice=500},
-    ["2210333304u"]={weaponHash="2210333304u",weaponImg="images/weapon_carbinerifle.png", weaponPrice=500},
-    ["3220176749u"]={weaponHash="3220176749u",weaponImg="images/weapon_assaultrifle.png", weaponPrice=500},
-    ["487013001u"]={weaponHash="487013001u",weaponImg="images/weapon_pumpshotgun.png", weaponPrice=500},
-    ["205991906u"]={weaponHash="205991906u",weaponImg="images/weapon_heavysniper.png", weaponPrice=500},
+    ["WEAPON_SMG"]={weaponHash="WEAPON_SMG",weaponImg="images/weapon_smg.png",weaponPrice=500},
+    ["WEAPON_ASSAULTSMG"]={weaponHash="WEAPON_ASSAULTSMG",weaponImg="images/weapon_assaultsmg.png", weaponPrice=500},
+    ["WEAPON_CARBINERIFLE"]={weaponHash="WEAPON_CARBINERIFLE",weaponImg="images/weapon_carbinerifle.png", weaponPrice=500},
+    ["WEAPON_ASSAULTRIFLE"]={weaponHash="WEAPON_ASSAULTRIFLE",weaponImg="images/weapon_assaultrifle.png", weaponPrice=500},
+    ["WEAPON_PUMPSHOTGUN"]={weaponHash="WEAPON_PUMPSHOTGUN",weaponImg="images/weapon_pumpshotgun.png", weaponPrice=500},
+    ["WEAPON_HEAVYSNIPER"]={weaponHash="WEAPON_HEAVYSNIPER",weaponImg="images/weapon_heavysniper.png", weaponPrice=500},
 }
 
 --[[

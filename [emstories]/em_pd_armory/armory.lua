@@ -14,7 +14,6 @@ function armory_getUserData()
 
     end
 end
---{{"weapon_hash"="321321321"},{"weapon_hash"}}
 function armory_checkout(hash)
     local source = source
     if (not hash) then return end
@@ -40,7 +39,23 @@ function armory_checkout(hash)
         end)
     end
 end
+function armory_getWeapons()
+    local source = source
+    local playerData = exports.em_core:PlayersGetPlayerFromId(source)
+    if (playerData and playerData.UID) then
+        MySQL.Async.fetchAll("SELECT weapons FROM em_users_police_armory WHERE user_id=@uid",{['@uid']=playerData.UID}, function(result)
+            local row = result[1]
+            if (row and row.weapons) then
+                local retVal = row.weapons
+                TriggerClientEvent("inventory:sendWeaponsData",source,json.decode(retVal))
+            end
+        end)
+    end
+end
+
 RegisterNetEvent("armory:checkout")
 RegisterNetEvent("armory:getUserData")
+RegisterNetEvent("armory:getUserWeapons")
+AddEventHandler("armory:getUserWeapons",armory_getWeapons)
 AddEventHandler("armory:checkout",armory_checkout)
 AddEventHandler("armory:getUserData",armory_getUserData)

@@ -18,5 +18,9 @@ CONFIG_VEHICLES = {
     }},
     ['f750']={faction=2,department=2,Inventory={
         ['door_dside_r']={dist=6.0, name="Naciśnij ~INPUT_PICKUP~ aby otworzyć tylne drzwi.",items={5,6}},
+    }},
+    -- Pojazdy Police Department
+    ['14pdcharger']={faction=1,department=5,Inventory={
+        ['boot']={dist=1.4,name="Naciśnij ~INPUT_PICKUP~ aby otworzyć bagażnik.",items={3,4,7,8,9}},
     }}
 }

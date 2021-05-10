@@ -123,6 +123,24 @@ function carInventory_useItem(response,cb)
         carInventory_hideGUI()
         exports.em_mc_stretcher:onPlayerPickedUpStretcher()
     end
+    if (itemID == 7) then
+        TriggerServerEvent("chat:sendScriptMessage","Wyciąga apteczkę z bagażnika, po czym opatruje rany.",2)
+        SetEntityHealth(PlayerPedId(),200)
+        cb("ok")
+        carInventory_hideGUI()
+    end
+    if (itemID == 8) then
+        TriggerServerEvent("chat:sendScriptMessage","Wyciąga zestaw broni z bagażnika.",2)
+        TriggerServerEvent("armory:getUserWeapons")
+        cb("ok")
+        carInventory_hideGUI()
+    end
+    if (itemID == 9) then
+        TriggerServerEvent("chat:sendScriptMessage","Wyciąga kamizelkę z bagażnika po czym zakłada ją.",2)
+        SetPedArmour(PlayerPedId(),100)
+        cb("ok")
+        carInventory_hideGUI()
+    end
     carInventory_hideGUI()
     cb("ok")
 end
@@ -163,6 +181,12 @@ function carInventory_placeObject()
     end
 end
 
+function inventory_giveWeapons(data)
+    for i,v in ipairs(data) do
+        print(v.weapon_hash)
+        GiveWeaponToPed(PlayerPedId(),v.weapon_hash,9999999,false,true)
+    end
+end
 Citizen.CreateThread(function()
     while true do
         if (IsPedGettingIntoAVehicle(GetPlayerPed(-1))) then
@@ -191,6 +215,7 @@ Citizen.CreateThread(function()
             local vehicle = getVehicleInDirection(plrCoords,plrOffset)
             if (DoesEntityExist(vehicle) and IsEntityAVehicle(vehicle)) then
                 local model = string.lower(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)))
+                
                 if (CONFIG_VEHICLES[model]) then
                     
                     local factionID, departmentID = GetDataFromVehicleModel(model)
@@ -201,6 +226,7 @@ Citizen.CreateThread(function()
                         local vehPos = GetWorldPositionOfEntityBone(vehicle, GetEntityBoneIndexByName(vehicle,i))
                         local distanceToBone = GetDistanceBetweenCoords(vehPos, plrCoords, 1)
                         if (distanceToBone <= v.dist) then
+                            
                             if (playerData.factionID == factionID and playerData.departmentID == departmentID) then
                                 DrawHelp(v.name)
                                 if (IsControlJustReleased(0,38)) then
@@ -215,6 +241,8 @@ Citizen.CreateThread(function()
                                     currentVehicleInventory = vehicle
                                     carInventory_showGUI(v.items)
                                 end
+                            else
+
                             end
                         end
                     end
@@ -251,6 +279,8 @@ RegisterCommand("obiekty",function(source,args,rawCommand)
         exports.em_3dtext:DrawNotification("System","","Usunięto postawione obiekty.",true)
     end
 end,false)
+RegisterNetEvent("inventory:sendWeaponsData")
+AddEventHandler("inventory:sendWeaponsData",inventory_giveWeapons)
 exports('vehicleInventory_deleteAllObjects',deleteAllObjects)
 RegisterNUICallback("useItem",carInventory_useItem)
 AddEventHandler("playerDropped",function()
