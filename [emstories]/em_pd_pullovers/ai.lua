@@ -1,5 +1,6 @@
 ITEMS = {}
 PEDS = {}
+VEHS = {}
 lastNames = {}
 firstNames = {
     female = {},
@@ -22,10 +23,10 @@ function stringsplit(inputstr, sep)
 
 	return t
 end
-function ai_generateItems()
+function ai_generateItems(location)
     local pedItems = ""
     for i,v in ipairs(ITEMS) do
-        if (v.itemLocation == 0) then
+        if (v.itemLocation == location) then
             local chance = math.random(v.multiplier)
             if (chance >v.multiplier/2) then
                 if (v.isIllegal) then
@@ -91,7 +92,7 @@ function ai_createPedClass(ped, gender)
     end
     
     PEDS[ped] = {element=ped,attitude=attitude,fName=firstNames[sex][math.random(1,#firstNames[sex])], lName=lastNames[math.random(1,#lastNames)],gender=sex,date=dateOfBirth,suspect=isSearched,driverLicenseExpiry=expiryDrivingLicense,weaponLicense=weaponLicense}
-    PEDS[ped].items = ai_generateItems()
+    PEDS[ped].items = ai_generateItems(0)
     PEDS[ped].drugs = drugs
     PEDS[ped].alcohol = promile
 end
@@ -173,10 +174,28 @@ function ai_startup(resname)
     ITEMS = json.decode(itemsFile)
     ITEMS = ITEMS
 end
+function ai_prepareVehicle(vID, pedID, pedType, vehData)
+    print("ai_pullovers-server: got data about vehicle and ped from client preparing vehicle class for mdt....")
+    print("@todo: dokonczyc przy wdrozeniu MDT.")
+end
+
+function ai_getVehicleItems(ped,pedType,vehicle)
+    if (not VEHS[vehicle]) then
+       -- ai_prepareVehicle()
+       VEHS[vehicle] = {}
+    end
+
+    VEHS[vehicle].items = ai_generateItems(1)
+    TriggerClientEvent("ai_vehItemsReturn",source,6,VEHS[vehicle])
+end
 RegisterNetEvent("pullover:getPedItems")
 RegisterNetEvent("pullover:getPedData")
 RegisterNetEvent("pullover:getPedTestData")
 RegisterNetEvent("pullover:checkPedIllegality")
+RegisterNetEvent("pullover:setVehicleData")
+RegisterNetEvent("pullover:getVehicleItems")
+AddEventHandler("pullover:getVehicleItems",ai_getVehicleItems)
+AddEventHandler("pullover:setVehicleData",ai_prepareVehicle)
 AddEventHandler("pullover:getPedItems", ai_prepareItems)
 AddEventHandler("pullover:getPedTestData", ai_prepareTest)
 AddEventHandler("pullover:getPedData", ai_prepareDocuments)

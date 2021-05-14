@@ -4,18 +4,33 @@ AddTextEntry("PedAlcoholGood","~b~[Alkomat]\n~w~Poziom alkoholu we krwi: ~g~~a~%
 AddTextEntry("PedAlcoholBad","~b~[Alkomat]\n~w~Poziom alkoholu we krwi: ~r~~a~%\n~w~Niedozwolony poziom alkoholu to ~g~0,008% ~w~lub więcej.")
 AddTextEntry("PedDrugs","~b~[Wyniki wymazu]\n~w~Kokaina: ~a~\n~w~Marihuana: ~a~\n~w~Metadon: ~a~")
 AddTextEntry("PedItems","~b~[Przeszukanie]\n~a~")
-
-
-function ai_prepareDocumentsData(documentID, ped)
+AddTextEntry("VehiclePulloverInformation","Naciśnij ~INPUT_PICKUP~ aby rozpocząć interakcję z kierowcą\nNaciśnij ~INPUT_VEH_DUCK~ aby rozkazać kierowcy wyjście z pojazdu")
+AddTextEntry("vehicleInfo","~w~Rejestracja pojazdu: ~b~~a~\n~w~Sprawdź więcej danych pojazdu w ~g~MDT")
+function ai_prepareVehicleData(vehicleID)
+    if (not vehicleID) then return end
+    local vehData = STOPPED_VEHS[vehicleID]
+    local addonData = {plate=GetVehicleNumberPlateText(vehData.vehicle),color=GetVehicleColours(vehData.vehicle),model=GetDisplayNameFromVehicleModel(GetEntityModel(vehData.vehicle))}
+    BeginTextCommandThefeedPost("vehicleInfo")
+    AddTextComponentString(addonData.plate)
+    EndTextCommandThefeedPostTicker(true,true)
+    TriggerServerEvent("pullover:setVehicleData", vehicleID, vehData.pedID,vehData.pedType,addonData)
+end
+function ai_prepareDocumentsData(documentID, ped, isVehicleStop)
     if (not ped) then return end
     local pedData = STOPPED_PEDS[ped]
+    if (isVehicleStop) then
+        pedData = convert_vehDataToPedData(STOPPED_VEHS[GUI.Variables.player.currentVehicle])
+    end
     DrawDialogue("Zatrzymany mówi: Bez pośpiechu mamy czas, hehe.")
     TriggerServerEvent("pullover:getPedData", ped, pedData.pedType, documentID)
 end
 
-function ai_prepareTestResults(testID, ped)
+function ai_prepareTestResults(testID, ped, isVehicleStop)
     if (not ped) then return end
     local pedData = STOPPED_PEDS[ped]
+    if (isVehicleStop) then
+        pedData = convert_vehDataToPedData(STOPPED_VEHS[GUI.Variables.player.currentVehicle])
+    end
     DrawDialogue("Zatrzymany mówi: Gdzie to mam sobie włożyć? hehe żarty panie policjant.")
     TriggerServerEvent("pullover:getPedTestData", ped, pedData.pedType, testID)
 end
@@ -80,11 +95,21 @@ function ai_outputTestData(type, data)
     end
 end
 
-function ai_searchPed(ped)
+function ai_searchPed(ped,isVehicleStop)
     if (not ped) then return end
     local pedData = STOPPED_PEDS[ped]
+    if (isVehicleStop) then
+        pedData = convert_vehDataToPedData(STOPPED_VEHS[GUI.Variables.player.currentVehicle])
+    end
     DrawDialogue("Zatrzymany mówi: No i co jeszcze? Może mam kucnąć i kaszlnąć...")
     TriggerServerEvent("pullover:getPedItems", ped, pedData.pedType)
+end
+
+function ai_searchVeh(ped,veh)
+    if (not veh or not ped) then return end
+    local vehData = STOPPED_VEHS[veh]
+    local pedData = STOPPED_PEDS[ped]
+    TriggerServerEvent("pullover:getVehicleItems", ped,pedData.pedType,veh)
 end
 function ai_outputResults(reward,XP)
     if (reward) then
@@ -96,6 +121,8 @@ end
 RegisterNetEvent("ai_pedDataReturn")
 RegisterNetEvent("ai_pedTestDataReturn")
 RegisterNetEvent("ai_pedIllegalityReturn")
+RegisterNetEvent("ai_vehItemsReturn")
+AddEventHandler("ai_vehItemsReturn",ai_outputData)
 AddEventHandler("ai_pedIllegalityReturn",ai_outputResults)
 AddEventHandler("ai_pedTestDataReturn", ai_outputTestData)
 AddEventHandler("ai_pedDataReturn", ai_outputData)

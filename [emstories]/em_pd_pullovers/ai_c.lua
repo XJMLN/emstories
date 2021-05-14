@@ -1,5 +1,6 @@
 --TextDraws
 STOPPED_PEDS = {}
+STOPPED_VEHS = {}
 JAILS = {}
 JAIL_BLIP = nil
 policeCars = {
@@ -9,6 +10,8 @@ ARRESTED_PEDS = {}
 local upcomingNotify = false
 local cuffedPed = nil
 local nearVehicleCuffed = false
+local isFleeing = false
+isPerformingVehicleStop = false
 function loadAnimDict( dict )
 	while ( not HasAnimDictLoaded( dict ) ) do
 		RequestAnimDict( dict )
@@ -28,6 +31,13 @@ function tablelength(T)
     for _ in pairs(T) do count = count + 1 end
     return count
 end
+function GetVehHealthPercent(vehicle)
+	local vehiclehealth = GetEntityHealth(vehicle) - 100
+	local maxhealth = GetEntityMaxHealth(vehicle) - 100
+	local procentage = (vehiclehealth / maxhealth) * 100
+	return procentage
+end
+
 function getClosestCoordsToJail()
     local _ClosestCoord = nil
     local _ClosestDistance = 9999999
@@ -68,16 +78,41 @@ function DrawDialogue(text)
     AddTextComponentSubstringPlayerName(text)
     EndTextCommandPrint(3000,0)
 end
-function DrawHelp(text)
+function DrawHelp(text,label)
+    if (label) then
+        BeginTextCommandDisplayHelp(label)
+        EndTextCommandDisplayHelp(0,false,1,0)
+        return
+    end
 	SetTextComponentFormat("STRING")
 	AddTextComponentString(text)
 	DisplayHelpTextFromStringLabel(0, false, 1, 0)
 end
 function isPedCuffed(ped)
-    if (not STOPPED_PEDS[ped]) then return false end
+    if (not STOPPED_PEDS[ped]) then 
+        if (STOPPED_PEDS[ped] == GUI.Variables.player.currentPed) then
+            if (GUI.Variables.player.currentVehicle and STOPPED_VEHS[GUI.Variables.player.currentVehicle] and STOPPED_VEHS[GUI.Variables.player.currentVehicle].cuffed) then return true end
+            return false
+        end
+        return false 
+    end
     return STOPPED_PEDS[ped].cuffed
 end
-
+function isVehicleStopped(veh)
+    if (not STOPPED_VEHS[veh]) then return false end
+    return true
+end
+function isVehicleFollowing(veh)
+    if (STOPPED_VEHS[veh] and STOPPED_VEHS[veh].followMode == 1) then return true end
+    return false
+end
+function canPlayerInteractWithDriver(veh)
+    if (STOPPED_VEHS[veh] and STOPPED_VEHS[veh].canInteract) then return true end
+    return false
+end
+function convert_vehDataToPedData(veh)
+    return {ped = veh.ped, pedType=veh.pedType, pedID=veh.pedID,cuffed=veh.cuffed}
+end
 function ai_showBadge()
     loadAnimDict("random@atm_robbery@return_wallet_male")
 	local prop = CreateObject(GetHashKey('prop_fib_badge'), GetEntityCoords(PlayerPedId()), true)
@@ -97,47 +132,51 @@ function GetPedInFront()
 end
 function ai_cuffPed(ped)
     local ped = ped
+    local data = STOPPED_PEDS[ped]
+    print(ped)
+    print(data.ped)
     loadAnimDict("mp_arrest_paired")
     loadAnimDict("mp_arresting")
     if (not isPedCuffed(ped)) then
+        GUI.Variables.pullover.cuffs="~y~Rozkuj"
         local plrAnim = "cop_p2_back_left"
         local targetAnim = "crook_p2_back_left"
-        AttachEntityToEntity(STOPPED_PEDS[ped].ped,GetPlayerPed(-1),11816, -0.1, 0.45, 0.0, 0.0, 0.0, 20.0, false, false, false, false, 20, false)
-        TaskPlayAnim(STOPPED_PEDS[ped].ped,"mp_arrest_paired",targetAnim,8.0,-8.0,5500,33,0,false,false,false)
+        AttachEntityToEntity(data.ped,GetPlayerPed(-1),11816, -0.1, 0.45, 0.0, 0.0, 0.0, 20.0, false, false, false, false, 20, false)
+        TaskPlayAnim(data.ped,"mp_arrest_paired",targetAnim,8.0,-8.0,5500,33,0,false,false,false)
         TaskPlayAnim(GetPlayerPed(-1),"mp_arrest_paired",plrAnim,8.0, -8.0, 5500, 33, 0, false, false, false)
         Citizen.Wait(950)
-        DetachEntity(STOPPED_PEDS[ped].ped,true,false)
+        DetachEntity(data.ped,true,false)
         Citizen.Wait(3000)
-        SetEnableHandcuffs(STOPPED_PEDS[ped].ped,true)
-        SetPedCanRagdoll(STOPPED_PEDS[ped].ped,false)
-        STOPPED_PEDS[ped].cuffed=true
+        SetEnableHandcuffs(data.ped,true)
+        SetPedCanRagdoll(data.ped,false)
+        data.cuffed=true
         upcomingNotify = true
         Citizen.CreateThread(function()
             if (isPedCuffed(ped)) then
-                TaskPlayAnim(STOPPED_PEDS[ped].ped,"mp_arresting","idle",8.0,-8,-1,49,0,0,0,0)
+                TaskPlayAnim(data.ped,"mp_arresting","idle",8.0,-8,-1,49,0,0,0,0)
             end
         end)
         Citizen.Wait(900)
         DrawHelp("Podejdź do tylnych drzwi swojego radiowozu aby przetransportować zatrzymanego do więzienia.")
         Citizen.Wait(3500)
         upcomingNotify = false
-        cuffedPed = {el=STOPPED_PEDS[ped].ped,pedID=ped}
+        cuffedPed = {el=data.ped,pedID=ped}
     else
-        STOPPED_PEDS[ped].cuffed=false
-        AttachEntityToEntity(STOPPED_PEDS[ped].ped,GetPlayerPed(-1),11816,0,0.3,0.0,0.0,0.0,0.0,false,false,false,false,2,true)
+        data.cuffed=false
+        GUI.Variables.pullover.cuffs="~y~Zakuj"
+        AttachEntityToEntity(data.ped,GetPlayerPed(-1),11816,0,0.3,0.0,0.0,0.0,0.0,false,false,false,false,2,true)
         TaskPlayAnim(GetPlayerPed(-1),"mp_arresting","a_uncuff",8.0,-8,-1,49,0,0,0,0)
         Citizen.Wait(2000)
-        DetachEntity(STOPPED_PEDS[ped].ped,true,false)
+        DetachEntity(data.ped,true,false)
         ClearPedSecondaryTask(GetPlayerPed(-1))
-        StopAnimTask(STOPPED_PEDS[ped].ped, 'mp_arresting', 'idle', 1.0)
-        SetEnableHandcuffs(STOPPED_PEDS[ped].ped,false)
-        SetPedCanRagdoll(STOPPED_PEDS[ped].ped,true)
+        StopAnimTask(data.ped, 'mp_arresting', 'idle', 1.0)
+        SetEnableHandcuffs(data.ped,false)
+        SetPedCanRagdoll(data.ped,true)
         cuffedPed = nil
     end
 end
-function ai_startPedPullover(ped, netID,pedType)
-    ai_showBadge()
-    STOPPED_PEDS[netID] = {stopped=true, ped=ped,pedType=pedType,cuffed=false}
+function ai_startPedPullover(ped, netID,pedType,vehicleStop)
+    STOPPED_PEDS[netID] = {stopped=true, ped=ped,pedType=pedType,cuffed=false,vehicleStop=vehicleStop}
     STOPPED_PEDS[netID].blip = AddBlipForEntity(ped)
     SetBlipDisplay(STOPPED_PEDS[netID].blip, 2)
     SetBlipSprite(STOPPED_PEDS[netID].blip, 280)
@@ -148,14 +187,43 @@ function ai_startPedPullover(ped, netID,pedType)
     local playerGroupId = GetPedGroupIndex(GetPlayerPed(-1))
     SetPedAsGroupMember(ped,playerGroupId)
 end
-function ai_endPedPullover(ped)
-    STOPPED_PEDS[ped].stopped = false
-    RemoveBlip(STOPPED_PEDS[ped].blip)
-    DeleteEntity(STOPPED_PEDS[ped].blip)
-    RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
-    STOPPED_PEDS[ped] = nil
+function ai_endPedPullover(ped,vehicleStop)
+    if (isPedCuffed(ped)) then
+        exports.em_3dtext:DrawNotification("Centrala","Centrala","~r~Najpierw zdejmij kajdanki osobie zatrzymanej.",true)
+        return
+    end
+    if (vehicleStop) then--{stopped=true,ped=driver.el,vehicle=veh.el,pedID=driver.id,pedType=driver.type,followMode=0,canInteract=false,cuffed=false}
+        local pedElement = STOPPED_VEHS[vehicleStop].ped
+        local vehicle = STOPPED_VEHS[vehicleStop].vehicle
+        if (not IsPedInAnyVehicle(pedElement,false)) then
+            TaskEnterVehicle(pedElement,vehicle,6000,-1,2.0,1,0)
+        end
+        TaskVehicleDriveWander(pedElement,vehicle,500.0,387)
+        RemoveBlip(STOPPED_VEHS[vehicleStop].blip)
+        DeleteEntity(STOPPED_VEHS[vehicleStop].blip)
+        RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
+        STOPPED_VEHS[vehicleStop] = nil
+        isFleeing = false
+        isPerformingVehicleStop = false
+        if (STOPPED_PEDS[ped]) then
+            STOPPED_PEDS[ped].stopped = false
+            RemoveBlip(STOPPED_PEDS[ped].blip)
+            DeleteEntity(STOPPED_PEDS[ped].blip)
+            RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
+            STOPPED_PEDS[ped] = nil
+        end
+    else
+        STOPPED_PEDS[ped].stopped = false
+        RemoveBlip(STOPPED_PEDS[ped].blip)
+        DeleteEntity(STOPPED_PEDS[ped].blip)
+        RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
+        STOPPED_PEDS[ped] = nil
+    end
     GUI.Variables.player.currentPed = nil
     GUI.Variables.player.distance = false
+    GUI.Variables.player.currentVehicle = nil
+    GUI.Variables.player.inVehicle=false
+    GUI.pullover.cuffs = "~y~Zakuj"
     if (RageUI.Visible(GUI['pullover'])) then
         RageUI.Visible(GUI['pullover'],false)
     end
@@ -176,6 +244,7 @@ function ai_arrestPed(ped,pedID,vehicle,seat)
         Wait(6000)
         SetPedConfigFlag(ped,292,true)
         DrawHelp("Wciśnij ~INPUT_BB407206~ aby wyświetlić trasę do najbliższego posterunku")
+            exports.em_3dtext:DrawNotification("Centrala","Centrala","Pamiętaj o wezwaniu lawety po pojazd zatrzymanej osoby.",true)
     end)
 end
 local isVehicleInDropoffMarker = false
@@ -210,6 +279,7 @@ function ai_createDropoff()
 end
 function ai_pedToJail()
     local vehicle = isVehicleInDropoffMarker
+    
     if (vehicle and GetVehiclePedIsIn(PlayerPedId(),false) == vehicle) then
         if (tablelength(ARRESTED_PEDS)>0) then
             local selectedPed = GetPedInVehicleSeat(vehicle,1)
@@ -219,13 +289,23 @@ function ai_pedToJail()
                 while pedID<1 do
                     pedID = NetworkGetNetworkIdFromEntity(selectedPed)
                 end
-                TriggerServerEvent("pullover:checkPedIllegality",pedID,STOPPED_PEDS[pedID].pedType)
-                if (STOPPED_PEDS[pedID] and STOPPED_PEDS[pedID].stopped) then
-                    RemoveBlip(STOPPED_PEDS[pedID].blip)
-                    DeleteEntity(STOPPED_PEDS[pedID].blip)
-                    ClearPedTasksImmediately(STOPPED_PEDS[pedID].ped)
-                    RemovePedFromGroup(STOPPED_PEDS[pedID].ped)
-                    DeleteEntity(STOPPED_PEDS[pedID].ped)
+                local data = STOPPED_PEDS[pedID]
+                TriggerServerEvent("pullover:checkPedIllegality",pedID,data.pedType)
+                if (data and data.stopped) then
+                    RemoveBlip(data.blip)
+                    DeleteEntity(data.blip)
+                    ClearPedTasksImmediately(data.ped)
+                    RemovePedFromGroup(data.ped)
+                    DeleteEntity(data.ped)
+                    if data.vehicleStop then
+                        local vehID = data.vehicleStop
+                        if (DoesEntityExist(STOPPED_VEHS[vehID].vehicle)) then
+                            DeleteEntity(STOPPED_VEHS[vehID].vehicle)
+                            RemoveBlip(STOPPED_VEHS[vehID].blip)
+                            DeleteEntity(STOPPED_VEHS[vehID].blip)
+                        end
+                        STOPPED_VEHS[vehID] = nil
+                    end
                     STOPPED_PEDS[pedID]=nil
                     ARRESTED_PEDS[pedID]=nil
                 end
@@ -236,13 +316,23 @@ function ai_pedToJail()
                 while pedID<1 do
                     pedID = NetworkGetNetworkIdFromEntity(selectedPed2)
                 end
-                TriggerServerEvent("pullover:checkPedIllegality",pedID,STOPPED_PEDS[pedID].pedType)
-                if (STOPPED_PEDS[pedID] and STOPPED_PEDS[pedID].stopped) then
-                    RemoveBlip(STOPPED_PEDS[pedID].blip)
-                    DeleteEntity(STOPPED_PEDS[pedID].blip)
-                    ClearPedTasksImmediately(STOPPED_PEDS[pedID].ped)
-                    RemovePedFromGroup(STOPPED_PEDS[pedID].ped)
-                    DeleteEntity(STOPPED_PEDS[pedID].ped)
+                local data = STOPPED_PEDS[pedID]
+                TriggerServerEvent("pullover:checkPedIllegality",pedID,data.pedType)
+                if (data and data.stopped) then
+                    RemoveBlip(data.blip)
+                    DeleteEntity(data.blip)
+                    ClearPedTasksImmediately(data.ped)
+                    RemovePedFromGroup(data.ped)
+                    DeleteEntity(data.ped)
+                    if data.vehicleStop then
+                        local vehID = data.vehicleStop
+                        if (DoesEntityExist(STOPPED_VEHS[vehID].vehicle)) then
+                            DeleteEntity(STOPPED_VEHS[vehID].vehicle)
+                            RemoveBlip(STOPPED_VEHS[vehID].blip)
+                            DeleteEntity(STOPPED_VEHS[vehID].blip)
+                        end
+                        STOPPED_VEHS[vehID] = nil
+                    end
                     STOPPED_PEDS[pedID]=nil
                     ARRESTED_PEDS[pedID]=nil
                 end
@@ -251,6 +341,12 @@ function ai_pedToJail()
             cuffedPed = nil
             isVehicleInDropoffMarker = false
             nearVehicleCuffed =false
+            GUI.Variables.player.currentVehicle=nil
+            GUI.Variables.player.distance = false
+            GUI.Variables.player.inVehicle=false
+            GUI.Variables.player.currentPed=nil
+            isFleeing = false
+            isPerformingVehicleStop = false
             if (JAIL_BLIP) then
                 RemoveBlip(JAIL_BLIP)
                 JAIL_BLIP = nil
@@ -261,6 +357,7 @@ function ai_pedToJail()
 end
 Citizen.CreateThread(function()
     while true do
+
         if (GetVehiclePedIsIn(PlayerPedId(), false) == 0) then
             if (cuffedPed and cuffedPed.el) then
                 if (isPedCuffed(cuffedPed.pedID) and not ARRESTED_PEDS[cuffedPed.pedID]) then
@@ -326,7 +423,7 @@ Citizen.CreateThread(function()
                 if (IsControlPressed(0,74) and ped and pedType) then
                     if (not IsPedDeadOrDying(ped)) then
                         
-                        if (not STOPPED_PEDS[pedID]) then
+                        if (not STOPPED_PEDS[pedID] and not isPerformingVehicleStop) then
                             SetBlockingOfNonTemporaryEvents(ped,true)
                             ai_startPedPullover(ped, pedID,pedType)
                         end
@@ -337,7 +434,186 @@ Citizen.CreateThread(function()
         Citizen.Wait(0)
     end
 end)
+--[[
+    Vehicle Pullovers
+]]
+function ai_returnToVehicle(ped)
+    if (isPedCuffed(ped)) then
+        exports.em_3dtext:DrawNotification("Centrala","Centrala","~r~Najpierw zdejmij kajdanki osobie zatrzymanej.",true)
+        return
+    end
+    STOPPED_PEDS[ped].stopped = false
+    
+    RemoveBlip(STOPPED_PEDS[ped].blip)
+    DeleteEntity(STOPPED_PEDS[ped].blip)
+    if (RageUI.Visible(GUI['pullover'])) then
+        RageUI.Visible(GUI['pullover'],false)
+    end
+    GUI.Variables.player.inVehicle=true
+    RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
+    TaskEnterVehicle(STOPPED_PEDS[ped].ped, STOPPED_VEHS[GUI.Variables.player.currentVehicle].vehicle, -1,-1,1.0,1,0)
+    print('return to vehicle')
+    print('inVehicle:'..tostring(GUI.Variables.player.inVehicle))
+    STOPPED_PEDS[ped] = nil
+end
+function ai_stopVehicle()
+    local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+    if (vehicle ~=0) then
+        local model = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+        if (policeCars[model] and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
+            local coordA = GetEntityCoords(vehicle,1)
+            local coordB = GetOffsetFromEntityInWorldCoords(vehicle, 0.0,20.0,0.0)
+            local targetVehicle = GetVehicleInDirection(vehicle,coordA,coordB)
+            if (targetVehicle) then
+                local ped = nil
+                local vehID = NetworkGetNetworkIdFromEntity(targetVehicle)
+                while (vehID<1) do
+                    vehID = NetworkGetNetworkIdFromEntity(targetVehicle)
+                end
+                if (IsVehicleSeatFree(targetVehicle,-1)) then return end
+                ped = GetPedInVehicleSeat(targetVehicle,-1)
+                local pedType = GetPedType(ped)
+                if (pedType == 4 or pedType == 5) then
+                    local pedID = NetworkGetNetworkIdFromEntity(ped)
+                    while (pedID<1) do
+                        pedID = NetworkGetNetworkIdFromEntity(ped)
+                    end
+                    if (not isVehicleStopped(vehID) and not IsPedDeadOrDying(ped)) then
+                        if (IsVehicleSirenOn(vehicle)) then
+                            ai_startVehiclePullover(vehicle,{el=targetVehicle,id=vehID},{el=ped,id=pedID,type=pedType})
+                        else
+                            DrawHelp("Włącz sygnały świetlne, aby przejść do zatrzymania pojazdu")
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
 
+function ai_startVehiclePullover(copCar, veh, driver)
+    STOPPED_VEHS[veh.id] = {stopped=true,ped=driver.el,vehicle=veh.el,pedID=driver.id,pedType=driver.type,followMode=0,canInteract=false,cuffed=false}
+    GUI.Variables.player.currentVehicle = veh.id
+    isPerformingVehicleStop = true
+    STOPPED_VEHS[veh.id].blip = AddBlipForEntity(veh.el)
+    SetBlipDisplay(STOPPED_VEHS[veh.id].blip,2)
+    SetBlipSprite(STOPPED_VEHS[veh.id].blip,225)
+    SetBlipColour(STOPPED_VEHS[veh.id].blip,46)
+    SetEntityHealth(ped,200)
+    SetEntityAsMissionEntity(veh.el,true,true)
+    SetEntityAsMissionEntity(driver.el,true,true)
+    SetBlockingOfNonTemporaryEvents(driver.el,true)
+    local chanceFlee = math.random(30)
+    if (chanceFlee >=25) then
+        SetDriverAbility(driver.el, 1.0) 
+        SetDriverAggressiveness(driver.el, 1.0) 
+        TaskVehicleDriveWander(driver.el, veh.el, 220.0,787260)
+        isFleeing = STOPPED_VEHS[veh.id]
+        DrawHelp("Kierowca ucieka, rusz w pościg - staraj się zablokować jego pojazd")
+    else
+        DrawHelp("Naciśnij ~INPUT_44A127F7~ aby zmienić pozycję zatrzymanego pojazdu")
+        STOPPED_VEHS[veh.id].canInteract = true
+    end
+    local stoppedVehicle = STOPPED_VEHS[veh.id].vehicle
+    GUI.Variables.player.inVehicle = true
+    Citizen.CreateThread(function()
+        while true do
+            if GetVehiclePedIsIn(GetPlayerPed(-1),false) == 0 then
+                if (canPlayerInteractWithDriver(veh.id)) then
+                    local coordA = GetEntityCoords(GetPlayerPed(-1), 1)
+	                local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, 1.0, 0.0)
+	                local vehNearBy = GetVehicleInDirection(GetPlayerPed(-1),coordA, coordB)
+                    if (vehNearBy == stoppedVehicle) then
+                        local driverDoor = GetWorldPositionOfEntityBone(stoppedVehicle, GetEntityBoneIndexByName(stoppedVehicle, "door_dside_f"))
+                        local distance = GetDistanceBetweenCoords(driverDoor,coordA,1)
+                        if (distance <= 1.6) then
+                            if (GetPedInVehicleSeat(stoppedVehicle,-1) == driver.el and GUI.Variables.player.inVehicle) then
+                                if (not upcomingNotify) then
+                                    DrawHelp(nil,"VehiclePulloverInformation")
+                                end
+                                GUI.Variables.player.distance = true
+                                GUI.Variables.player.currentPed = driver.id
+                                
+                                if (IsControlJustPressed(0,73) and GUI.Variables.player.inVehicle) then
+                                    if (not IsPedDeadOrDying(driver.el)) then
+                                        GUI.Variables.player.inVehicle = false
+                                        SetBlockingOfNonTemporaryEvents(driver.el,true)
+                                        local playerGroupId = GetPedGroupIndex(GetPlayerPed(-1))
+                                        SetPedAsGroupMember(driver.el,playerGroupId)
+                                        TaskLeaveVehicle(driver.el,veh.el,256)
+                                        
+                                        ai_startPedPullover(driver.el,driver.id,driver.type,veh.id)
+                                    end
+                                end
+                            end
+                        else
+                            GUI.Variables.player.distance = false
+                            GUI.Variables.player.currentPed = nil
+                        end
+                    end
+                end
+            end
+            Citizen.Wait(0)
+        end
+
+    end)
+end
+
+function ai_followVehicle(vehicle)
+    if (STOPPED_VEHS[vehicle]) then
+        local playerVehicle = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+        if (vehicle ~=0) then
+            local model = GetDisplayNameFromVehicleModel(GetEntityModel(playerVehicle))
+            if (policeCars[model] and GetPedInVehicleSeat(playerVehicle,-1)==PlayerPedId()) then
+                local pedVehicle = STOPPED_VEHS[vehicle].vehicle
+                local followMode = STOPPED_VEHS[vehicle].followMode
+                if (followMode==1) then
+                    ClearPedSecondaryTask(STOPPED_VEHS[vehicle].ped)
+                    ClearPedTasks(STOPPED_VEHS[vehicle].ped)
+                    SetBlockingOfNonTemporaryEvents(STOPPED_VEHS[vehicle].ped,true)
+                    STOPPED_VEHS[vehicle].followMode=0
+                else
+                    STOPPED_VEHS[vehicle].followMode=1
+                    print('follow')
+                    TaskVehicleEscort(STOPPED_VEHS[vehicle].ped,pedVehicle,playerVehicle,-1,500.0,828,1.0,1,10.0)
+                end 
+            end
+        end
+    end
+end
+Citizen.CreateThread(function()
+    while true do
+        local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+        if (vehicle ~=0) then
+            local model = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+            if (policeCars[model] and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
+                if (isFleeing) then
+                    local vehData = isFleeing
+                    local hpEngine = GetVehHealthPercent(vehData.vehicle)
+                    if (hpEngine<=25) then
+                        if (not GUI.Variables.player.distance) then
+                            DrawHelp("Uciekający zatrzymał się. Możesz przystąpić do zatrzymania.")
+                        end
+                        TaskVehicleTempAction(vehData.ped,vehData.vehicle,6,9999)
+                        SetBlockingOfNonTemporaryEvents(vehData.ped,true)
+                        local playerGroupId = GetPedGroupIndex(GetPlayerPed(-1))
+                        SetPedAsGroupMember(vehData.ped,playerGroupId)
+                        vehData.canInteract = true
+                    end
+                end
+            end
+        end
+
+        Citizen.Wait(0)
+    end
+end)
+--[[
+    config loader
+]]
+RegisterCommand('rgroup',function()
+    RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
+    print("DEV_COMMAND: Group removed")
+end)
 function ai_loadConfig()
     local jailsFile = LoadResourceFile(GetCurrentResourceName(), "config/jails.json")
     JAILS = json.decode(jailsFile)
@@ -346,6 +622,8 @@ end
 
 ai_loadConfig()
 RegisterCommand("pokazjaile",ai_createDropoff)
+RegisterCommand("pojazdzatrzymaj",ai_stopVehicle)
 RegisterCommand("odeslijpeda",ai_pedToJail)
+RegisterKeyMapping("pojazdzatrzymaj","PD: Zatrzymanie pojazdu","keyboard","LSHIFT")
 RegisterKeyMapping("odeslijpeda","PD: Odesłanie aresztowanego do wiezienia (zatrzymanie)","keyboard","h")
 RegisterKeyMapping("pokazjaile","PD: Pokaż trasę do posterunku (zatrzymanie)","keyboard","u")
