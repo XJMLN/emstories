@@ -1,5 +1,3 @@
-DecorRegister("__PLAYER_DEPARTMENT_",3)
-DecorRegister("__PLAYER_FACTION_",3)
 vehicleRoom = nil
 plrFactionID = nil
 local plrDepartmentID = nil
@@ -189,8 +187,6 @@ function startDuty(vehData)
     duty_createVehicle(vehData)
     DisplayRadar(true)
 	DoScreenFadeIn(1000)
-    DecorSetInt(PlayerPedId(-1),"__PLAYER_DEPARTMENT_",plrDepartmentID)
-    DecorSetInt(PlayerPedId(-1),"__PLAYER_FACTION_",plrFactionID)
     TriggerServerEvent("em_duty:startPlayerDuty",plrFactionID,plrDepartmentID)
     if (plrFactionID == 1) then
         exports.em_gui:showNotification("Informacja","Swoje wyposażenie znajdziesz w bagażniku.\nJeśli chcesz zakupić nowe wyposażenie, udaj się na posterunek do zbrojowni.",9000)

@@ -53,7 +53,7 @@ Players.load = function(identifier, playerId, callback)
             factionDuty = false,
         }
         Players.set(playerId,userData)
-
+        Player(playerId).state.level = tonumber(row.level)
         if (callback ~= nil) then
             callback(callback)
         end

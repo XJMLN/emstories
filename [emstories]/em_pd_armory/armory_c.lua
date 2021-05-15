@@ -60,6 +60,9 @@ Citizen.CreateThread(function()
                     Wait(1)
                 end
                 Wait(4)
+                if (v.pedElement) then
+
+                else
                 v.pedElement = CreatePed(1,skin_model,v.ped[1],v.ped[2],v.ped[3],v.ped['heading'],true,false)
                 SetPedDiesWhenInjured(v.pedElement,false)
                 SetBlockingOfNonTemporaryEvents(v.pedElement,true)
@@ -69,6 +72,7 @@ Citizen.CreateThread(function()
                 SetEntityInvincible(v.pedElement, true)
                 Citizen.Wait(5000)
                 FreezeEntityPosition(v.pedElement, true)
+                end
             end
             hasNPCLoaded = true
         end
@@ -77,8 +81,8 @@ Citizen.CreateThread(function()
             for i,v in ipairs(ARMORY_POSITIONS) do
                 v = v['player']
                 local ped = GetEntityCoords(PlayerPedId(),false)
-                local playerFaction = DecorGetInt(PlayerPedId(),"__PLAYER_FACTION_")
-                if (ped and GetDistanceBetweenCoords(v[1],v[2],v[3],ped[1],ped[2],ped[3])<2.5 and GetVehiclePedIsIn(PlayerPedId(), false) == 0 and playerFaction == 1) then
+                local playerFaction = LocalPlayer.state.factionID
+                if (ped and GetDistanceBetweenCoords(v[1],v[2],v[3],ped[1],ped[2],ped[3])<2.5 and GetVehiclePedIsIn(PlayerPedId(), false) == 0 ) then
                     DrawHelp("Wciśnij ~INPUT_PICKUP~ aby wyświetlić ofertę zbrojowni.")
                     if (IsControlJustPressed(0, 38)) then
                         armory_showGUI(false)

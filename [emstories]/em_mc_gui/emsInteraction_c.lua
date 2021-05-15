@@ -18,9 +18,9 @@ local function DrawHelp(text)
     DisplayHelpTextFromStringLabel(0, false, 1, 0)
 end
 local function getPlayerElementData(player)
-    local FID = DecorGetInt(player,"__PLAYER_FACTION_")
-    local DID = DecorGetInt(player,"__PLAYER_DEPARTMENT_")
-    return {factionID=2,departmentID=2}
+    local FID = LocalPlayer.state.factionID
+    local DID = LocalPlayer.state.departmentID
+    return {factionID=FID,departmentID=DID}
 end
 local function isPlayerHoldingMedicBag()
     return exports.em_mc_bag:isPlayerHoldingBag()

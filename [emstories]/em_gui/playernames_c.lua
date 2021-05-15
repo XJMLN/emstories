@@ -13,7 +13,7 @@ Citizen.CreateThread(function()
                 local playerPed = GetPlayerPed(i)
                 local isPlayerTalking = NetworkIsPlayerTalking(i)
                 local isPlayerTyping,isPlayerTypingState = DecorGetInt(playerPed,"isTypingInChat"), false
-                local level = DecorGetInt(playerPed,"adminLevel")
+                local level = Player(i).state.level
                 if (isPlayerTyping == 2) then
                     isPlayerTypingState = true
                 else

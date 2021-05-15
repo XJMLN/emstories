@@ -18,9 +18,6 @@ local departments = {
 }
 
 DecorRegister("__PLAYER_MONEY_",3)
-
-DecorRegister("isVIP",2)
-DecorRegister("adminLevel",3)
 AddEventHandler("em:showHUD",function(faction)
     Wait(1000)
     local showAllData=true
@@ -93,10 +90,8 @@ end)
  
 AddEventHandler("em_core_client:playerLoaded",function(data)
     DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data.money)
-    DecorSetInt(PlayerPedId(-1),"adminLevel",data.level)
 end)
 
 AddEventHandler("em_hud:updateMoney",function(data)
     DecorSetInt(PlayerPedId(-1),"__PLAYER_MONEY_",data.money)
-    DecorSetInt(PlayerPedId(-1),"adminLevel",data.level)
 end)

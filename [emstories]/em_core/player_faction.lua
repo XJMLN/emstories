@@ -91,6 +91,8 @@ Players.setPlayerFaction = function(factionID, departmentID,player)
         end
         playerData.factionID = factionID
         playerData.departmentID = departmentID
+        Player(playerId).state.departmentID = departmentID
+        Player(playerId).state.factionID = factionID
         TriggerClientEvent("em_core_client:playerFactionChange",playerId,playerData)
     end)
 end
@@ -120,6 +122,8 @@ Players.unsetDuty = function(player)
     playerData.callsign = nil
     playerData.factionID = nil
     playerData.departmentID = nil
+    Player(playerID).state.departmentID = nil
+    Player(playerID).state.factionID = nil
     return true
 end
 Players.setRankName = function(player)

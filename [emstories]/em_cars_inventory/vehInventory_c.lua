@@ -33,8 +33,8 @@ local function DrawHelp(text)
     DisplayHelpTextFromStringLabel(0, false, 1, 0)
 end
 local function getPlayerElementData(player)
-    local FID = DecorGetInt(player,"__PLAYER_FACTION_")
-    local DID = DecorGetInt(player,"__PLAYER_DEPARTMENT_")
+    local FID = LocalPlayer.state.factionID
+    local DID = LocalPlayer.state.departmentID
     return {factionID=FID,departmentID=DID}
 end
 
@@ -241,8 +241,6 @@ Citizen.CreateThread(function()
                                     currentVehicleInventory = vehicle
                                     carInventory_showGUI(v.items)
                                 end
-                            else
-
                             end
                         end
                     end
