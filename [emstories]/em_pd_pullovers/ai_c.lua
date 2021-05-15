@@ -5,6 +5,7 @@ JAILS = {}
 JAIL_BLIP = nil
 policeCars = {
     ['14pdcharger']=true,
+    ['11pdcvpi']=true,
 }
 ARRESTED_PEDS = {}
 local upcomingNotify = false
@@ -613,6 +614,9 @@ end)
 RegisterCommand('rgroup',function()
     RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
     print("DEV_COMMAND: Group removed")
+end)
+RegisterCommand('model',function()
+    print(GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsIn(GetPlayerPed(-1),false))))
 end)
 function ai_loadConfig()
     local jailsFile = LoadResourceFile(GetCurrentResourceName(), "config/jails.json")
