@@ -28,6 +28,13 @@ function restoreDefaultVariables()
             [1]={marked="Oznakowane",unmarked="Nieoznakowane"},
         }
     }
+    MENUS.MainMenu:RefreshIndex()
+    MENUS.garage:RefreshIndex()
+    MENUS.skins:RefreshIndex()
+    if (vehicleRoom) then
+        DeleteVehicle(vehicleRoom)
+        DeleteEntity(vehicleRoom)
+    end
     vehicleRoom = nil
     plrFactionID = nil
     plrDepartmentID = nil
@@ -36,6 +43,11 @@ function restoreDefaultVariables()
     camName=""
     camSkin = nil
     returnPos = nil
+    skins = {}
+    vehicles = {
+        [1]={},
+        [0]={},
+    }
 end
 function DrawHelp(text)
 	SetTextComponentFormat("STRING")
@@ -216,6 +228,7 @@ function showRoom(hash)
     end
     if (vehicleRoom) then
         DeleteVehicle(vehicleRoom)
+        DeleteEntity(vehicleRoom)
         vehicleRoom = nil
     end
     vehicleRoom = CreateVehicle(hash,231.08,-986.6,-98.93,143.81,false,false)
@@ -283,6 +296,7 @@ function setGarageCam()
     end
     if (vehicleRoom) then
         DeleteVehicle(vehicleRoom)
+        DeleteEntity(vehicleRoom)
         vehicleRoom = nil
     end
     vehicleRoom = CreateVehicle(vehicles[1][1]['hash'],231.08,-986.6,-98.93,143.81,false,false)

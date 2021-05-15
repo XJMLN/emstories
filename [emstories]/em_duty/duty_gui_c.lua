@@ -11,7 +11,7 @@ MENUS.skins:DisplayGlare(false)
 MENUS.garage.Closed = function()
     backToDefault()
 end
-local menusVariables = {
+menusVariables = {
     vehiclesMarkIndex = 1,
     vehiclesUMarkIndex = 1,
     vehicleData = {},
