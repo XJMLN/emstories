@@ -91,11 +91,12 @@ function ai_createPedClass(ped, gender)
         drugs.marijuana = "~r~Pozytywny"
     end
     
-    PEDS[ped] = {element=ped,attitude=attitude,fName=firstNames[sex][math.random(1,#firstNames[sex])], lName=lastNames[math.random(1,#lastNames)],gender=sex,date=dateOfBirth,suspect=isSearched,driverLicenseExpiry=expiryDrivingLicense,weaponLicense=weaponLicense}
+    PEDS[ped] = {element=ped,attitude=attitude,fName=string.gsub(firstNames[sex][math.random(1,#firstNames[sex])],"[\n\r]",""), lName=string.gsub(lastNames[math.random(1,#lastNames)],"[\n\r]",""),gender=sex,date=dateOfBirth,suspect=isSearched,driverLicenseExpiry=expiryDrivingLicense,weaponLicense=weaponLicense}
     PEDS[ped].items = ai_generateItems(0)
     PEDS[ped].drugs = drugs
     PEDS[ped].alcohol = promile
 end
+
 
 function ai_prepareDocuments(ped, pedType, documentID)
     local source = source
@@ -174,26 +175,83 @@ function ai_startup(resname)
     ITEMS = json.decode(itemsFile)
     ITEMS = ITEMS
 end
-function ai_prepareVehicle(vID, pedID, pedType, vehData)
-    print("ai_pullovers-server: got data about vehicle and ped from client preparing vehicle class for mdt....")
-    print("@todo: dokonczyc przy wdrozeniu MDT.")
+
+function ai_prepareVehicle(pedID, pedType, vehID, vehData)
+    if (not PEDS[pedID]) then
+        ai_createPedClass(pedID,pedType)
+    end
+
+    local sex = "male"
+    if (pedType == 5) then
+        sex = "female"
+    end
+    local runner = vehData.runner
+    local yearOfRegistry = 2021 - math.random(1,15)
+    local monthOfRegistry = math.random(1,12)
+    local dayOfRegistry = math.random(1,28)
+    local dateOfRegistry = dayOfRegistry.."/"..monthOfRegistry.."/"..yearOfRegistry
+    local chanceToStolen = math.random(100)
+    local fName = PEDS[pedID].fName
+    local lName = PEDS[pedID].lName
+    local isStolen = false
+    if (chanceToStolen>85) then
+        fName = string.gsub(firstNames[sex][math.random(1,#firstNames[sex])],"[\n\r]","")
+        lName = string.gsub(lastNames[math.random(1,#lastNames)],"[\n\r]","")
+        isStolen = true
+    end
+    local modelName = vehData.model
+    local plate = vehData.plate
+    local color = vehData.color
+    local chanceToCheck = math.random(50)
+    local check = true
+    local dateOfCheck = math.random(1,28).."/"..math.random(1,12).."/2022"
+    if (chanceToCheck>=47) then
+        dateOfCheck = math.random(1,28).."/"..math.random(1,4).."/2021"
+        check = false
+    end
+    VEHS[vehID] = {element=vehID, inPursuit=runner,isStolen=isStolen,fName=fName,lName=lName, dateOfRegistry=dateOfRegistry,modelName=modelName,plate=plate,color=color,check=check,dateOfCheck=dateOfCheck}
+    VEHS[vehID].items = ai_generateItems(1)
 end
 
 function ai_getVehicleItems(ped,pedType,vehicle)
     if (not VEHS[vehicle]) then
-       -- ai_prepareVehicle()
-       VEHS[vehicle] = {}
+       ai_prepareVehicle(ped,pedType,vehicle)
     end
-
-    VEHS[vehicle].items = ai_generateItems(1)
     TriggerClientEvent("ai_vehItemsReturn",source,6,VEHS[vehicle])
 end
+
+function ai_searchPed(data)
+    local fName,lName = data.fName, data.lName
+    local person = false
+    for k,v in pairs(PEDS) do
+        if (string.lower(v.fName) == string.lower(fName)) and (string.lower(v.lName) == string.lower(lName)) then
+            person = v
+        end
+    end
+    return person
+end
+
+function ai_searchVeh(data)
+    local plate = data.plate
+    local vehicle = false
+    for k,v in pairs(VEHS) do
+        if (string.lower(v.plate) == string.lower(plate)) then
+            vehicle = v
+        end
+    end
+    return vehicle
+end
+
+exports("searchPed",ai_searchPed)
+exports("searchVehicle",ai_searchVeh)
 RegisterNetEvent("pullover:getPedItems")
 RegisterNetEvent("pullover:getPedData")
 RegisterNetEvent("pullover:getPedTestData")
 RegisterNetEvent("pullover:checkPedIllegality")
 RegisterNetEvent("pullover:setVehicleData")
 RegisterNetEvent("pullover:getVehicleItems")
+RegisterNetEvent("pullover:prepareVehicleClass")
+AddEventHandler("pullover:prepareVehicleClass",ai_prepareVehicle)
 AddEventHandler("pullover:getVehicleItems",ai_getVehicleItems)
 AddEventHandler("pullover:setVehicleData",ai_prepareVehicle)
 AddEventHandler("pullover:getPedItems", ai_prepareItems)

@@ -453,8 +453,6 @@ function ai_returnToVehicle(ped)
     GUI.Variables.player.inVehicle=true
     RemoveGroup(GetPedGroupIndex(GetPlayerPed(-1)))
     TaskEnterVehicle(STOPPED_PEDS[ped].ped, STOPPED_VEHS[GUI.Variables.player.currentVehicle].vehicle, -1,-1,1.0,1,0)
-    print('return to vehicle')
-    print('inVehicle:'..tostring(GUI.Variables.player.inVehicle))
     STOPPED_PEDS[ped] = nil
 end
 function ai_stopVehicle()
@@ -493,7 +491,8 @@ function ai_stopVehicle()
 end
 
 function ai_startVehiclePullover(copCar, veh, driver)
-    STOPPED_VEHS[veh.id] = {stopped=true,ped=driver.el,vehicle=veh.el,pedID=driver.id,pedType=driver.type,followMode=0,canInteract=false,cuffed=false}
+    STOPPED_VEHS[veh.id] = {stopped=true,ped=driver.el,vehicle=veh.el,pedID=driver.id,pedType=driver.type,followMode=0,canInteract=false,cuffed=false,plate=GetVehicleNumberPlateText(veh.el),color={GetVehicleColor(veh.el)},model=GetDisplayNameFromVehicleModel(GetEntityModel(veh.el))}
+    
     GUI.Variables.player.currentVehicle = veh.id
     isPerformingVehicleStop = true
     STOPPED_VEHS[veh.id].blip = AddBlipForEntity(veh.el)
@@ -510,11 +509,13 @@ function ai_startVehiclePullover(copCar, veh, driver)
         SetDriverAggressiveness(driver.el, 1.0) 
         TaskVehicleDriveWander(driver.el, veh.el, 220.0,787260)
         isFleeing = STOPPED_VEHS[veh.id]
+        STOPPED_VEHS[veh.id].runner = true
         DrawHelp("Kierowca ucieka, rusz w pościg - staraj się zablokować jego pojazd")
     else
         DrawHelp("Naciśnij ~INPUT_44A127F7~ aby zmienić pozycję zatrzymanego pojazdu")
         STOPPED_VEHS[veh.id].canInteract = true
     end
+    TriggerServerEvent("pullover:prepareVehicleClass",driver.id,driver.type,veh.id, STOPPED_VEHS[veh.id])
     local stoppedVehicle = STOPPED_VEHS[veh.id].vehicle
     GUI.Variables.player.inVehicle = true
     Citizen.CreateThread(function()
@@ -575,7 +576,6 @@ function ai_followVehicle(vehicle)
                     STOPPED_VEHS[vehicle].followMode=0
                 else
                     STOPPED_VEHS[vehicle].followMode=1
-                    print('follow')
                     TaskVehicleEscort(STOPPED_VEHS[vehicle].ped,pedVehicle,playerVehicle,-1,500.0,828,1.0,1,10.0)
                 end 
             end

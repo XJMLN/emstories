@@ -9,11 +9,9 @@ AddTextEntry("vehicleInfo","~w~Rejestracja pojazdu: ~b~~a~\n~w~Sprawdź więcej 
 function ai_prepareVehicleData(vehicleID)
     if (not vehicleID) then return end
     local vehData = STOPPED_VEHS[vehicleID]
-    local addonData = {plate=GetVehicleNumberPlateText(vehData.vehicle),color=GetVehicleColours(vehData.vehicle),model=GetDisplayNameFromVehicleModel(GetEntityModel(vehData.vehicle))}
     BeginTextCommandThefeedPost("vehicleInfo")
-    AddTextComponentString(addonData.plate)
+    AddTextComponentString(GetVehicleNumberPlateText(vehData.vehicle))
     EndTextCommandThefeedPostTicker(true,true)
-    TriggerServerEvent("pullover:setVehicleData", vehicleID, vehData.pedID,vehData.pedType,addonData)
 end
 function ai_prepareDocumentsData(documentID, ped, isVehicleStop)
     if (not ped) then return end
