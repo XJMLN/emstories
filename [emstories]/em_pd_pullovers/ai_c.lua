@@ -597,8 +597,8 @@ Citizen.CreateThread(function()
                         end
                         TaskVehicleTempAction(vehData.ped,vehData.vehicle,6,9999)
                         SetBlockingOfNonTemporaryEvents(vehData.ped,true)
-                        local playerGroupId = GetPedGroupIndex(GetPlayerPed(-1))
-                        SetPedAsGroupMember(vehData.ped,playerGroupId)
+                        --local playerGroupId = GetPedGroupIndex(GetPlayerPed(-1))
+                        --SetPedAsGroupMember(vehData.ped,playerGroupId)
                         vehData.canInteract = true
                     end
                 end
