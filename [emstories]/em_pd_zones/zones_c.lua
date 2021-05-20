@@ -25,7 +25,7 @@ function zones_startup()
         while true do
             Citizen.Wait(5000)
             local coord = GetEntityCoords(PlayerPedId())
-            local departmentID = 5
+            local departmentID = LocalPlayer.state.departmentID
             if (createdZones[departmentID]:isPointInside(coord)) then
                 leftMessageSent = false
                 if (not enterMessageSent) then
