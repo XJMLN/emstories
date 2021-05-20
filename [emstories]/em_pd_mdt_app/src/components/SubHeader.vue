@@ -18,7 +18,7 @@
           <div class="sidebar-divider"></div>
            <a href="#" class="sidebar-link" :class="{ 'active' : siteNumber === 3}" @click="changeSite(3)"><font-awesome-icon icon="pencil-alt"></font-awesome-icon> Dodaj Wykroczenie</a>
           <a href="#" class="sidebar-link">Wezwania</a>
-          <a href="#" class="sidebar-link">Departament</a>
+          <a href="#" class="sidebar-link" :class="{ 'active' : siteNumber === 4}" @click="changeSite(4)"><font-awesome-icon icon="building"></font-awesome-icon> Departament</a>
         </div>
       </div>
   </fragment>

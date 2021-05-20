@@ -13,6 +13,9 @@
             <div class="w-full h-full d-flex" v-if="site == 3" :key="site">
                 <mdt-citation :addCitationSuccess="addCitationSuccess" :citationsData="citationsData" :inputCitationForm="inputCitationForm" :sendNUICallback="sendCallback" :addCitationError="addCitationError"></mdt-citation>
             </div>
+            <div class="w-full h-full d-flex" v-if="site == 4" :key="site">
+                <mdt-department :departmentData="departmentData"></mdt-department>
+            </div>
         </div>
     </main>
 </template>
@@ -22,6 +25,7 @@ import SubHeader from './components/SubHeader';
 import PersonPage from './components/PersonPage';
 import VehiclePage from './components/VehiclePage';
 import CitationPage from './components/CitationPage';
+import DepartmentPage from './components/DepartmentPage';
 import Nui from './utils/Nui';
 const halfmoon = require("halfmoon");
 require("halfmoon/css/halfmoon-variables.min.css");
@@ -34,7 +38,8 @@ export default {
         'mdt-subheader':SubHeader,
         'mdt-person':PersonPage,
         'mdt-vehicle':VehiclePage,
-        'mdt-citation':CitationPage
+        'mdt-citation':CitationPage,
+        'mdt-department':DepartmentPage
     },
     
     data() {
@@ -46,6 +51,7 @@ export default {
            vehicleSearchError: false,
            addCitationError: '',
            addCitationSuccess: false,
+           departmentData: {},
            inputDataVehicle: {
                plate:'',
            },
@@ -120,6 +126,8 @@ export default {
         sendPlayerData: function(event) {
             this.playerData = event.data.playerData;
             this.citationsData = event.data.citations;
+            this.departmentData = event.data.departmentData;
+            console.log(this.departmentData);
         },
         renderApp: function(state){
             if (state) {
