@@ -16,6 +16,42 @@ MISSIONS = {
         },
         code=3,
     },
+	{
+		id=2,
+		title="Eskorta pojazdu",
+		locations={
+			[5] = {
+				{x=397.83,y=-1597.92,z=28.87,heading=228.75,escortID=2},
+				{x=228.79,y=-1417.14,z=28.95,heading=58.91,escortID=2},
+				{x=-40.96,y=-685.21,z=32,heading=94.73,escortID=1},
+				{x=-1033.21,y=-2731.17,z=19.71,heading=242.57,escortID=3},
+			},
+			[6] = {
+				{},
+			},
+			[7] = {
+
+			}
+		},
+		code=3,
+	},
+	{
+		id=3,
+		title="Rowerzysta na autostradzie",
+		locations={
+			[5] = {
+				{x=-412.49,y=-489.38,z=24.83,heading=92.49},
+
+			},
+			[6] = {
+				{},
+			},
+			[7] = {
+				{},
+			}
+		},
+		code=3,
+	}
 }
 
 VEHICLES = {"mule","mule2","mule3","mule4","blista","club","dilettante","panto","oracle","felon2","felon","dloader","baller","huntley","landstalker","granger","gresley","bjxl","xls","serrano","emperor2","primo","premier","regina","stratum","sadler","speedo4","minivan","burrito","journey","surfer","rumpo"}

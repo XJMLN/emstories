@@ -1,44 +1,16 @@
 local calloutData = {ped=nil, veh=nil,blip=nil, stopped=false,started=false}
-local MISSION_ID = 1
-function GetVehHealthPercent(vehicle)
-	local vehiclehealth = GetEntityHealth(vehicle) - 100
-	local maxhealth = GetEntityMaxHealth(vehicle) - 100
-	local procentage = (vehiclehealth / maxhealth) * 100
-	return procentage
-end
-function loadAnimDict( dict )
-	while ( not HasAnimDictLoaded( dict ) ) do
-		RequestAnimDict( dict )
-		Citizen.Wait( 0 )
-	end
-end
+local MISSION_ID = 3
+local vehicleModels = {"bmx","cruiser","fixter","scorcher","tribike","tribike2","tribike3"}
+
 function DrawHelp(text)
 	SetTextComponentFormat("STRING")
 	AddTextComponentString(text)
 	DisplayHelpTextFromStringLabel(0, false, 1, 0)
 end
-
-Citizen.CreateThread(function()
-    while true do
-        if (calloutData.started) then
-            if (not DoesEntityExist(calloutData.ped) or not DoesEntityExist(calloutData.veh)) then
-                DeleteEntity(calloutData.ped)
-                DeleteEntity(calloutData.veh)
-                DeleteEntity(calloutData.blip)
-                calloutData = {ped=nil, veh=nil,blip=nil, stopped=false,started=false}
-                TriggerServerEvent("pdCallout:end",MISSION_ID,true)
-            end
-        end
-        Citizen.Wait(0)
-    end
-end)
 function pdCallout_startupMission(id,data,coords)
     if (id ~= MISSION_ID) then return end
-    print(coords['x']..","..coords.y..","..coords.z)
     local coords = coords
-
-    local player = source
-    local vehicleModel = GetHashKey(VEHICLES[math.random(1,#VEHICLES)])
+    local vehicleModel = GetHashKey(vehicleModels[math.random(1,#vehicleModels)])
     local npcModel = GetHashKey(PEDS[math.random(1,#PEDS)])
     RequestModel(npcModel)
     RequestModel(vehicleModel)
@@ -64,14 +36,15 @@ function pdCallout_startupMission(id,data,coords)
     SetBlipRoute(blip, true)
     SetBlipRouteColour(blip, 1)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString("Wezwanie: Pojazd na wstecznym")
+    AddTextComponentString("Wezwanie: Rowerzysta na autostradzie")
     EndTextCommandSetBlipName(blip)
     calloutData.ped = ped
     calloutData.veh = veh
+    calloutData.coords = coords
     calloutData.blip = blip
     SetDriverAbility(ped,1.0)
     SetDriverAggressiveness(ped,1.0)
-    TaskVehicleDriveWander(ped,veh, 100.0, 1596)
+    TaskVehicleDriveWander(ped,veh, 100.0, 60)
     calloutData.pedType = GetPedType(ped)
     calloutData.pedID = NetworkGetNetworkIdFromEntity(calloutData.ped)
     calloutData.started = true
@@ -83,17 +56,15 @@ function pdCallout_startupMission(id,data,coords)
         calloutData.vehID  = NetworkGetNetworkIdFromEntity(calloutData.veh)
     end
     SetBlockingOfNonTemporaryEvents(calloutData.ped,true)
+    DrawHelp("Podążaj za rowerzystą. ~r~Nie zabijaj go~w~.")
     Citizen.CreateThread(function()
         while true do
-            if (calloutData.ped and calloutData.veh) then
-                local hpEngine = GetVehHealthPercent(calloutData.veh)
-                if (hpEngine<=25) then
-                    if (not calloutData.stopped) then
-                        --DrawHelp("Uciekająca osoba zatrzymała się. Możesz przystąpić do zatrzymania.")
-                        TaskVehicleTempAction(calloutData.ped,calloutData.veh,6,9999)
-                        calloutData.stopped = true
-                        exports.em_pd_pullovers:ai_startVehiclePullover(GetVehiclePedIsIn(GetPlayerPed(-1),false),{el=calloutData.veh, id=calloutData.vehID}, {el=calloutData.ped, id=calloutData.pedID, type=calloutData.pedType})
-                    end
+            if (calloutData.ped and calloutData.veh and not calloutData.stopped) then
+                local bikePos = GetEntityCoords(calloutData.veh)
+                if (GetDistanceBetweenCoords(bikePos.x, bikePos.y, bikePos.z,calloutData.coords.x,calloutData.coords.y,calloutData.coords.z,false)>=900) then
+                    TaskVehicleTempAction(calloutData.ped,calloutData.veh,6,9999)
+                    calloutData.stopped = true
+                    exports.em_pd_pullovers:ai_startVehiclePullover(GetVehiclePedIsIn(GetPlayerPed(-1),false),{el=calloutData.veh, id=calloutData.vehID}, {el=calloutData.ped, id=calloutData.pedID, type=calloutData.pedType})
                 end
             end
             Citizen.Wait(0)

@@ -23,20 +23,22 @@ function pdCallout_create(missionData, player)
     TriggerClientEvent("pdCallout:create",player,missionData)
 end
 
-function pdCallout_end(missionID)
+function pdCallout_end(missionID, success)
     if (playersOnMission[missionID]) then
         for i,v in ipairs(playersOnMission[missionID]) do
             playersMission[1][v] = nil
             playersOnMission[missionID] = nil
-            exports.em_core:givePlayerXP(40, v)
-            TriggerClientEvent("3dtext:DrawNotification",v,"SYSTEM","SYSTEM","Otrzymujesz ~g~40~w~ XP za wykonane wezwanie.",true)
+			if (success) then
+            	exports.em_core:givePlayerXP(40, v)
+            	TriggerClientEvent("3dtext:DrawNotification",v,"SYSTEM","SYSTEM","Otrzymujesz ~g~40~w~ XP za wykonane wezwanie.",true)
+			end
         end
     end
 end
 Citizen.CreateThread(function()
     while true do
 		Citizen.Wait(5000)
-		local randomMission = table.random(MISSIONS)
+		local randomMission = 3
 		if (randomMission) then
 			if (playersOnMission[MISSIONS[randomMission].id]) then return end
 			local allPlayers = exports.em_core:PlayersGetAllPlayers()
