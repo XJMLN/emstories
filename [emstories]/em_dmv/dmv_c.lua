@@ -186,6 +186,7 @@ function dmv_startExam(ID)
         pedVehicle = CreateVehicle(GetHashKey("dilettantedl"),-1322.8,-393.0,35.95,31.86,true,false)
         ped = CreatePedInsideVehicle(pedVehicle,26,INSTRUCTOR_MODEL,-1,true,false)
         SetEntityAsMissionEntity(pedVehicle,true,true)
+        SetVehicleColours(playerVehicle,38,38)
     end
 
     if (ID == 'pjB' or ID == 'pjC') then
