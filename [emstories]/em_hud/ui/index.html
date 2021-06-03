@@ -41,16 +41,14 @@
 			<h5 v-else><i class="icon white map marker alternate"></i> {{ zone }}, {{ street }}</h5>
 		</div>
     <div class="navbar" v-if="!showAllData">
-      <center>
-      <h5 v-if="isTalking"><i class="microphone icon white" style="color: #4fff8d;"></i></h5>
-      <h5 v-if="!isTalking"><i class="microphone icon white"></i></h5>
-      <h5><a style="color:#4fff8d;padding:0;">$</a>{{ money }}</h5>
+      <h5 v-if="isTalking" style="margin-right: 300px !important;"><i class="microphone icon white" style="color: #4fff8d;"></i></h5>
+      <h5 v-if="!isTalking" style="margin-right: 300px !important;"><i class="microphone icon white"></i></h5>
+      <h5><a style="color:#4fff8d;padding:0;" style="margin-right:300px !important;">$</a>{{ money }}</h5>
       <h5 v-if="vehicle"><i class="icon white tachometer alternate"></i> {{ speed }} km/h</h5>
       <h5 v-if="vehicle && fuel>50"><a style="color:#4fff8d;padding:0;"><i style="color:white;" class="fas fa-gas-pump"></i> {{ fuel }}</a> l</h5>
       <h5 v-if="vehicle && fuel<50"><a style="color:rgb(255, 160, 79);padding:0;"><i style="color:white;" class="fas fa-gas-pump"></i> {{ fuel }}</a> l</h5>
-      <h5 v-if="street == ''"><i class="icon white map marker alternate"></i> {{ zone }}</h5>
-			<h5 v-else><i class="icon white map marker alternate"></i> {{ zone }}, {{ street }}</h5>
-      </center>
+      <h5 v-if="street == ''" style="right:0; position: absolute;"><i class="icon white map marker alternate"></i> {{ zone }}</h5>
+			<h5 v-else style="right:0; position: absolute;"><i class="icon white map marker alternate"></i> {{ zone }}, {{ street }}</h5>
     </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
