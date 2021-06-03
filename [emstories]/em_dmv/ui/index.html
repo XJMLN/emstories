@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <title>sGaming.pl - Zarządzanie kontem</title>
+    <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+  />
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+/>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css" />
+  <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"
+  ></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+  <script src="lib/axios.min.js"></script>
+  <style>
+    #dmv {
+font-family:Roboto;
+font-weight:normal;
+min-height: 185px;
+margin-left: auto;
+margin-right: auto;
+  margin-top: 20%;
+  width: 49%;
+    }
+  </style>
+  </head>
+  <body>
+    <body style="height:50% !important;">
+        <div v-show="showDMV" id="dmv">
+          <div class="ui attached segment">
+            <div class="ui cards">
+                <div class="card">
+                  <div class="content">
+                    <div class="header">Kategoria A</div>
+                    <div class="description">
+                      Prawo jazdy na motocykl<br><b>Koszt: $300.</b>
+                    </div>
+                  </div>
+                  <div class="ui bottom attached button" @click="startExam('pjA')">
+                    <i class="motorcycle icon"></i>
+                    Rozpocznij egzamin
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="content">
+                    <div class="header">Kategoria B</div>
+                    <div class="description">
+                      Prawo jazdy na pojazdy osobowe<br><b>Koszt: $300.</b>
+                    </div>
+                  </div>
+                  <div class="ui bottom attached button" @click="startExam('pjB')">
+                    <i class="car icon"></i>
+                    Rozpocznij egzamin
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="content">
+                    <div class="header">Kategoria C</div>
+                    <div class="description">
+                      Prawo jazdy na pojazdy ciężarowe<br><b>Koszt: $300.</b>
+                    </div>
+                  </div>
+                  <div class="ui bottom attached button" @click="startExam('pjC')">
+                    <i class="truck icon"></i>
+                    Rozpocznij egzamin
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="ui bottom attached clearing segment">
+            <button class="ui right floated red button" @click="closeDMV()">
+              Zamknij
+            </button>
+          </div>
+          <div v-if="showsError" class="ui bottom attached error message">
+            <i class="info icon"></i>
+            {{ errorMsg }}
+          </div>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
