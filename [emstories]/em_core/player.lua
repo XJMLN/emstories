@@ -51,9 +51,11 @@ Players.load = function(identifier, playerId, callback)
             level = tonumber(row.level),
             vip = false,
             factionDuty = false,
+            pj = json.decode(row.driver_licenses)
         }
         Players.set(playerId,userData)
         Player(playerId).state.level = tonumber(row.level)
+        Player(playerId).state.pj = row.driver_licenses
         if (callback ~= nil) then
             callback(callback)
         end
