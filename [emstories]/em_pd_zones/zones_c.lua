@@ -26,14 +26,14 @@ function zones_startup()
             Citizen.Wait(5000)
             local coord = GetEntityCoords(PlayerPedId())
             local departmentID = LocalPlayer.state.departmentID
-            if (departmentID > 0 and createdZones[departmentID] and createdZones[departmentID]:isPointInside(coord)) then
+            if (departmentID and departmentID > 0 and createdZones[departmentID] and createdZones[departmentID]:isPointInside(coord)) then
                 leftMessageSent = false
                 if (not enterMessageSent) then
                     DrawNotification("Centrala","Informacja","CHAR_CALL911",1,false,"patrolZoneInNotification")
                     enterMessageSent = true
                 end
             else
-                if (not messageSent and departmentID >0) then
+                if (not messageSent and departmentID and departmentID >0) then
                     DrawNotification("Centrala","Informacja","CHAR_CALL911",1,false,"patrolZoneOutNotification")
                     messageSent = true
                     enterMessageSent = false
