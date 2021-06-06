@@ -1,4 +1,7 @@
 Citizen.CreateThread(function()
+	for i = 1, 32 do
+        EnableDispatchService(i, false)
+    end
 	while true do
 	    SetVehicleDensityMultiplierThisFrame(0.6)
 	    SetPedDensityMultiplierThisFrame(0.6)
