@@ -149,6 +149,28 @@ function ai_checkIllegality(ped,pedType)
         grantReward = true
     end
 
+    local vehicle = PEDS[ped].vehicle
+    if (vehicle and vehicle>0) then
+        local isStolen = VEHS[vehicle].isStolen
+        local check = VEHS[vehicle].check
+        local inPursuit = VEHS[vehicle].inPursuit
+
+        if (isStolen) then
+            grantReward = true
+        end
+
+        if (not check) then
+            grantReward = true
+        end
+
+        if (inPursuit) then
+            grantReward = true
+        end
+        local vItems = VEHS[vehicle].items
+        if (string.find(vItems,"~r~")) then 
+            grantReward = true
+        end
+    end
     if (grantReward) then
         exports.em_core:givePlayerXP(CONFIG_PULLOVER_XP,source)
     end
@@ -211,6 +233,7 @@ function ai_prepareVehicle(pedID, pedType, vehID, vehData)
     end
     VEHS[vehID] = {element=vehID, inPursuit=runner,isStolen=isStolen,fName=fName,lName=lName, dateOfRegistry=dateOfRegistry,modelName=modelName,plate=plate,color=color,check=check,dateOfCheck=dateOfCheck}
     VEHS[vehID].items = ai_generateItems(1)
+    PEDS[pedID].vehicle = vehID
 end
 
 function ai_getVehicleItems(ped,pedType,vehicle)

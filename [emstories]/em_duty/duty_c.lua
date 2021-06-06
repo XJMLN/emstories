@@ -147,12 +147,14 @@ function duty_prepareMenu(data,factionID,departmentID)
 end
 
 function setVehicleExtras(veh,data)
-    local data = json.decode(data)
+    for i,v in ipairs(getAvailableExtras(veh)) do
+        SetVehicleExtra(veh,v.id,0)
+    end
     for i,v in ipairs(data) do
         SetVehicleExtra(veh,v.id,v.state)
     end
 end
-function duty_createVehicle(vehData)
+function duty_createVehicle(vehData,vehExtras)
     local hash = vehData['hash']
     local playerPed = PlayerPedId()
 
@@ -171,9 +173,7 @@ function duty_createVehicle(vehData)
     local spawnHeading = spawnData['heading']
     vehicles[playerPed] = {}
     vehicles[playerPed].vehicle = CreateVehicle(hash,spawnData[1],spawnData[2],spawnData[3],spawnHeading, true,false)
-    if (vehData['type'] == 0) then
-        setVehicleExtras(vehicles[playerPed].vehicle,vehData['extras'])
-    end
+    setVehicleExtras(vehicles[playerPed].vehicle,vehExtras)
     SetVehicleLivery(vehicles[playerPed].vehicle,vehData['livery'])
     SetVehicleOnGroundProperly(vehicles[playerPed].vehicle)
     SetModelAsNoLongerNeeded(hash)
@@ -182,7 +182,7 @@ function duty_createVehicle(vehData)
     Citizen.Wait(5000)
     TriggerServerEvent("em_duty:ghost",false)
 end
-function startDuty(vehData)
+function startDuty(vehData,vehExtras)
     local playerPed = GetPlayerPed(-1)
     
     DoScreenFadeOut(1000)
@@ -196,7 +196,7 @@ function startDuty(vehData)
     SetEntityCoords(playerPed, loc[1],loc[2],loc[3])
 	SetEntityHeading(playerPed, 90.00)
 	Wait(1000)
-    duty_createVehicle(vehData)
+    duty_createVehicle(vehData,vehExtras)
     DisplayRadar(true)
 	DoScreenFadeIn(1000)
     TriggerServerEvent("em_duty:startPlayerDuty",plrFactionID,plrDepartmentID)
@@ -236,12 +236,16 @@ function showRoom(hash)
     FreezeEntityPosition(vehicleRoom,true)
 end
 
-function getAvailableExtras()
+function getAvailableExtras(veh)
     local vehicleExtras = {}
-    if (vehicleRoom and DoesEntityExist(vehicleRoom)) then
+    local vehicleRooms = vehicleRoom
+    if (not vehicleRooms and not DoesEntityExist(vehicleRooms)) then
+        vehicleRooms = veh
+    end
+    if (vehicleRooms and DoesEntityExist(vehicleRooms)) then
         for i=0,20 do
-            if (DoesExtraExist(vehicleRoom, i)) then
-                table.insert(vehicleExtras,{extraId=i,Name="Dodatek #"..i, state=(IsVehicleExtraTurnedOn(vehicleRoom, i) == 1)})
+            if (DoesExtraExist(vehicleRooms, i)) then
+                table.insert(vehicleExtras,{extraId=i,Name="Dodatek #"..i, state=(IsVehicleExtraTurnedOn(vehicleRooms, i) == 1)})
             end
         end
     end
@@ -278,6 +282,7 @@ function backToDefault()
     end
 end
 function setGarageCam()
+    RageUI.Visible(MENUS['MainMenu'], false)
     local playerPed = PlayerPedId()
     FreezeEntityPosition(GetPlayerPed(-1), false)
     DoScreenFadeOut(1000)
@@ -304,7 +309,7 @@ function setGarageCam()
     SetEntityHeading(GetPlayerPed(-1), 160.66)
     Citizen.Wait(2000)
     DoScreenFadeIn(2000)
-    RageUI.Visible(MENUS['MainMenu'], false)
+    
     RageUI.Visible(MENUS['garage'], true)
     MENUS.garage.Controls.Back.Enabled = true
     Citizen.Wait(500)
@@ -353,4 +358,14 @@ function duty_endDuty()
 end
 exports("playerEndDuty",duty_endDuty)
 RegisterNetEvent("em_duty_client:returnDepartmentData")
+RegisterNetEvent("em_core_client:PlayerDropped")
+AddEventHandler("em_core_client:PlayerDropped",function()
+    local playerPed = PlayerPedId()
+    if (vehicles[PlayerPedId()]) then
+        NetworkRequestControlOfEntity(vehicles[playerPed].vehicle)
+        SetEntityAsMissionEntity(vehicles[playerPed].vehicle,true,true)
+        DeleteVehicle(vehicles[playerPed].vehicle)
+        vehicles[playerPed] = nil
+    end
+end)
 AddEventHandler("em_duty_client:returnDepartmentData",duty_prepareMenu)

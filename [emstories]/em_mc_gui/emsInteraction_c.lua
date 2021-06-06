@@ -3,6 +3,13 @@ local canOpenInteraction = false
 local ped = false
 local pedData = {}
 
+function loadAnimDict( dict )
+	while ( not HasAnimDictLoaded( dict ) ) do
+		RequestAnimDict( dict )
+		Citizen.Wait( 0 )
+	end
+end
+
 local function GetPedInFront()
 	local player = PlayerId()
 	local plyPed = GetPlayerPed(player)
@@ -52,10 +59,13 @@ function emsInteraction_gui()
     end
 end
 
+function restartVariable()
+    SendNUIMessage({type="updatePedData",data={{temp="Brak informacji",puls="Brak informacji",diagnose="Brak informacji",taskList="Zbyt mało informacji aby określić diagnozę."}}})
+end
+local inInteraction = false
 function emsInteraction_action(response, cb)
-    if (not isInteractionWindowOpen) then print('xD') return end
+    if (not isInteractionWindowOpen) then return end
     local actionID = response.actionID 
-    print(actionID)
     if (actionID == -1) then
         emsInteraction_gui()
         cb("ok")
@@ -70,26 +80,54 @@ function emsInteraction_action(response, cb)
         SendNUIMessage({type="updatePedData",data=pedData})
     end
     if (actionID == 3) then
-        pedData.diagnose = exports.em_mc_callouts:GetPedSickType()
+        if (inInteraction) then
+            DrawHelp("Wykonujesz aktualnie czynność. Poczekaj aż ją skończysz.")
+            return
+        end
+        inInteraction = true
+        loadAnimDict("random@train_tracks")
+        pedData.diagnose = exports.em_callouts:GetPedSickType()
+        TaskPlayAnim(GetPlayerPed(-1),"random@train_tracks","idle_e",2.0,2.0,-1,0,0,false,false,false)
+        Wait(4500)
+        inInteraction = false
         SendNUIMessage({type="updatePedData",data=pedData})
     end
     if (actionID == 4) then
-        exports.em_mc_callouts:TaskWatcher_completeID(1)
-        --@todo some animations export
+        if (inInteraction) then
+            DrawHelp("Wykonujesz aktualnie czynność. Poczekaj aż ją skończysz.")
+            return
+        end
+        inInteraction = true
+        loadAnimDict("gestures@f@standing@casual")
+        exports.em_callouts:TaskWatcher_completeID(1)
+        TaskPlayAnim(GetPlayerPed(-1),"gestures@f@standing@casual","gesture_hand_down",2.0,2.0,-1,0,0,false,false,false)
+        Wait(2500)
+        inInteraction = false
+        ClearPedTasks(GetPlayerPed(-1))
     end
     if (actionID == 5) then
-        exports.em_mc_callouts:TaskWatcher_completeID(2)
+        if (inInteraction) then
+            DrawHelp("Wykonujesz aktualnie czynność. Poczekaj aż ją skończysz.")
+            return
+        end
+        inInteraction = true
+        loadAnimDict("anim@amb@clubhouse@tutorial@bkr_tut_ig3@")
+        exports.em_callouts:TaskWatcher_completeID(2)
+        TaskPlayAnim(GetPlayerPed(-1),"anim@amb@clubhouse@tutorial@bkr_tut_ig3@","machinic_loop_mechandplayer",2.0,2.0,-1,0,0,false,false,false)
+        Wait(5000)
+        inInteraction = false
+        ClearPedTasks(GetPlayerPed(-1))
     end
     if (actionID == 6) then
         emsInteraction_gui()
         cb('ok')
         exports.em_mc_stretcher:putNPCOnStretcher(ped)
-        exports.em_mc_callouts:TaskWatcher_completeID(3)
+        exports.em_callouts:TaskWatcher_completeID(3)
         
 
     end
     if (pedData.diagnose and pedData.puls and pedData.temp) then
-        pedData.taskList = exports.em_mc_callouts:GetTaskList()
+        pedData.taskList = exports.em_callouts:GetTaskList()
         SendNUIMessage({type="updatePedData",data=pedData})
     end
     cb("ok")
@@ -129,6 +167,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(10)
     end
 end)
+exports("restartVariables",restartVariable)
 RegisterNUICallback("Interaction",emsInteraction_action)
 RegisterCommand("openPedInteractionMenu",emsInteraction_gui)
 RegisterKeyMapping("openPedInteractionMenu","EMS: Interakcja z poszkodowanym","keyboard","e")

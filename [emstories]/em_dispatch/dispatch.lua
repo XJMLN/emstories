@@ -9,19 +9,7 @@ function dispatch_accepted(missionData)
     local FactionID = player.factionID
     local departmentID = player.departmentID
     local callsign = player.callsign
-    if (FactionID == 3) then
-        if (systemData.type == 'fire') then
-            exports.em_fd_callouts:fireSystem_createFire(systemData.id,source)
-        end
-        if (systemData.type == 'vehicle') then
-            exports.em_fd_callouts:accidentSystem_create(missionData, source)
-        end
-    end
-    if (FactionID == 2) then
-        if (systemData.type == 'ped') then
-            exports.em_mc_callouts:pedSystem_create(missionData, source)
-        end
-    end
+    exports.em_callouts:callouts_start(missionData,source)
     exports.em_discord:onDispatchAccept(FactionID,departmentID,callsign,missionData)
 end
 

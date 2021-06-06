@@ -45,7 +45,7 @@ Citizen.CreateThread(function()
             onSelected = function()
                 if menusVariables.skinSelected and menusVariables.vehicleSelected then
                     RageUI.Visible(MENUS['MainMenu'],false)
-                    startDuty(menusVariables.vehicleData)
+                    startDuty(menusVariables.vehicleData,menusVariables.extras)
                 else
                     menusVariables.error = true
                 end
@@ -87,7 +87,8 @@ Citizen.CreateThread(function()
                     showRoom(vehicles[0][menusVariables.vehiclesUMarkIndex]['hash'])
                     local item = vehicles[0][menusVariables.vehiclesUMarkIndex]
                     menusVariables.vehicleSelected = true
-                    menusVariables.showExtras = false
+                    menusVariables.showExtras = true
+                    menusVariables.extras = getAvailableExtras()
                     menusVariables.vehicleData = item
                 end,
                 onListChange = function(Index, Items)
@@ -102,10 +103,10 @@ Citizen.CreateThread(function()
                 for i,v in ipairs(menusVariables.extras) do
                     RageUI.Checkbox(v.Name, "Dodaj/Usuń dodatek", v.state, {}, {
                         onChecked = function()
-                            v.state = true
+                            v.state = 1
                         end,
                         onUnChecked = function()
-                            v.state = false
+                            v.state = 0
                         end,
                         onSelected = function(Index)
                             local state = 0

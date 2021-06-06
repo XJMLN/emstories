@@ -1,4 +1,4 @@
-var icon = {
+ var icon = {
     cross: "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z",
 };
 
@@ -29,7 +29,9 @@ const emsInteraction = new Vue({
             this.wheel.colors = ['#424242']
             this.wheel.titleWidth = 40
             this.wheel.titleHeight = 40
-            
+            if (this.pedData.temp >0) {
+                this.pedData.temp = this.pedData.temp.toFixed(2);
+            }
             this.wheel.spreaderOutTitle = icon.cross;
             var images = ["imgsrc:actions/testy.png","imgsrc:actions/bag.png"];
             if (this.stretcher) {
@@ -44,9 +46,7 @@ const emsInteraction = new Vue({
                 emsInteraction.description = ""
             })
             this.wheel.navItems[0].navSlice.mousedown(function(){
-                console.log('test')
                 if (emsInteraction.bag) {
-                    
                     emsInteraction.showCategory(0)
                 }
             })
@@ -170,7 +170,9 @@ const emsInteraction = new Vue({
         showInformations(data){
             this.pedData = data;
             this.showPedData = true
-
+            if (this.pedData.temp) {
+                this.pedData.temp = this.pedData.temp.toFixed(1);
+            }
         },
         updateInformations(data) {
             this.pedData = data

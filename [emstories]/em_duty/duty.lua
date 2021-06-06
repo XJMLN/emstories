@@ -10,7 +10,7 @@ local departmentNames = {
 
 function duty_getDepartmentData(plr,fid,did,rid,sex)
     local plr = plr
-    MySQL.Async.fetchAll("SELECT s.skin_data,s.skin_id,s.name,v.vehicle_desc,v.vehicle_hash,v.vehicle_extras,v.vehicle_livery,v.vehicle_type FROM em_departments_skins s LEFT JOIN em_departments_vehicles v ON v.department_id=@did AND v.rank_id=@rid WHERE s.department_id=@did AND s.rank_id<=@rid AND s.skin_sex=@sex",{
+    MySQL.Async.fetchAll("SELECT s.skin_data,s.skin_id,s.name,v.vehicle_desc,v.vehicle_hash,v.vehicle_extras,v.vehicle_livery,v.vehicle_type FROM em_departments_skins s LEFT JOIN em_departments_vehicles v ON v.department_id=@did AND v.rank_id<=@rid WHERE s.department_id=@did AND s.rank_id<=@rid AND s.skin_sex=@sex",{
         ['@did']=did,
         ['@rid']=rid,
         ['@did']=did,

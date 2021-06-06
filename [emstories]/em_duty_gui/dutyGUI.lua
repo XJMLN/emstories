@@ -1,3 +1,5 @@
+
+
 function duty_checkPlayerFaction()
     local playerId = source
     local playerData = exports.em_core:PlayersGetPlayerFromId(source)
@@ -14,6 +16,7 @@ function duty_endPlayerDuty()
     exports.em_core:unsetPlayerDuty(playerId)
     exports.em_spawnSelection:spawnSelection_server_init(playerId)
 end
+
 RegisterNetEvent("em_duty_gui:checkPlayerFaction")
 AddEventHandler("em_duty_gui:checkPlayerFaction",duty_checkPlayerFaction)
 RegisterNetEvent("em_duty_gui:endDuty")
