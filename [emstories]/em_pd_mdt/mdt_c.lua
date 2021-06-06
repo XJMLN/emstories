@@ -1,6 +1,7 @@
 local isMDTOpened = false
 local policeCars = {
-    ['14pdcharger']=true
+    ['14pdcharger']=true,
+    ['16pdfpiu']=true
 }
 
 local function getPlayerElementData()
