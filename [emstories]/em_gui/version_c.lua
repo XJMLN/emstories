@@ -11,7 +11,7 @@ Citizen.CreateThread(function()
             SetTextDropShadow()
             SetTextOutline()
             SetTextEntry("STRING")
-            AddTextComponentString("Emergency Stories: Alpha")
+            AddTextComponentString("Emergency Stories: Beta")
             DrawText(0.005, 0.005)
 end
 end)
