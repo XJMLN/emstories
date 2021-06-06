@@ -3,6 +3,7 @@ local isPlayerInExam = false
 local ped = nil 
 local playerVehicle = nil
 local pedVehicle = nil
+local checkpoints = {}
 local currentPoint = 1
 local VEHICLE_DATA = {
     -- C
@@ -163,7 +164,11 @@ end
 function dmv_showError(text)
     SendNUIMessage({type="showError",data=text})
 end
-
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
 function dmv_startExam(ID)
     if (not isDMVOpened) then return end
     local ID = ID
@@ -198,18 +203,29 @@ function dmv_startExam(ID)
     TaskVehicleEscort(ped,pedVehicle,playerVehicle,-1,90.0,60,5.0,true,10.0)
     
     isPlayerInExam = true
+    for i,v in ipairs(TRACKS[ID]) do
+        local checkpoint
+        if (i+1 == tablelength(TRACKS[ID])) then
+            checkpoint = CreateCheckpoint(4, v[1],v[2],v[3]-0.5,v[1],v[2],v[3], 2.0, 255, 125, 0, 125, 0)
+        else
+            checkpoint = CreateCheckpoint(0, v[1],v[2],v[3]-0.5,TRACKS[ID][i+1][1],TRACKS[ID][i+1][2],TRACKS[ID][i+1][3], 2.0, 255, 125, 0, 125, 0)
+        end
+        checkpoints[i] = checkpoint
+    end
     Citizen.CreateThread(function()
         while true do
             if (isPlayerInExam) then
                 if (GetVehiclePedIsIn(PlayerPedId(),false) == playerVehicle) then
+                    SetVehicleDoorsLocked(playerVehicle,4)
                     SetEntityMaxSpeed(playerVehicle,32/2.236936)
                     local current = TRACKS[ID][currentPoint]
-                    DrawMarker(1,current[1],current[2],current[3],0.0,0.0,0.0,0,180.0,0.0,2.5,2.5,2.5,122,199,74,90,false,true,2,nil,nil,false)
                     local vehCoord = GetEntityCoords(playerVehicle,false)
                     if (GetDistanceBetweenCoords(current[1],current[2],current[3],vehCoord[1],vehCoord[2],vehCoord[3])<2.5) then
+                        DeleteCheckpoint(checkpoints[currentPoint])
                         if (TRACKS[ID][currentPoint].last) then
                             DeleteEntity(playerVehicle)
                             DeleteEntity(ped)
+                            
                             if (DoesEntityExist(pedVehicle)) then
                                 DeleteEntity(pedVehicle)
                             end
