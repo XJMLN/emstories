@@ -52,7 +52,6 @@ function armory_getWeapons()
         end)
     end
 end
-
 RegisterNetEvent("armory:checkout")
 RegisterNetEvent("armory:getUserData")
 RegisterNetEvent("armory:getUserWeapons")
