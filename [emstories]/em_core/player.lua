@@ -141,6 +141,7 @@ end)
 
 AddEventHandler('playerDropped', function (reason)
     Players.all[tostring(source)]=nil
+    TriggerClientEvent("em_core_client:PlayerDropped",source)
     TriggerEvent("em_core:playerDropped",source)
 end)
   
