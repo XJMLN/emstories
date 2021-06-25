@@ -148,10 +148,10 @@ end
 
 function setVehicleExtras(veh,data)
     for i,v in ipairs(getAvailableExtras(veh)) do
-        SetVehicleExtra(veh,v.id,0)
+        SetVehicleExtra(veh,v.extraId,1)
     end
     for i,v in ipairs(data) do
-        SetVehicleExtra(veh,v.id,v.state)
+        SetVehicleExtra(veh,v.extraId,v.extraState)
     end
 end
 function duty_createVehicle(vehData,vehExtras)
@@ -173,10 +173,11 @@ function duty_createVehicle(vehData,vehExtras)
     local spawnHeading = spawnData['heading']
     vehicles[playerPed] = {}
     vehicles[playerPed].vehicle = CreateVehicle(hash,spawnData[1],spawnData[2],spawnData[3],spawnHeading, true,false)
-    setVehicleExtras(vehicles[playerPed].vehicle,vehExtras)
+    
     SetVehicleLivery(vehicles[playerPed].vehicle,vehData['livery'])
     SetVehicleOnGroundProperly(vehicles[playerPed].vehicle)
     SetModelAsNoLongerNeeded(hash)
+    setVehicleExtras(vehicles[playerPed].vehicle,vehExtras)
     SetEntityAsMissionEntity(vehicles[playerPed].vehicle,true,true)
     SetPedIntoVehicle(playerPed,vehicles[playerPed].vehicle,-1)
     Citizen.Wait(5000)
@@ -245,7 +246,8 @@ function getAvailableExtras(veh)
     if (vehicleRooms and DoesEntityExist(vehicleRooms)) then
         for i=0,20 do
             if (DoesExtraExist(vehicleRooms, i)) then
-                table.insert(vehicleExtras,{extraId=i,Name="Dodatek #"..i, state=(IsVehicleExtraTurnedOn(vehicleRooms, i) == 1)})
+                SetVehicleExtra(vehicleRooms,i,1)
+                table.insert(vehicleExtras,{extraId=i,Name="Dodatek #"..i, state=false, extraState=1})
             end
         end
     end

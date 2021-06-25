@@ -103,17 +103,14 @@ Citizen.CreateThread(function()
                 for i,v in ipairs(menusVariables.extras) do
                     RageUI.Checkbox(v.Name, "Dodaj/Usuń dodatek", v.state, {}, {
                         onChecked = function()
-                            v.state = 1
+                            v.state = true
+                            v.extraState = 0
+                            SetVehicleExtra(vehicleRoom,v.extraId,v.extraState)
                         end,
                         onUnChecked = function()
-                            v.state = 0
-                        end,
-                        onSelected = function(Index)
-                            local state = 0
-                            if (not v.state) then
-                                state = 1
-                            end
-                            SetVehicleExtra(vehicleRoom,v.extraId,state)
+                            v.state = false
+                            v.extraState = 1
+                            SetVehicleExtra(vehicleRoom,v.extraId,v.extraState)
                         end
                     })
                 end
