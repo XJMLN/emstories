@@ -52,12 +52,26 @@ function callouts_playerDropped()
     Player(source).state.onCallout = false
     activeCallouts[FID][ID] = nil
 end
-exports("callouts_start",callouts_start)
 
+function callouts_cancel()
+    local source = source
+    local FID = Player(source).state.factionID
+    if (playersOnCallout[FID][source]) then
+        local calloutID = playersOnCallout[FID][source]
+        Player(source).state.onCallout = false
+        playersOnCallout[FID][source] = nil
+        activeCallouts[FID][calloutID] = nil
+        TriggerClientEvent("callouts_cancelCallout",source,calloutID)
+        TriggerClientEvent("3dtext:DrawNotification",source,"Centrala","Centrala","~g~Przerwano aktualne wezwanie.",true)
+    end
+end
+exports("callouts_start",callouts_start)
 RegisterNetEvent("callouts_request")
 AddEventHandler("callouts_request",callouts_request)
 RegisterNetEvent("callouts_end")
 AddEventHandler("callouts_end",callouts_end)
+RegisterNetEvent("callouts_cancelRequest")
+AddEventHandler("callouts_cancelRequest",callouts_cancel)
 RegisterNetEvent("em_core:playerDropped")
 AddEventHandler("em_core:playerDropped",callouts_playerDropped)
 RegisterNetEvent("callouts_checkCallout")

@@ -7,6 +7,29 @@ function DrawHelp(text)
 	AddTextComponentString(text)
 	DisplayHelpTextFromStringLabel(0, false, 1, 0)
 end
+
+function callout_cancelCallout(ID)
+    if (calloutData and calloutData.started) then
+        DeleteEntity(calloutData.ped)
+        DeleteEntity(calloutData.veh)
+        DeleteEntity(calloutData.blip)
+        calloutData = {ped=nil, veh=nil,blip=nil, stopped=false,started=false}
+        bonus = false
+        currentID = nil
+    end
+end
+
+Citizen.CreateThread(function()
+    while true do
+        if (calloutData.started) then
+            if (IsPedDeadOrDying(calloutData.ped)) then
+                callout_cancelCallout(MISSION_ID)
+                DrawHelp("~r~Rowerzysta został zabity.")
+            end
+        end
+        Citizen.Wait(1000)
+    end
+end)
 function callout_startupMission(id,data,coords)
     if (id ~= MISSION_ID) then return end
     local coords = coords
@@ -73,3 +96,6 @@ function callout_startupMission(id,data,coords)
 end
 RegisterNetEvent("em_callouts:startupMission")
 AddEventHandler("em_callouts:startupMission",callout_startupMission)
+
+RegisterNetEvent("em_callouts:cancelMission")
+AddEventHandler("em_callouts:cancelMission",callout_cancelCallout)

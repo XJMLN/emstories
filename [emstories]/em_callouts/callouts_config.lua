@@ -55,6 +55,57 @@ CALLOUTS = {
             code=3,
             sprite=665,
             colour=1
+        },
+        {
+            id=18,
+            title="Bójka z użyciem broni białej",
+            locations={
+                [5]={
+                    {x=-166.66,y=-1031.69,z=27.27,heading=101.08, 
+                    data={
+                            {x=-164.25,y=-1031.19,z=27.27,heading=164.97},
+                            {x=-161.87,y=-1036.86,z=27.27,heading=342.75},
+                        }
+                    },
+                    {x=-570.42,y=-1012.04,z=22.18,heading=278.28,
+                    data={
+                        {x=-570.42,y=-1012.04,z=22.18,heading=278.28},
+                        {x=-566.4,y=-1014.31,z=22.18,heading=77.02},
+                    }
+                    },
+                },
+                [6]={
+
+                },
+                [7]={
+
+                },
+            },
+            code=3,
+            sprite=665,
+            colour=1
+        },
+        {
+            id=19,
+            title="Strzelanina",
+            locations={
+                [5]={
+                    {x=-569.38,y=-999.94,z=22.18,heading=179.98,
+                    data={
+                        {x=-570.42,y=-1012.04,z=22.18,heading=278.28},
+                        {x=-566.4,y=-1014.31,z=22.18,heading=77.02},
+                        {x=-569.82,y=-992.81,z=22.18,heading=130.08},
+                        {x=-576.88,y=-996.14,z=22.28,heading=266.61},
+                        {x=-568.74,y=-977.28,z=22.18,heading=176.16}
+                    }
+                }
+                },
+                [6]={},
+                [7]={},
+            },
+            code=3,
+            sprite=665,
+            colour=1
         }
     },
     [2]={
@@ -128,7 +179,44 @@ CALLOUTS = {
                 [3]={},
                 [4]={},
             },
-            code=4,
+            code=3,
+            sprite=665,
+            colour=1,
+            
+        },
+        {
+            id=16,
+            title="Potrącenie przez pociąg",
+            locations = {
+                [2]={
+                    {x=-14.52,y=-1622.47,z=29.27,heading=146.8,trainPos={-5.98,-1627.22,29.29,48.57}},
+                }
+            },
+            code=3,
+            sprite=665,
+            colour=1,
+            pedData = {
+                taskList = "Poszkodowany nie żyje przez obrażenia odniesione podczas potrącenia. Wypisz akt zgonu, następnie przetransportuj zwłoki do techników.",
+                tasksIDs = {[3]=true,[4]=true},
+                diagnose = {"Zgon"},
+                pulseFrom='dead',
+                pulseTo = 0,
+                temperatureFrom=34.0,
+                temperatureTo=35.8,
+                animationDict="missarmenian2",
+                animationName="corpse_search_exit_ped"
+            }
+        },
+        {
+            id=17,
+            title="Transport chorych z lotniska",
+            locations = {
+                [2]={
+                    {x=-1001.14,y=-2452.55,z=13.76,heading=149.78},
+                },
+                [3]={},
+                [4]={},
+            },
             sprite=665,
             colour=1,
         }
@@ -252,10 +340,19 @@ CALLOUTS = {
         },
     },
 }
-
+HOSPITAL_POINTS = {
+    "366.27,-596.34,28.92", -- lsmc
+}
 VEHICLES = {"mule","mule2","mule3","mule4","blista","club","dilettante","panto","oracle","felon2","felon","dloader","baller","huntley","landstalker","granger","gresley","bjxl","xls","serrano","emperor2","primo","premier","regina","stratum","sadler","speedo4","minivan","burrito","journey","surfer","rumpo"}
 PEDS = {"a_f_o_genstreet_01","a_f_y_genhot_01","a_m_m_genfat_02","a_m_m_genfat_01","u_m_m_filmdirector","a_f_y_fitness_02","a_f_y_hipster_01","a_m_y_hikey_01","a_f_y_hiker_01"}
-
+WEAPONS = {
+    ['melee']={
+        "weapon_bat","weapon_bottle","weapon_crowbar","weapon_flashlight","weapon_golfclub","weapon_hammer","weapon_hatchet","weapon_knuckle","weapon_nightstick","weapon_wrench","weapon_poolcue"
+    },
+    ['range']={
+        "weapon_pistol","weapon_combatpistol","weapon_heavypistol","weapon_pistol50","weapon_vintagepistol"
+    }
+}
 
 function table.random(t)
 	if not t or type(t) ~= "table" or next(t) == nil then

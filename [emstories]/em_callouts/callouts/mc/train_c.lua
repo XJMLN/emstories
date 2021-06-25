@@ -1,21 +1,15 @@
-local MISSION_IDS = {[13]=true,[14]=true}
-local calloutData = {blip=nil,ped=nil,started=false,steps=0,coords=nil, diagnose=nil,pulse=nil,temp=nil,taskList="",pedData=nil}
+local MISSION_ID = 16
+local calloutData = {train=nil,blip=nil,driver=nil,ped=nil,steps=0,pulse=nil,diagnose=nil,coords=nil,temp=nil,taskList="",pedData=nil}
 local taskWatchData = {}
-local currentID = nil
 local dropoffCoords = nil
-local dropoffState = false
+local dropoffState = nil
+local currentID = nil
+
 DecorRegister("__MISSION_MC_ITEMS_",3)
 DecorRegister("__MISSION_MC_PED_",3)
 DecorRegister("__MISSION_MC_PED_SEX_",3)
 DecorRegister("__MISSION_MC_PED_TEMP_",1)
 DecorRegister("__MISSION_MC_PED_PULSE_",3)
-
-function loadAnimDict( dict )
-	while ( not HasAnimDictLoaded( dict ) ) do
-		RequestAnimDict( dict )
-		Citizen.Wait( 0 )
-	end
-end
 
 function callout_accident_taskWatcher(tasks)
     taskWatchData = {}
@@ -38,8 +32,10 @@ function callout_cancelCallout(ID)
     if (calloutData and calloutData.started) then
         DeleteEntity(calloutData.ped)
         DeleteEntity(calloutData.blip)
+        DeleteMissionTrain(calloutData.train)
+        DeleteEntity(calloutData.driver)
         RemoveBlip(calloutData.blip)
-        calloutData = {blip=nil,ped=nil,started=false,steps=0,coords=nil, diagnose=nil,pulse=nil,temp=nil,taskList="",pedData=nil}
+        calloutData = {blip=nil,ped=nil,train=nil,driver=nil,started=false,steps=0,coords=nil, diagnose=nil,pulse=nil,temp=nil,taskList="",pedData=nil}
         dropoffState = false
         dropoffCoords = nil
         currentID = nil
@@ -51,6 +47,8 @@ function mcPedCallouts_pedInAmbulance()
     if (not currentID) then return end
     DrawHelp("Przetransportuj poszkodowanego do szpitala. Najbliższy szpital został zaznaczony na mapie.")
     DeleteEntity(calloutData.ped)
+    DeleteEntity(calloutData.blip)
+    RemoveBlip(calloutData.blip)
     calloutData.ped = nil
     dropoffCoords = getClosestCoords(HOSPITAL_POINTS)
     ClearAllBlipRoutes()
@@ -70,23 +68,27 @@ function mcPedCallouts_pedInAmbulance()
 end
 
 function callout_endMission(ID,success)
-    if (not MISSION_IDS[ID]) then return end
+    if (MISSION_ID ~= ID) then return end
     if (success) then
         TriggerServerEvent("callouts_end",currentID,true)
     end
     DeleteEntity(calloutData.ped)
     DeleteEntity(calloutData.blip)
+    DeleteMissionTrain(calloutData.train)
+    DeleteEntity(calloutData.driver)
     RemoveBlip(calloutData.blip)
-    calloutData = {blip=nil,ped=nil,started=false,steps=0,coords=nil, diagnose=nil,pulse=nil,temp=nil,taskList="",pedData=nil}
+    calloutData = {blip=nil,ped=nil,train=nil,driver=nil,started=false,steps=0,coords=nil, diagnose=nil,pulse=nil,temp=nil,taskList="",pedData=nil}
     dropoffState = false
     dropoffCoords = nil
     currentID = nil
     taskWatchData = {}
 end
+
 function callout_startupMission(ID, data, location)
-    if (not MISSION_IDS[ID]) then return end
+    if (MISSION_ID ~= ID) then return end
     exports.em_mc_gui:restartVariables()
     currentID = ID
+    
     local pedModel = GetHashKey(PEDS[math.random(1,#PEDS)])
     local pedData = data.pedData
     loadAnimDict(pedData.animationDict)
@@ -94,6 +96,28 @@ function callout_startupMission(ID, data, location)
     while not HasModelLoaded(pedModel) do
         Citizen.Wait(0)
     end
+    local trainModel =GetHashKey("metrotrain")
+    RequestModel(trainModel)
+    while not HasModelLoaded(trainModel) do
+        RequestModel(trainModel)
+        Citizen.Wait(0)
+    end
+    local trainPos = location.trainPos
+    local train = CreateMissionTrain(24,trainPos[1],trainPos[2],trainPos[3],trainPos[4])
+    local driverModel = GetHashKey("s_m_m_lsmetro_01")
+    RequestModel(driverModel)
+	while not HasModelLoaded(driverModel) do
+		RequestModel(driverModel)
+		Citizen.Wait(0)
+	end
+    local driver = CreatePedInsideVehicle(train, 26, driverModel, -1, 1, true)
+    SetEntityAsMissionEntity(driver,true,true)
+    SetEntityAsMissionEntity(train,true,true)
+    SetBlockingOfNonTemporaryEvents(driver,true)
+    SetModelAsNoLongerNeeded(driverModel)
+    SetModelAsNoLongerNeeded(pedModel)
+    FreezeEntityPosition(train,true)
+    SetTrainCruiseSpeed(train, 0.0)
     local blip = AddBlipForCoord(location.x, location.y, location.z)
     SetBlipSprite(blip,data.sprite)
     SetBlipDisplay(blip,4)
@@ -109,7 +133,10 @@ function callout_startupMission(ID, data, location)
     SetBlockingOfNonTemporaryEvents(NPC,true)
     DecorSetInt(NPC,"__MISSION_MC_PED_SEX_",sex)
     local temp = round(randomFloat(pedData.temperatureFrom,pedData.temperatureTo),1)
-    local pulse = math.random(pedData.pulseFrom,pedData.pulseTo)
+    local pulse = 1
+    if (pedData.pulseFrom ~= 'dead') then
+        pulse = math.random(pedData.pulseFrom,pedData.pulseTo)
+    end
     local diagnose = pedData.diagnose[math.random(1,#pedData.diagnose)]
     local taskList = pedData.taskList
     DecorSetInt(NPC,"__MISSION_MC_PED_",2)
@@ -121,8 +148,11 @@ function callout_startupMission(ID, data, location)
     Entity(NPC).state.taskList = taskList
     calloutData.pedData = pedData
     calloutData.started = true
+    calloutData.train = train
+    calloutData.driver = driver
     DecorSetInt(NPC,"__MISSION_MC_PED_PULSE_",pulse)
     DecorSetFloat(NPC,"__MISSION_MC_PED_TEMP_",temp)
+    Wait(500)
     TaskPlayAnim(NPC,pedData.animationDict,pedData.animationName,2.0,2.0,-1,2,0,false,false,false)
     callout_accident_taskWatcher(pedData.tasksIDs)
 end
@@ -142,10 +172,9 @@ Citizen.CreateThread(function()
         Citizen.Wait(10)
     end
 end)
-
+exports("TaskWatcher_completeID",callout_accident_taskWatcherComplete)
 RegisterNetEvent("onPlayerPutPedInAmbulance")
 AddEventHandler("onPlayerPutPedInAmbulance",mcPedCallouts_pedInAmbulance)
-exports("TaskWatcher_completeID",callout_accident_taskWatcherComplete)
 RegisterNetEvent("em_callouts:startupMission")
 AddEventHandler("em_callouts:startupMission",callout_startupMission)
 RegisterNetEvent("em_callouts:cancelMission")

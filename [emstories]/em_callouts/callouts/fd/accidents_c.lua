@@ -46,6 +46,16 @@ Citizen.CreateThread(function() -- mission tasks thread
 
 end)
 
+function callout_cancelCallout(ID)
+    if (calloutData.started) then
+        DeleteEntity(calloutData.blip)
+        RemoveBlip(calloutData.blip)
+        DeleteEntity(calloutData.ped)
+        DeleteEntity(calloutData.vehicle)
+        calloutData = {blip=nil,ped=nil,vehicle=nil,started=false,step=0,coords=nil}
+        currentID = nil
+    end
+end
 function callout_startupMission(ID, data, coords)
     if (not MISSION_IDS[ID]) then return end
     local vehicleModel = GetHashKey(VEHICLES[math.random(1,#VEHICLES)])
@@ -96,5 +106,7 @@ function callout_startupMission(ID, data, coords)
     calloutData.started = true
 end
 
+RegisterNetEvent("em_callouts:cancelMission")
+AddEventHandler("em_callouts:cancelMission",callout_cancelCallout)
 RegisterNetEvent("em_callouts:startupMission")
 AddEventHandler("em_callouts:startupMission",callout_startupMission)

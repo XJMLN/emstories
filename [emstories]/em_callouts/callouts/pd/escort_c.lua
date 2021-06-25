@@ -82,6 +82,22 @@ Citizen.CreateThread(function()
     end
 end)
 
+function callout_cancelCallout(ID)
+    if (calloutData and calloutData.started) then
+        DeleteEntity(calloutData.driver)
+        DeleteEntity(calloutData.veh)
+        DeleteEntity(calloutData.blip)
+        if (calloutData.escortID == 2) then
+            for i=2,6 do
+                DeleteEntity(calloutData.passenger[i])
+            end
+        else
+            DeleteEntity(calloutData.passenger)
+        end
+        calloutData = {started=false, driver=nil,veh=nil,passenger=nil,blip=nil,escortID=nil,destination=nil}
+    end
+end
+
 function callout_startupMission(id, data, coords)
     if (id ~= MISSION_ID) then return end
     
@@ -109,6 +125,7 @@ function callout_startupMission(id, data, coords)
     end
     
     local veh = CreateVehicle(vehicleModel, coords.x, coords.y, coords.z, coords.heading, true, true)
+    Entity(veh).state.calloutEntity = true
     local blip = AddBlipForEntity(veh)
     SetBlipSprite(blip,665)
     SetBlipDisplay(blip, 4)
@@ -153,7 +170,7 @@ function callout_startupMission(id, data, coords)
             if (calloutData.started) then
                 local vehPosition = GetEntityCoords(veh)
                 local plrPos = GetEntityCoords(PlayerPedId())
-                if (GetDistanceBetweenCoords(calloutData.destination.x,calloutData.destination.y,calloutData.destination.z,vehPosition.x,vehPosition.y, vehPosition.z, false) <=15.0 and calloutData.near) then
+                if (DoesEntityExist(calloutData.veh) and  GetDistanceBetweenCoords(calloutData.destination.x,calloutData.destination.y,calloutData.destination.z,vehPosition.x,vehPosition.y, vehPosition.z, false) <=15.0 and calloutData.near) then
                     DeleteEntity(calloutData.driver)
                     DeleteEntity(calloutData.veh)
                     DeleteEntity(calloutData.blip)
@@ -167,7 +184,7 @@ function callout_startupMission(id, data, coords)
                     calloutData = {started=false, driver=nil,veh=nil,passenger=nil,blip=nil,escortID=nil,destination=nil}
                     TriggerServerEvent("callouts_end",MISSION_ID,true)
                 end
-                if (GetDistanceBetweenCoords(calloutData.destination.x,calloutData.destination.y,calloutData.destination.z,vehPosition.x,vehPosition.y, vehPosition.z, false) <=50 and not calloutData.near) then
+                if (DoesEntityExist(calloutData.veh) and GetDistanceBetweenCoords(calloutData.destination.x,calloutData.destination.y,calloutData.destination.z,vehPosition.x,vehPosition.y, vehPosition.z, false) <=50 and not calloutData.near) then
                     DeleteEntity(calloutData.driver)
                     DeleteEntity(calloutData.veh)
                     DeleteEntity(calloutData.blip)
@@ -181,10 +198,10 @@ function callout_startupMission(id, data, coords)
                     calloutData = {started=false, driver=nil,veh=nil,passenger=nil,blip=nil,escortID=nil,destination=nil}
                     TriggerServerEvent("callouts_end",MISSION_ID,false)
                 end
-                if (GetDistanceBetweenCoords(plrPos.x,plrPos.y,plrPos.z,vehPosition.x,vehPosition.y, vehPosition.z, false) <=100 and not calloutData.near) then
+                if (DoesEntityExist(calloutData.veh) and  GetDistanceBetweenCoords(plrPos.x,plrPos.y,plrPos.z,vehPosition.x,vehPosition.y, vehPosition.z, false) <=100 and not calloutData.near) then
                     calloutData.near = true
                 end
-                if (GetDistanceBetweenCoords(plrPos.x,plrPos.y,plrPos.z,vehPosition.x,vehPosition.y, vehPosition.z, false) >=300 and calloutData.near) then
+                if (DoesEntityExist(calloutData.veh) and  GetDistanceBetweenCoords(plrPos.x,plrPos.y,plrPos.z,vehPosition.x,vehPosition.y, vehPosition.z, false) >=300 and calloutData.near) then
                     TriggerEvent("3dtext:DrawNotification","System","System","~r~Wezwanie zostało przerwane - oddaliłeś się od eskortowanego pojazdu.")
                     DeleteEntity(calloutData.driver)
                     DeleteEntity(calloutData.veh)
@@ -206,3 +223,6 @@ function callout_startupMission(id, data, coords)
 end
 RegisterNetEvent("em_callouts:startupMission")
 AddEventHandler("em_callouts:startupMission",callout_startupMission)
+
+RegisterNetEvent("em_callouts:cancelMission")
+AddEventHandler("em_callouts:cancelMission",callout_cancelCallout)

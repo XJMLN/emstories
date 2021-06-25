@@ -24,6 +24,18 @@ Citizen.CreateThread(function()
         Citizen.Wait(500)
     end
 end)
+
+function callout_cancelCallout(ID)
+    if (fireID and fireID >0) then
+        DeleteEntity(calloutData.blip)
+        RemoveBlip(calloutData.blip)
+        TriggerServerEvent("fireManager:removeFire",fireID)
+        calloutData = {blip=nil,started=false}
+        fireID = nil
+        currentID = nil
+    end
+end
+
 function callout_startupMission(ID, data, location)
     if (not MISSION_IDS[ID]) then return end
     currentID = ID
@@ -55,6 +67,9 @@ end
 function callouts_returnFireID(ID)
     fireID = ID
 end
+
+RegisterNetEvent("em_callouts:cancelMission")
+AddEventHandler("em_callouts:cancelMission",callout_cancelCallout)
 
 RegisterNetEvent("callouts_returnFireID")
 AddEventHandler("callouts_returnFireID",callouts_returnFireID)

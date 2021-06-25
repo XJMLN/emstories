@@ -17,51 +17,6 @@ MENUS.main.Closed = function() -- @todo: przerobic na funkcje ktora resetuje men
     playerData = nil
 end
 
-local menusVariables = {
-    dispatch = {
-        [1]={label="Wezwij lawetę",desc="Wezwij lawetę na miejsce w którym przebywasz",called=false, calledLabel="~r~Anuluj lawetę", calledDesc="Anuluj wezwanie lawety",showedLabel="Wezwij lawetę", showedDesc="Wezwij lawetę na miejsce w którym przebywasz"},
-        [2]={label="Wezwij ambulans",desc="Wezwij ambulans na miejsce w którym przebywasz",called=false, calledLabel="~r~Anuluj ambulans", calledDesc="Anuluj wezwanie ambulansu",showedLabel="Wezwij ambulans", showedDesc="Wezwij ambulans na miejsce w którym przebywasz"},
-        [3]={label="Wezwij koronera",desc="Wezwij koronera na miejsce w którym przebywasz",called=false, calledLabel="~r~Anuluj koronera", calledDesc="Anuluj wezwanie koronera",showedLabel="Wezwij koronera", showedDesc="Wezwij koronera na miejsce w którym przebywasz"},
-        [4]={label="Wezwij hycla",desc="Wezwij hycla na miejsce w którym przebywasz",called=false, calledLabel="~r~Anuluj hycla", calledDesc="Anuluj wezwanie hycla",showedLabel="Wezwij hycla", showedDesc="Wezwij hycla na miejsce w którym przebywasz"},
-    },
-    callouts = {
-        [1]={
-            ["Inne"]={
-                {label="Rowerzysta na autostradzie",id=3},
-                {label="Pojazd na wstecznym",id=1},
-            },
-            ['Konwoje']={
-                {label="Eskorta pojazdu",id=2},
-            }
-        },
-        [2]={
-            ['Upadki']={
-                {label="Upadek w metrze",id=1},
-                {label="Upadek z schodów",id=2},
-            },
-            ['Transport']={
-                {label="Transport krwi",id=3}
-            }
-        },
-        [3]={
-            ['Pożary']={
-                {label="Pożar burdelu",id=1},
-                {label="Pożar transformatora",id=2},
-                {label="Pożar składowiska",id=3},
-                {label="Pożar domu",id=4},
-                {label="Pożar przytułka dla bezdomnych",id=5},
-                {label="Pożar złomowiska",id=6},
-                {label="Pożar doków",id=7},
-                {label="Pożar lasu",id=8}
-            },
-            ['Wypadki']={
-                {label="Uderzenie w słup energetyczny",id=9}
-            }
-
-        }
-    }
-}
-
 function duty_gui_cancelService(serviceID)
     local item = menusVariables['dispatch'][serviceID]
     item.showedLabel = item.label
@@ -77,18 +32,29 @@ function duty_gui_cooldown()
         exports.em_gui:showNotification("Informacja","Możesz ponownie wygenerować wezwanie.",9000)
     end)
 end
+
 Citizen.CreateThread(function()
     while true do
         if (isWindowOpen) then
             RageUI.IsVisible(MENUS.main, function()
                 RageUI.Button("Wezwania","Wygeneruj wezwanie",{RightLabel = ">>>"},true,{},MENUS.callouts)
                 RageUI.Button("Centrala","Wezwij wsparcie",{RightLabel = ">>>"},true,{},MENUS.dispatch)
+                if (LocalPlayer.state.factionID and LocalPlayer.state.factionID == 2) then
+                    RageUI.Checkbox("Pokaż rannych graczy", "Pokaż rannych graczy na mapie", menusVariables.injuredPlayers, {},{
+                        onChecked = function()
+                            menusVariables.injuredPlayers = true
+                            exports.em_mc_players:showInjuredPlayers(true)
+                        end,
+                        onUnChecked = function()
+                            menusVariables.injuredPlayers = false
+                            exports.em_mc_players:showInjuredPlayers(false)
+                        end
+                    })
+                end
                 if (LocalPlayer.state.onCallout) then
                     RageUI.Button("Przerwij wezwanie","Przerwij wezwanie",{RightBadge= RageUI.BadgeStyle.Alert, Color ={BackgroundColor={212, 71, 53}, HighLightColor={235, 101, 84}}}, true, {
                         onSelected = function()
-                            exports.em_fd_callouts:accident_fd_cancel()
-                            exports.em_fd_callouts:fireCallout_cancel()
-                            exports.em_mc_callouts:mcCallout_cancel()
+                            TriggerServerEvent("callouts_cancelRequest",true)
                             RageUI.Visible(MENUS['main'],false)
                         end
                     })

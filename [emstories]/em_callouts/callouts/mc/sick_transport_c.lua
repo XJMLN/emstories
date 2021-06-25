@@ -1,10 +1,7 @@
-local MISSION_IDS = {[15]=true}
-local calloutData = {blip=nil,started=false,dropoff=false,dropoffCoords=nil}
+local MISSION_IDS = {[17]=true}
+local calloutData = {blip=nil,started=false,ped=nil,ped2=nil,dropoff=false,dropoffCoords=nil}
 local bonus = false
 local currentID = nil
-local TRANSPORT_POINTS = {
-    {x=-3020.51,y=85.73,z=11.61}
-}
 
 function DrawHelp(text)
 	SetTextComponentFormat("STRING")
@@ -18,12 +15,22 @@ function transport_timer()
     bonus = false
 end
 
+function enterVehicleTask()
+    Citizen.CreateThread(function()
+        local playerVehicle = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+        if (playerVehicle) then
+            TaskEnterVehicle(calloutData.ped, playerVehicle,6000,0,2.0,1,0)
+            Wait(6000)
+            SetPedConfigFlag(calloutData.ped,292,true)
+        end
+    end)
+end
 function callout_dropoff()
+    enterVehicleTask()
     DeleteEntity(calloutData.blip)
     RemoveBlip(calloutData.blip)
-
-    local dropoff = TRANSPORT_POINTS[math.random(1,#TRANSPORT_POINTS)]
-    local blip = AddBlipForCoord(dropoff.x,dropoff.y,dropoff.z)
+    local dropoff = getClosestCoords(HOSPITAL_POINTS)
+    local blip = AddBlipForCoord(dropoff[1],dropoff[2],dropoff[3])
     SetBlipSprite(blip,655)
     SetBlipDisplay(blip,4)
     SetBlipColour(blip,3)
@@ -40,15 +47,16 @@ function callout_dropoff()
     Citizen.CreateThread(function()
         while true do
             if (calloutData.dropoff) then
-                DrawMarker(1,dropoff.x,dropoff.y,dropoff.z,0.0,0.0,0.0,0,180.0,0.0,1.5,1.5,1.5,122,199,74,90,false,true,2,nil,nil,false)
+                DrawMarker(1,dropoff[1],dropoff[2],dropoff[3],0.0,0.0,0.0,0,180.0,0.0,1.5,1.5,1.5,122,199,74,90,false,true,2,nil,nil,false)
                 local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-                if (not vehicle) then
+                if (vehicle) then
                     calloutData.dropoff = false
-                    if (vehicle and GetDistanceBetweenCoords(dropoff.x,dropoff.y,dropoff.z, GetEntityCoords(vehicle,false)) < 1.5 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
+                    if (vehicle and GetDistanceBetweenCoords(dropoff[1],dropoff[2],dropoff[3], GetEntityCoords(vehicle,false)) < 1.5 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
                         DeleteEntity(calloutData.blip)
+                        DeleteEntity(calloutData.ped)
                         RemoveBlip(calloutData.blip)
                         TriggerServerEvent("callouts_end",currentID,true)
-                        calloutData = {blip=nil,started=false,dropoff=false,dropoffCoords=nil}
+                        calloutData = {blip=nil,started=false,ped=nil,ped2=nil,dropoff=false,dropoffCoords=nil}
                         bonus = false
                         currentID = nil
 
@@ -62,8 +70,9 @@ end
 function callout_cancelCallout(ID)
     if (calloutData and calloutData.started) then
         DeleteEntity(calloutData.ped)
+        DeleteEntity(calloutData.ped2)
         DeleteEntity(calloutData.blip)
-        calloutData = {blip=nil,started=false,dropoff=false,dropoffCoords=nil}
+        calloutData = {blip=nil,started=false,ped=nil,ped2=nil,dropoff=false,dropoffCoords=nil}
         bonus = false
         currentID = nil
     end
@@ -81,15 +90,23 @@ function callout_startupMission(ID, data, location)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString("Wezwanie:"..data.title)
     EndTextCommandSetBlipName(blip)
+    local pedModel = GetHashKey(PEDS[math.random(1,#PEDS)])
+    RequestModel(pedModel)
+    while not HasModelLoaded(pedModel) do
+        Citizen.Wait(0)
+    end
+    local ped = CreatePed(26, pedModel, location.x, location.y, location.z, location.heading, true,true)
+    SetBlockingOfNonTemporaryEvents(ped,true)
+    SetEntityAsMissionEntity(ped,true,true)
+    calloutData.ped = ped
     calloutData.blip = blip
     calloutData.started = true
     Citizen.CreateThread(function()
         while true do
             if (calloutData.started) then
-                DrawMarker(1,location.x, location.y, location.z,0.0,0.0,0.0,0,180.0,0.0,1.5,1.5,1.5,122,199,74,90,false,true,2,nil,nil,false)
                 local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-                if (vehicle and GetDistanceBetweenCoords(location.x, location.y, location.z, GetEntityCoords(vehicle,false)) < 1.5 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
-                    DrawHelp("Wciśnij ~INPUT_PICKUP~ aby odebrać paczki z krwią.")
+                if (vehicle and GetDistanceBetweenCoords(location.x, location.y, location.z, GetEntityCoords(vehicle,false)) < 20 and GetPedInVehicleSeat(vehicle,-1)==PlayerPedId()) then
+                    DrawHelp("Wciśnij ~INPUT_PICKUP~ aby odebrać chorych.")
                     if (IsControlJustPressed(0,38)) then
                         callout_dropoff()
                     end

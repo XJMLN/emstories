@@ -13,6 +13,7 @@ client_scripts {
     "RageUI/menu/windows/*.lua",
 }
 shared_script 'ai_scripts/ai_config.lua'
+shared_script 'config.lua'
 server_scripts {
     '@mysql-async/lib/MySQL.lua',
     'dutyGUI.lua',
